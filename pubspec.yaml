@@ -1,0 +1,49 @@
+name: bizgienelimited
+description: A sales application for bizgiene limited
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+  gradient_app_bar: ^0.0.1
+  font_awesome_flutter: ^8.5.0
+  flutter_typeahead: ^1.7.0
+  folding_cell: ^0.1.2
+  animated_text_kit: ^2.0.0
+  fluttertoast: ^3.1.3
+  modal_progress_hud: ^0.1.3
+  step_progress_indicator: ^0.2.3+6
+  sqflite: ^1.2.0
+  path_provider: ^1.6.5
+  intl: ^0.15.8
+  flutter_money_formatter: ^0.8.3
+  pie_chart: ^3.1.1
+  flutter_sparkline: ^0.1.0
+  shared_preferences: ^0.5.6+3
+  #esc_pos_printer: ^3.1.6
+  esc_pos_printer: ^2.1.2
+  http: ^0.12.0+4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - Assets/images/
+
+  fonts:
+    - family: SFUIDisplay
+      fonts:
+        - asset: Assets/fonts/sf-ui-display-light.otf
+
