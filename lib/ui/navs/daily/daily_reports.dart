@@ -110,7 +110,7 @@ class _DailyReportsState extends State<DailyReports> {
 
   /// Building a Scaffold Widget to display today's report, [DailyChart],
   /// [_availableCash], [_totalTransfer], totalCash and [_totalProfitMade] if
-  /// the user is an Admin 'Farawe'
+  /// the user is an Admin
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();

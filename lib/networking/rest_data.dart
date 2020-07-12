@@ -5,6 +5,7 @@ import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/model/create_user.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/model/store_details.dart';
+import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/model/user.dart';
 import 'network_util.dart';
 
@@ -336,5 +337,165 @@ class RestDataSource {
       throw ("Error in fetching store details, try again");
     });
   }
+
+  /// A function that adds new supply to the server POST
+  /// with [Supply] model
+  Future<dynamic> addSupply(Supply supply) async{
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw new Exception("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+
+    return _netUtil.post(ADD_SUPPLY_URL, headers: header, body: {
+      "dealer": supply.dealer,
+      "amount": supply.amount.toString(),
+      "products": supply.products,
+      "received": supply.received,
+      "createdAt": supply.createdAt.toString(),
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw new Exception(res["message"]);
+      }else{
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in adding supply, try again");
+    });
+  }
+
+  /// A function that updates supply details PUT.
+  /// with [Supply]
+  Future<dynamic> updateSupply(Supply supply) async{
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw new Exception("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.put(UPDATE_SUPPLY_URL, headers: header, body: {
+      "id": supply.id,
+      "dealer": supply.dealer.toString(),
+      "amount": supply.amount.toString(),
+      "products": supply.products,
+      "received": supply.received,
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw new Exception(res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in updating supply, try again");
+    });
+  }
+
+  /// A function that updates received in supply details to True PUT.
+  /// with [Supply]
+  Future<dynamic> receivedSupply(Supply supply) async{
+    /// Variable holding today's datetime
+    DateTime dateTime = DateTime.now();
+
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw new Exception("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.put(RECEIVED_SUPPLY_URL, headers: header, body: {
+      "id": supply.id,
+      "received": true,
+      "receivedAt": dateTime.toString(),
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw new Exception(res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in updating supply, try again");
+    });
+  }
+
+  /// A function that fetches a particular supply from the server
+  /// into a model of [Supply] GET.
+  Future<Supply> fetchSupply(String id) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw new Exception("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}"};
+    });
+    final FETCH_URL = FETCH_SUPPLY_URL + "$id";
+    return _netUtil.get(FETCH_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw new Exception(res["message"]);
+      }else{
+        return Supply.fromJson(res["data"]);
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in fetching supply, try again");
+    });
+  }
+
+  /// A function that fetches all supplies from the server
+  /// into a List of [Supply] GET.
+  Future<List<Supply>> fetchAllSupply() async {
+    List<Supply> supplies;
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw new Exception("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}"};
+    });
+    return _netUtil.get(FETCH_SUPPLIES_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw new Exception(res["message"]);
+      }else{
+        var rest = res["data"] as List;
+        supplies = rest.map<Supply>((json) => Supply.fromJson(json)).toList();
+        return supplies;
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in fetching supplies, try again");
+    });
+  }
+
 
 }

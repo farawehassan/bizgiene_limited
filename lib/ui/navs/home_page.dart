@@ -2,11 +2,12 @@ import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/bloc/product_suggestions.dart';
 import 'package:bizgienelimited/database/user_db_helper.dart';
 import 'package:bizgienelimited/model/productDB.dart';
-import 'package:bizgienelimited/styles/theme.dart' as Theme;
+import 'package:bizgienelimited/styles/theme.dart' as Them;
 import 'package:bizgienelimited/ui/navs/other/other_reports.dart';
 import 'package:bizgienelimited/ui/navs/receipt/receipt_page.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/round_icon.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -28,6 +29,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  /// Switch button for toggling between light mode and dark mode
+  bool _enabled = false;
+
+  /// Function for toggling between light mode and dark mode
+  void themeSwitch(context) {
+    DynamicTheme.of(context).setBrightness(
+        Theme.of(context).brightness == Brightness.dark
+            ? Brightness.light
+            : Brightness.dark);
+  }
 
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
@@ -101,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _getCurrentUser();
+    _getThemeBoolValuesSF();
   }
 
   /// Function to add a new row to record sales details:
@@ -116,6 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final TextEditingController productController = TextEditingController();
     final TextEditingController totalPriceController = TextEditingController();
 
+    if (!mounted) return;
     setState(() {
       _details = {'qty':'$_quantity','product':_selectedProduct,'costPrice':'$_costPrice','unitPrice':'$_unitPrice','totalPrice':'$_totalPrice'};
       increment ++;
@@ -241,6 +255,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Function to delete a row from the record sales at a particular [index]
   void _deleteItem(index){
+    if (!mounted) return;
     setState((){
       print(index);
       _rows.removeAt(index);
@@ -389,8 +404,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                             colors: [
-                              Theme.ColorGradients.loginGradientEnd,
-                              Theme.ColorGradients.loginGradientStart
+                              Them.ColorGradients.loginGradientEnd,
+                              Them.ColorGradients.loginGradientStart
                             ],
                             begin: const FractionalOffset(0.2, 0.2),
                             end: const FractionalOffset(1.0, 1.0),
@@ -440,6 +455,24 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                   ListTile(
+                    leading: Icon(Icons.settings),
+                    trailing: Switch(
+                      activeColor: Color(0xFF008752),
+                      value: _enabled,
+                      onChanged: (bool value) {
+                        if (!mounted) return;
+                        setState(() {
+                          _addThemeBoolToSF(value);
+                          themeSwitch(context);
+                        });
+                      },
+                    ),
+                    title: Text('Theme'),
+                    subtitle: _enabled ? Text('Dark Mode') : Text('Light Mode'),
+                    onTap: (){
+                    },
+                  ),
+                  ListTile(
                     title: Text('Sign Out'),
                     onTap: (){
                       showDialog(
@@ -458,7 +491,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Align(
-                                  alignment: Alignment.center,
+                                  alignment: Alignment.topLeft,
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         top: 16.0),
@@ -597,6 +630,37 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('loggedIn', false);
     Navigator.of(context).pushReplacementNamed(WelcomeScreen.id);
+  }
+
+  /// Function to get the 'loggedIn' in your SharedPreferences
+  _getThemeBoolValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool boolValue = prefs.getBool('themeMode');
+    if(boolValue == true){
+      if (!mounted) return;
+      setState(() {
+        _enabled = true;
+      });
+    }
+    else if(boolValue == false){
+      if (!mounted) return;
+      setState(() {
+        _enabled = false;
+      });
+    } else {
+      _addThemeBoolToSF(false);
+      if (!mounted) return;
+      setState(() {
+        _enabled = false;
+      });
+    }
+  }
+
+  /// Function to set the 'loggedIn' in your SharedPreferences to false
+  _addThemeBoolToSF(bool state) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('themeMode', state);
+    _getThemeBoolValuesSF();
   }
 
 }

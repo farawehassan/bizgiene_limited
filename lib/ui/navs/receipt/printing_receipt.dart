@@ -56,8 +56,7 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
     }
   }
 
-  /// Calls [_addProducts()] and [_availableProductNames()]
-  /// before the class builds its widgets
+  /// Calls [_addProducts()] before the class builds its widgets
   @override
   void initState() {
     super.initState();
@@ -82,7 +81,7 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
     final Image image = decodeImage(bytes);
     ticket.image(image);
 
-    ticket.text('AYO-LEE STORES',
+    ticket.text('BizGenie Limited',
         styles: PosStyles(
           align: PosTextAlign.center,
           height: PosTextSize.size2,
@@ -90,10 +89,10 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
         ),
         linesAfter: 1);
 
-    ticket.text('14, Leigh street Off Ojuelegba Road', styles: PosStyles(align: PosTextAlign.center));
+    ticket.text('56, Olumegbon Rd Gbaja', styles: PosStyles(align: PosTextAlign.center));
     ticket.text('Surulere Lagos', styles: PosStyles(align: PosTextAlign.center));
-    ticket.text('0802912565, 07033757855', styles: PosStyles(align: PosTextAlign.center));
-    ticket.text('farawebola@gmail.com',
+    ticket.text('08025013518, 09072222068', styles: PosStyles(align: PosTextAlign.center));
+    ticket.text('mbkosoko@yahoo.com',
         styles: PosStyles(align: PosTextAlign.center), linesAfter: 1);
     ticket.emptyLines(1);
 
@@ -326,12 +325,15 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
         onPressed: () {
           printerManager.startScan(Duration(seconds: 4));
           printerManager.scanResults.listen((scannedDevices) {
+            if (!mounted) return;
             setState(() {
               _devices = scannedDevices;
             });
             if(_devices.isEmpty){
               _showMessage('No Available Printer');
             }
+          }).onError((handleError){
+            _showMessage('${handleError.toString()}');
           });
         },
         icon: Icons.search,

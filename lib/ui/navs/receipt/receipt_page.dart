@@ -28,13 +28,13 @@ class _ReceiptState extends State<Receipt> {
   var futureValue = FutureValues();
 
   /// Variable holding the company's name
-  String companyName = "Bizgenie Limited";
+  String companyName = "BizGenie Limited";
 
   /// Variable holding the company's address
-  String address = "14, Leigh street Off Ojuelegba Road Surulere Lagos";
+  String address = "56, Olumegbon Rd Gbaja, Surulere, Lagos";
 
   /// Variable holding the company's phone number
-  String phoneNumber = "0802912565, 07033757855";
+  String phoneNumber = "08025013518, 09072222068";
 
   /// Variable holding the company's email
   String email = "mbkosoko@yahoo.com";

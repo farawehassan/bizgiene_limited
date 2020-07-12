@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:versionCode="1"
+    android:versionName="initialVersion"
     package="com.mrfarawe.bizgienelimited">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -9,7 +11,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Bizgenie Limited"
+        android:label="BizGenie Limited"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

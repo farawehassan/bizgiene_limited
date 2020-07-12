@@ -83,7 +83,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       //backgroundColor: Color(0xFFf2f4fb),
       appBar: GradientAppBar(
-        title: Text('Bizgenie Limited'),
+        title: Text('BizGenie Limited'),
         backgroundColorStart: Color(0xFF004C7F),
         backgroundColorEnd: Color(0xFF008752),
         actions: <Widget>[

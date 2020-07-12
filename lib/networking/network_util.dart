@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
@@ -36,8 +35,6 @@ class NetworkHelper{
       throw new ErrorDescription (e.toString());
     }
   }
-
-
 
   /// A function to do any get request with the url and headers
   /// then sends back a json decoded result

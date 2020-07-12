@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class CreateSupply extends StatefulWidget {
+class SupplyPage extends StatefulWidget {
 
-  static const String id = 'create_supply_page';
+  static const String id = 'supply_page';
 
   @override
-  _CreateSupplyState createState() => _CreateSupplyState();
+  _SupplyPageState createState() => _SupplyPageState();
 }
 
-class _CreateSupplyState extends State<CreateSupply> {
+class _SupplyPageState extends State<SupplyPage> {
 
   @override
   Widget build(BuildContext context) {

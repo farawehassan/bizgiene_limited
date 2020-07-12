@@ -20,7 +20,7 @@ class FutureValues {
 
   /// Method to get all the products from the database in the server with
   /// the help of [RestDataSource]
-  /// It returns a list of [AvailableProduct]
+  /// It returns a list of [Product]
   Future<List<Product>> getAllProductsFromDB() {
     var data = RestDataSource();
     Future<List<Product>> product = data.fetchAllProducts();
@@ -30,7 +30,7 @@ class FutureValues {
 
   /// Method to get all the products from the database in the server that its
   /// [currentQuantity] is not 0 with the help of [RestDataSource]
-  /// It returns a list of [AvailableProduct]
+  /// It returns a list of [Product]
   Future<List<Product>> getAvailableProductsFromDB() async {
     List<Product> products = new List();
     Future<List<Product>> availableProduct = getAllProductsFromDB();
@@ -49,7 +49,7 @@ class FutureValues {
 
   /// Method to get all the products from the database in the server that its
   /// [currentQuantity] is = 0 with the help of [RestDataSource]
-  /// It returns a list of [AvailableProduct]
+  /// It returns a list of [Product]
   Future<List<Product>> getFinishedProductFromDB() async {
     List<Product> products = new List();
     Future<List<Product>> finishedProduct = getAllProductsFromDB();
@@ -68,7 +68,7 @@ class FutureValues {
 
   /// Method to get all the reports from the database in the server with
   /// the help of [RestDataSource]
-  /// It returns a list of [DailyReportsData]
+  /// It returns a list of [Reports]
   Future<List<Reports>> getAllReportsFromDB() {
     var data = RestDataSource();
     Future<List<Reports>> dailyReportData = data.fetchAllReports();
@@ -77,7 +77,7 @@ class FutureValues {
 
   /// Method to get today's reports from [DailyReportValue] based on time by
   /// calling the [getTodayReport]
-  /// It returns a list of [DailyReportsData]
+  /// It returns a list of [Reports]
   Future<List<Reports>> getTodayReports() {
     var reportValue = DailyReportValue();
     Future<List<Reports>> todayReport = reportValue.getTodayReport();
@@ -96,7 +96,7 @@ class FutureValues {
   }
 
   /// Method to get report of a [month] using the class [DailyReportValue]
-  /// /// It returns a list of [DailyReportsData]
+  /// /// It returns a list of [Reports]
   Future<List<Reports>> getMonthReports(String month) {
     var reportValue = DailyReportValue();
 

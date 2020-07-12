@@ -8,6 +8,7 @@ import 'package:bizgienelimited/ui/navs/other/products_sold.dart';
 import 'package:bizgienelimited/ui/profile_page.dart';
 import 'package:bizgienelimited/ui/register/create_worker.dart';
 import 'package:bizgienelimited/ui/register/login_screen.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'ui/navs/available_drinks.dart';
@@ -29,37 +30,75 @@ void main() {
 }
 
 /// A StatelessWidget class to hold basic details and routes of my application
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Bizgenie Limited',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        cursorColor: Color(0xFF008752),
-        primaryColor: Color(0xFF004C7F),
-        //primarySwatch: Colors.green,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        //primarySwatch: Colors.blue
-      ),
-      initialRoute: Splash.id,
-      routes: {
-        Splash.id: (context) => Splash(),
-        LoginScreen.id: (context) => LoginScreen(),
-        WelcomeScreen.id: (context) => WelcomeScreen(),
-        MyHomePage.id: (context) => MyHomePage(),
-        Products.id: (context) => Products(),
-        DailyReports.id: (context) => DailyReports(),
-        DailyReportList.id: (context) => DailyReportList(),
-        Profile.id: (context) => Profile(),
-        CreateWorker.id: (context) => CreateWorker(),
-        OtherReports.id: (context) => OtherReports(),
-        ReportPage.id: (context) => ReportPage(),
-        ProductsSold.id: (context) => ProductsSold(),
-      },
-    );
+    return DynamicTheme(
+        defaultBrightness: Brightness.light,
+        data: (brightness) => ThemeData(
+              brightness: brightness,
+              cursorColor: Color(0xFF008752),
+              primaryColor: Color(0xFF004C7F),
+              //rest of the themeData
+              //you can also use conditioning here based on the current
+              //brightness mode (dark or light). For ex:
+              // primarySwatch: brightness == Brighness.dark ? Colors.white : Colors.black
+            ),
+        themedWidgetBuilder: (context, theme) {
+          return MaterialApp(
+            title: 'Bizgenie Limited',
+            debugShowCheckedModeBanner: false,
+            theme: theme,
+            initialRoute: Splash.id,
+            routes: {
+              Splash.id: (context) => Splash(),
+              LoginScreen.id: (context) => LoginScreen(),
+              WelcomeScreen.id: (context) => WelcomeScreen(),
+              MyHomePage.id: (context) => MyHomePage(),
+              Products.id: (context) => Products(),
+              DailyReports.id: (context) => DailyReports(),
+              DailyReportList.id: (context) => DailyReportList(),
+              Profile.id: (context) => Profile(),
+              CreateWorker.id: (context) => CreateWorker(),
+              OtherReports.id: (context) => OtherReports(),
+              ReportPage.id: (context) => ReportPage(),
+              ProductsSold.id: (context) => ProductsSold(),
+            },
+          );
+        });
+    /*return MaterialApp(
+        title: 'Bizgenie Limited',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          brightness: Brightness.light,
+          cursorColor: Color(0xFF008752),
+          primaryColor: Color(0xFF004C7F),
+          //primarySwatch: Colors.green,
+        ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+        ),
+        themeMode: AppState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        initialRoute: Splash.id,
+        routes: {
+          Splash.id: (context) => Splash(),
+          LoginScreen.id: (context) => LoginScreen(),
+          WelcomeScreen.id: (context) => WelcomeScreen(),
+          MyHomePage.id: (context) => MyHomePage(),
+          Products.id: (context) => Products(),
+          DailyReports.id: (context) => DailyReports(),
+          DailyReportList.id: (context) => DailyReportList(),
+          Profile.id: (context) => Profile(),
+          CreateWorker.id: (context) => CreateWorker(),
+          OtherReports.id: (context) => OtherReports(),
+          ReportPage.id: (context) => ReportPage(),
+          ProductsSold.id: (context) => ProductsSold(),
+        },
+      ),*/
   }
 }
