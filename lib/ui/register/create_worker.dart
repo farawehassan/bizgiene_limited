@@ -224,7 +224,7 @@ class _CreateWorkerState extends State<CreateWorker> {
           showSpinner = false;
         });
         _showMessage('User successfully created');
-      }).catchError((Object error) {
+      }).catchError((error) {
         _phoneController.clear();
         _pinController.clear();
         _confirmPinController.clear();

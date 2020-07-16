@@ -31,6 +31,7 @@ dependencies:
   esc_pos_printer: ^2.1.2
   http: ^0.12.0+4
   dynamic_theme: ^1.0.1
+  rflutter_alert: ^1.0.3
 
 dev_dependencies:
   flutter_test:

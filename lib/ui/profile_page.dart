@@ -106,7 +106,6 @@ class _ProfileState extends State<Profile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Material(
-              //color: Color(0xFFF9FBFD),
               elevation: 14.0,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(40),

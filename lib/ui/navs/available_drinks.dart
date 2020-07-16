@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
@@ -62,11 +61,11 @@ class _ProductsState extends State<Products> {
   /// Variable of String to hold the searchText on the AppBar
   String _searchText = "";
 
-  /// Variable of List<[AvailableProduct]> to hold
+  /// Variable of List<[Product]> to hold
   /// the details of all the availableProduct
   List<Product> _names = new List();
 
-  /// Variable of List<[AvailableProduct]> to hold
+  /// Variable of List<[Product]> to hold
   /// the details of all filtered availableProduct
   List<Product> _filteredNames = new List();
 

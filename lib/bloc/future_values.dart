@@ -3,6 +3,7 @@ import 'package:bizgienelimited/model/linear_sales.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/model/store_details.dart';
+import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/model/user.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
 import 'daily_report_value.dart';
@@ -84,7 +85,6 @@ class FutureValues {
     return todayReport;
   }
 
-
   /// Method to get all the store details such as:
   ///  cost price net worth, selling price net worth, number of product items,
   ///  total sales made, totalProfitMade
@@ -93,6 +93,71 @@ class FutureValues {
     var data = RestDataSource();
     Future<StoreDetails> storeDetails = data.fetchStoreDetails();
     return storeDetails;
+  }
+
+  /// Method to get all the supplies from the database in the server with
+  /// the help of [RestDataSource]
+  /// It returns a list of [Supply]
+  Future<List<Supply>> getAllSuppliesFromDB() {
+    var data = RestDataSource();
+    Future<List<Supply>> supply = data.fetchAllSupply();
+    print(supply);
+    return supply;
+  }
+
+  /// Method to get all the supply dealer names from the database by storing all
+  /// the dealer names from [getAllSuppliesFromDB()]
+  /// It returns a list of [String]
+  Future<List<String>> getAllSupplyNamesFromDB() async {
+    List<String> names = new List();
+    Future<List<Supply>> receivedSupply = getAllSuppliesFromDB();
+    await receivedSupply.then((value){
+      for(int i = 0; i < value.length; i++){
+        names.add(value[i].dealer);
+      }
+    }).catchError((e){
+      throw e;
+    });
+    print(names);
+    return names;
+  }
+
+  /// Method to get all the received supplies from the database in the server with
+  /// the help of [RestDataSource]
+  /// It returns a list of [Supply]
+  Future<List<Supply>> getReceivedSuppliesFromDB() async {
+    List<Supply> supply = new List();
+    Future<List<Supply>> receivedSupply = getAllSuppliesFromDB();
+    await receivedSupply.then((value){
+      for(int i = 0; i < value.length; i++){
+        if(value[i].received == true){
+          supply.add(value[i]);
+        }
+      }
+    }).catchError((e){
+      throw e;
+    });
+    print(supply);
+    return supply;
+  }
+
+  /// Method to get all the supplies yet to be received from the database in the
+  /// server with the help of [RestDataSource]
+  /// It returns a list of [Supply]
+  Future<List<Supply>> getInProgressSuppliesFromDB() async {
+    List<Supply> supply = new List();
+    Future<List<Supply>> inProgressSupply = getAllSuppliesFromDB();
+    await inProgressSupply.then((value){
+      for(int i = 0; i < value.length; i++){
+        if(value[i].received == false){
+          supply.add(value[i]);
+        }
+      }
+    }).catchError((e){
+      throw e;
+    });
+    print(supply);
+    return supply;
   }
 
   /// Method to get report of a [month] using the class [DailyReportValue]

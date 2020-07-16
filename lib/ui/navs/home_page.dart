@@ -18,6 +18,7 @@ import '../profile_page.dart';
 import '../welcome_screen.dart';
 import 'available_drinks.dart';
 import 'daily/daily_reports.dart';
+import 'other/supply_page.dart';
 
 /// A StatefulWidget class that displays the sales record
 class MyHomePage extends StatefulWidget {
@@ -264,6 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _detailsList.removeAt(index);
       } catch (e) {
         print(e);
+        _showMessage(e);
       }
     });
   }
@@ -452,6 +454,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: Text('Other Reports'),
                     onTap: (){
                       Navigator.pushNamed(context, OtherReports.id);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.note),
+                    title: Text('Supply'),
+                    onTap: (){
+                      Navigator.pushNamed(context, SupplyPage.id);
                     },
                   ),
                   ListTile(

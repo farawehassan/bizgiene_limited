@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/productDB.dart';
@@ -51,7 +52,7 @@ class RestDataSource {
     }).then((dynamic res) {
       if(res["error"] == true){
         print(res["error"]);
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       } else {
         print(res["error"]);
         return User.map(res["data"]);
@@ -76,7 +77,7 @@ class RestDataSource {
       "confirmPassword": createUser.confirmPin
     }).then((dynamic res) {
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         return res["message"];
       }
@@ -96,7 +97,7 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
@@ -111,7 +112,7 @@ class RestDataSource {
     }).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         return res["message"];
       }
@@ -134,7 +135,7 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
@@ -150,7 +151,7 @@ class RestDataSource {
     }).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         print(res["message"]);
         return res["message"];
@@ -171,14 +172,14 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}"};
     });
     final FETCH_URL = FETCH_PRODUCT_URL + "$id";
     return _netUtil.get(FETCH_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         return Product.fromJson(res["data"]);
       }
@@ -205,7 +206,7 @@ class RestDataSource {
     });
     return _netUtil.get(FETCH_PRODUCTS_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         var rest = res["data"] as List;
         products = rest.map<Product>((json) => Product.fromJson(json)).toList();
@@ -227,7 +228,7 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
@@ -243,7 +244,7 @@ class RestDataSource {
     }).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         return res["message"];
       }
@@ -264,13 +265,13 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}"};
     });
     return _netUtil.get(FETCH_REPORT_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         var result = res["data"] as List;
         reports = result.map<Reports>((json) => Reports.fromJson(json)).toList();
@@ -285,17 +286,17 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches deletes a report from the server using the [id]
+  /// A function that deletes a report from the server using the [id]
   Future<dynamic> deleteReport(String id) async {
     Map<String, String> header;
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
-    final DELETE_URL = DELETE_REPORT_URL + "$id";
+    final DELETE_URL = DELETE_REPORT_URL + "/$id";
     return _netUtil.delete(DELETE_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
         throw (res["message"]);
@@ -319,13 +320,13 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}"};
     });
     return _netUtil.get(FETCH_STORE_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         return StoreDetails.fromJson(res["data"]);
       }
@@ -345,21 +346,21 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
-
     return _netUtil.post(ADD_SUPPLY_URL, headers: header, body: {
-      "dealer": supply.dealer,
+      "dealer": supply.dealer.toString(),
       "amount": supply.amount.toString(),
-      "products": supply.products,
-      "received": supply.received,
+      "products": jsonEncode(supply.products),
+      "notes": supply.notes.toString(),
+      "received": supply.received.toString(),
       "createdAt": supply.createdAt.toString(),
     }).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         return res["message"];
       }
@@ -379,7 +380,7 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
@@ -388,11 +389,12 @@ class RestDataSource {
       "dealer": supply.dealer.toString(),
       "amount": supply.amount.toString(),
       "products": supply.products,
+      "notes": supply.notes,
       "received": supply.received,
     }).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         print(res["message"]);
         return res["message"];
@@ -408,7 +410,7 @@ class RestDataSource {
 
   /// A function that updates received in supply details to True PUT.
   /// with [Supply]
-  Future<dynamic> receivedSupply(Supply supply) async{
+  Future<dynamic> receivedSupply(String id, bool received) async{
     /// Variable holding today's datetime
     DateTime dateTime = DateTime.now();
 
@@ -416,18 +418,18 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
     return _netUtil.put(RECEIVED_SUPPLY_URL, headers: header, body: {
-      "id": supply.id,
-      "received": true,
+      "id": id,
+      "received": received.toString(),
       "receivedAt": dateTime.toString(),
     }).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         print(res["message"]);
         return res["message"];
@@ -448,14 +450,14 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}"};
     });
     final FETCH_URL = FETCH_SUPPLY_URL + "$id";
     return _netUtil.get(FETCH_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         return Supply.fromJson(res["data"]);
       }
@@ -476,13 +478,13 @@ class RestDataSource {
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
-        throw new Exception("No user logged in");
+        throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}"};
     });
     return _netUtil.get(FETCH_SUPPLIES_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
-        throw new Exception(res["message"]);
+        throw (res["message"]);
       }else{
         var rest = res["data"] as List;
         supplies = rest.map<Supply>((json) => Supply.fromJson(json)).toList();
@@ -493,7 +495,35 @@ class RestDataSource {
       if(e is SocketException){
         throw ("Unable to connect to the server, check your internet connection");
       }
+      print(e);
       throw ("Error in fetching supplies, try again");
+    });
+  }
+
+  /// A function that deletes a supply from the server using the [id]
+  Future<dynamic> deleteSupply(String id) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    final DELETE_URL = DELETE_SUPPLY_URL + "/$id";
+    return _netUtil.delete(DELETE_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in deleting supply, try again");
     });
   }
 

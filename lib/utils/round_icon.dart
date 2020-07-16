@@ -35,4 +35,38 @@ class RoundIconButton extends StatelessWidget {
       ),
     );
   }
+
+}
+
+class AddIconButton extends StatelessWidget {
+
+  AddIconButton({@required this.icon, @required this.onPressed});
+
+  final Icon icon;
+  final Function onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: new BoxDecoration(
+        shape: BoxShape.circle,
+          border: Border.all(color: Color(0xFF008752))
+      ),
+      child: RawMaterialButton(
+        elevation: 0.0,
+        child: icon,
+        onPressed: onPressed,
+        constraints: BoxConstraints.tightFor(
+          width: 20.0,
+          height: 20.0,
+        ),
+        shape: CircleBorder(
+        ),
+        //fillColor: Color(0xFF4C4F5E),
+      ),
+    );
+  }
+
 }

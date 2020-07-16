@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:bizgienelimited/model/supply_products.dart';
+
 /// A class to hold my [Supply] model
 class Supply {
   /// Setting constructor for [Supply] class
@@ -6,6 +10,7 @@ class Supply {
     this.dealer,
     this.amount,
     this.products,
+    this.notes,
     this.received,
     this.createdAt,
     this.receivedAt
@@ -21,7 +26,10 @@ class Supply {
   String amount;
 
   /// An object variable to hold the product type and details
-  Object products;
+  List<SupplyProducts> products;
+
+  /// A string variable to hold the extra notes
+  String notes;
 
   /// A bool variable to hold true or false if supply is received
   bool received;
@@ -34,11 +42,18 @@ class Supply {
 
   /// Creating a method to map my JSON values to the model details accordingly
   factory Supply.fromJson(Map<String, dynamic> json) {
+    //Map userMap = jsonDecode(json['products']);
+    //var user = User.fromJson(userMap);
+    var productsJson = jsonDecode(json['products']) as List;
+    List<SupplyProducts> res = productsJson.map((json) => SupplyProducts.fromJson(json)).toList();
+    //var rest = json["products"] as List;
     return Supply(
       id: json["_id"].toString(),
       dealer: json["dealer"].toString(),
       amount: json["amount"].toString(),
-      products: json["products"],
+      products: res,
+      //products: rest.map<SupplyProducts>((json) => SupplyProducts.fromJson(json)).toList(),
+      notes: json["notes"],
       received: json["received"],
       createdAt: json["createdAt"].toString(),
       receivedAt: json["receivedAt"].toString(),

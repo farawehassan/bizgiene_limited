@@ -4,6 +4,8 @@ import 'package:bizgienelimited/ui/navs/daily/daily_reports.dart';
 import 'package:bizgienelimited/ui/navs/home_page.dart';
 import 'package:bizgienelimited/ui/navs/other/monthly/reports_page.dart';
 import 'package:bizgienelimited/ui/navs/other/other_reports.dart';
+import 'package:bizgienelimited/ui/navs/other/supplies/add_supply.dart';
+import 'package:bizgienelimited/ui/navs/other/supply_page.dart';
 import 'package:bizgienelimited/ui/navs/other/products_sold.dart';
 import 'package:bizgienelimited/ui/profile_page.dart';
 import 'package:bizgienelimited/ui/register/create_worker.dart';
@@ -68,37 +70,10 @@ class _MyAppState extends State<MyApp> {
               OtherReports.id: (context) => OtherReports(),
               ReportPage.id: (context) => ReportPage(),
               ProductsSold.id: (context) => ProductsSold(),
+              SupplyPage.id: (context) => SupplyPage(),
+              AddSupply.id: (context) => AddSupply(),
             },
           );
         });
-    /*return MaterialApp(
-        title: 'Bizgenie Limited',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          brightness: Brightness.light,
-          cursorColor: Color(0xFF008752),
-          primaryColor: Color(0xFF004C7F),
-          //primarySwatch: Colors.green,
-        ),
-        darkTheme: ThemeData(
-          brightness: Brightness.dark,
-        ),
-        themeMode: AppState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-        initialRoute: Splash.id,
-        routes: {
-          Splash.id: (context) => Splash(),
-          LoginScreen.id: (context) => LoginScreen(),
-          WelcomeScreen.id: (context) => WelcomeScreen(),
-          MyHomePage.id: (context) => MyHomePage(),
-          Products.id: (context) => Products(),
-          DailyReports.id: (context) => DailyReports(),
-          DailyReportList.id: (context) => DailyReportList(),
-          Profile.id: (context) => Profile(),
-          CreateWorker.id: (context) => CreateWorker(),
-          OtherReports.id: (context) => OtherReports(),
-          ReportPage.id: (context) => ReportPage(),
-          ProductsSold.id: (context) => ProductsSold(),
-        },
-      ),*/
   }
 }

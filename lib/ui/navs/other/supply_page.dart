@@ -1,4 +1,8 @@
+import 'package:bizgienelimited/ui/navs/other/supplies/add_supply.dart';
+import 'package:bizgienelimited/ui/navs/other/supplies/received_supply.dart';
+import 'package:bizgienelimited/ui/navs/other/supplies/supply_in_progress.dart';
 import 'package:flutter/material.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 
 class SupplyPage extends StatefulWidget {
 
@@ -8,30 +12,69 @@ class SupplyPage extends StatefulWidget {
   _SupplyPageState createState() => _SupplyPageState();
 }
 
-class _SupplyPageState extends State<SupplyPage> {
+class _SupplyPageState extends State<SupplyPage> with SingleTickerProviderStateMixin {
+
+  final List<Tab> myTabs = <Tab>[
+    Tab(text: 'Received'),
+    Tab(text: 'In Progress'),
+  ];
+
+  final List<Widget> _children = [
+    ReceivedSupply(),
+    SupplyInProgress()
+    //Container(child: Center(child: Text('This is the Received tab', style: const TextStyle(fontSize: 22),),),),
+    //Container(child: Center(child: Text('This is the In Progress tab', style: const TextStyle(fontSize: 22),),),),
+  ];
+
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(vsync: this, length: myTabs.length);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
+      appBar: GradientAppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Align(
-              alignment: Alignment.topLeft,
-              child: FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                  size: 50.0,
-                ),
+            Text("Supplies", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 36.0),),
+            IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
               ),
+              onPressed: (){
+                Navigator.pushNamed(context, AddSupply.id);
+              },
             ),
           ],
         ),
+        backgroundColorStart: Color(0xFF004C7F),
+        backgroundColorEnd: Color(0xFF008752),
+        elevation: 0.0,
+        bottom: TabBar(
+          controller: _tabController,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: Colors.transparent,
+          labelColor: Colors.white,
+          tabs: myTabs,
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: myTabs.map((Tab tab) {
+          return _children[myTabs.indexOf(tab)];
+        }).toList(),
       ),
     );
   }

@@ -187,7 +187,7 @@ class _ReceiptState extends State<Receipt> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Align(
-                          alignment: Alignment.centerLeft,
+                          alignment: Alignment.topLeft,
                           child: Padding(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Text(

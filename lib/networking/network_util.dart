@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 /// A network helper class to do all the back end request
@@ -26,13 +25,13 @@ class NetworkHelper{
         var result = _decoder.convert(res);
 
         if (statusCode < 200 || statusCode > 400 || json == null) {
-          throw new ErrorDescription("${result['message']}");
+          throw ("${result['message']}");
         }
         return _decoder.convert(res);
       });
     } catch (e) {
       print(e);
-      throw new ErrorDescription (e.toString());
+      throw (e.toString());
     }
   }
 
@@ -47,13 +46,13 @@ class NetworkHelper{
         final String res = response.body;
         final int statusCode = response.statusCode;
         if (statusCode < 200 || statusCode > 400 || json == null) {
-          throw new Exception("Error while fetching data");
+          throw ("Error while fetching data");
         }
         return _decoder.convert(res);
       });
     } catch (e) {
       print(e);
-      throw new ErrorDescription(e.toString());
+      throw (e.toString());
     }
   }
 
@@ -68,13 +67,13 @@ class NetworkHelper{
         final int statusCode = response.statusCode;
 
         if (statusCode < 200 || statusCode > 400 || json == null) {
-          throw new Exception("$statusCode ,${_decoder.convert(res)["message"]}");
+          throw ("$statusCode ,${_decoder.convert(res)["message"]}");
         }
         return _decoder.convert(res);
       });
     } catch (e) {
       print(e);
-      throw new ErrorDescription(e.toString());
+      throw (e.toString());
     }
   }
 
@@ -89,13 +88,13 @@ class NetworkHelper{
         final int statusCode = response.statusCode;
 
         if (statusCode < 200 || statusCode > 400 || json == null) {
-          throw new Exception("$statusCode , ${_decoder.convert(res)["message"]}");
+          throw ("$statusCode , ${_decoder.convert(res)["message"]}");
         }
         return _decoder.convert(res);
       });
     } catch (e) {
       print(e);
-      throw new ErrorDescription(e.toString());
+      throw (e.toString());
     }
   }
 
@@ -110,13 +109,13 @@ class NetworkHelper{
         final int statusCode = response.statusCode;
 
         if (statusCode < 200 || statusCode > 400 || json == null) {
-          throw new Exception("$statusCode , ${_decoder.convert(res)["message"]}");
+          throw ("$statusCode , ${_decoder.convert(res)["message"]}");
         }
         return _decoder.convert(res);
       });
     } catch (e) {
       print(e);
-      throw new ErrorDescription(e.toString());
+      throw (e.toString());
     }
   }
 
