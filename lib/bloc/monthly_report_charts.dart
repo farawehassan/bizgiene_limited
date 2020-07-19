@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
-
 import 'daily_report_value.dart';
 import 'future_values.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 
 /// A StatefulWidget class creating a pie chart for my monthly report records
 class MonthlyReportCharts extends StatefulWidget {
@@ -78,11 +78,21 @@ class _MonthlyReportChartsState extends State<MonthlyReportCharts> {
         _dataLength = value.length;
         for(int i = 0; i < value.length; i++){
           totalProfitMade += double.parse(value[i].quantity) * (double.parse(value[i].unitPrice) - double.parse(value[i].costPrice));
-          if(data.containsKey(value[i].productName)){
-            data[value[i].productName] = (double.parse(data[value[i].productName]) + double.parse(value[i].quantity)).toString();
-          }else{
-            data[value[i].productName] = '${value[i].quantity}';
+
+          if(Constants.sevenUpItems.contains(value[i].productName)){
+            if(data.containsKey(value[i].productName)){
+              data[value[i].productName] = (double.parse(data[value[i].productName]) + double.parse(value[i].quantity)).toString();
+            }else{
+              data[value[i].productName] = '${value[i].quantity}';
+            }
+          } else {
+            if(data.containsKey('Others')){
+              data['Others'] = (double.parse(data['Others']) + double.parse(value[i].quantity)).toString();
+            }else{
+              data['Others'] = '${value[i].quantity}';
+            }
           }
+
         }
         print(data);
       });
@@ -99,8 +109,12 @@ class _MonthlyReportChartsState extends State<MonthlyReportCharts> {
       colorList.add(colours[i]);
     }
     data.forEach((k,v) {
-      dataMap.putIfAbsent("$k", () => double.parse('$v'));
+      dataMap.putIfAbsent(Constants.sevenUpItems.contains(k) ? "$k" : "Others",
+              () => double.parse('$v'));
     });
+    /*data.forEach((k,v) {
+      dataMap.putIfAbsent("$k", () => double.parse('$v'));
+    });*/
   }
 
   /// It calls [getReports()] and [getCurrentUser()] while initializing my state

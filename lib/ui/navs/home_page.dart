@@ -414,7 +414,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             stops: [0.0, 1.0],
                             tileMode: TileMode.clamp),
                       ),
-                      accountName: Text("Bizgenie Limited"),
+                      accountName: Text("BizGenie Limited"),
                       accountEmail: Text("mbkosoko@yahoo.com"),
                       currentAccountPicture: Hero(
                         tag: 'displayPicture',

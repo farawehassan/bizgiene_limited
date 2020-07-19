@@ -10,17 +10,38 @@ class Constants{
   static const String ShowAll = 'Display all products';
   static const String ShowAvailable = 'Display available products';
   static const String ShowFinished = 'Display finished products';
+  static const String ShowOther = 'Display other products';
 
   /// List of string to hold the menu options in [Products]
   static const List<String> showProductChoices = <String>[
     ShowAll,
     ShowAvailable,
-    ShowFinished
+    ShowFinished,
+    ShowOther
   ];
 
   /// List of string to hold the menu options in [Profile]
   static const List<String> profileChoices = <String>[
     Create,
+  ];
+
+  /// List of String to hold all the 7up bottling company products
+  static const List<String> sevenUpItems = [
+    'Pepsi',
+    '7up',
+    'Mirinda',
+    'Mirinda Apple Red',
+    'Mirinda Apple Green',
+    'Teem Lemon',
+    'Teem Soda',
+    'Teem Tonic',
+    'Lipton Ice Tea Peach',
+    'Lipton Ice Tea Lemon',
+    'H2oh',
+    'Mountain Dew',
+    'Aquafina Water 1.5 litres',
+    'Aquafina Water 75cl',
+    'Aquafina Water 50cl',
   ];
 
 }

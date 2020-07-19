@@ -1,5 +1,5 @@
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/material.dart';
-import 'constants.dart';
 
 /// A [ReusableCard] StatelessWidget class to build a card
 class ReusableCard extends StatelessWidget {
@@ -10,13 +10,20 @@ class ReusableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return GestureDetector(
       onTap: onPress,
       child: Card(
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(40.0),
-            child: titleText(cardChild)
+            child: Text(
+              cardChild,
+              style: TextStyle(
+                fontSize: SizeConfig.safeBlockHorizontal * 4,
+                fontWeight: FontWeight.bold
+              ),
+            ),
           ),
         ),
         margin: EdgeInsets.all(8.0),

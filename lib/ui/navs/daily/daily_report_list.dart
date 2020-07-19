@@ -38,9 +38,9 @@ class DailyReportList extends StatelessWidget {
   /// the values of each DataColumn in the [salesList] as DataRows
   SingleChildScrollView _dataTable(List<Map> salesList){
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+      scrollDirection: Axis.horizontal,
       child: DataTable(
-        columnSpacing: 20.0,
+        columnSpacing: 10.0,
         columns: [
           DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.bold),)),
           DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.bold),)),

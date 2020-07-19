@@ -6,6 +6,7 @@ import 'package:bizgienelimited/model/store_details.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/model/user.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 import 'daily_report_value.dart';
 
 /// A class to handle my asynchronous methods linking to the server or database
@@ -25,7 +26,6 @@ class FutureValues {
   Future<List<Product>> getAllProductsFromDB() {
     var data = RestDataSource();
     Future<List<Product>> product = data.fetchAllProducts();
-    print(product);
     return product;
   }
 
@@ -44,7 +44,6 @@ class FutureValues {
     }).catchError((e){
       throw e;
     });
-    print(products);
     return products;
   }
 
@@ -56,14 +55,32 @@ class FutureValues {
     Future<List<Product>> finishedProduct = getAllProductsFromDB();
     await finishedProduct.then((value){
       for(int i = 0; i < value.length; i++){
-        if(double.parse(value[i].currentQuantity) == 0.0){
+        if(double.parse(value[i].currentQuantity) == 0.0 &&
+            Constants.sevenUpItems.contains(value[i].productName)){
           products.add(value[i]);
         }
       }
     }).catchError((e){
       throw e;
     });
-    print(products);
+    return products;
+  }
+
+  /// Method to get all the products from the database in the server that wasn't
+  /// from 7up bottling company with the help of [RestDataSource]
+  /// It returns a list of [Product]
+  Future<List<Product>> getOtherProductFromDB() async {
+    List<Product> products = new List();
+    Future<List<Product>> otherProduct = getAllProductsFromDB();
+    await otherProduct.then((value){
+      for(int i = 0; i < value.length; i++){
+        if(!(Constants.sevenUpItems.contains(value[i].productName))){
+          products.add(value[i]);
+        }
+      }
+    }).catchError((e){
+      throw e;
+    });
     return products;
   }
 
@@ -113,7 +130,10 @@ class FutureValues {
     Future<List<Supply>> receivedSupply = getAllSuppliesFromDB();
     await receivedSupply.then((value){
       for(int i = 0; i < value.length; i++){
-        names.add(value[i].dealer);
+        if(!(names.contains(value[i].dealer))){
+          print(value[i].dealer);
+          names.add(value[i].dealer);
+        }
       }
     }).catchError((e){
       throw e;

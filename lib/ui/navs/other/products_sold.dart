@@ -1,6 +1,7 @@
 import 'package:bizgienelimited/bloc/daily_report_value.dart';
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -128,13 +129,29 @@ class _ProductsSoldState extends State<ProductsSold> {
   /// Function to get the amount of colors needed for the pie chart and map
   /// [_data] to [_dataMap]
   void getColors() {
-    for(int i = 0; i < _data.length; i++){
+    var toMap = new Map();
+    _data.forEach((k,v) {
+      if(Constants.sevenUpItems.contains(k)){
+        if(toMap.containsKey(k)){
+          toMap[k] = toMap[k]+ v[1];
+        }else{
+          toMap[k] = v[1];
+        }
+      }
+      else {
+        if(toMap.containsKey('Others')){
+          toMap['Others'] = toMap['Others'] + v[1];
+        }else{
+          toMap['Others'] = v[1];
+        }
+      }
+    });
+    toMap.forEach((k,v) {
+      _dataMap.putIfAbsent("$k", () => double.parse('$v'));
+    });
+    for(int i = 0; i < _dataMap.length; i++){
       _colorList.add(colours[i]);
     }
-    _data.forEach((k,v) {
-      _dataMap.putIfAbsent("$k", () => double.parse('${_data[k][1]}'));
-    });
-
   }
 
   /// Convert a double [value] to naira
@@ -191,11 +208,11 @@ class _ProductsSoldState extends State<ProductsSold> {
   /// a container to show the [_totalSalesPrice] and the [_totalProfitMade]
   SingleChildScrollView _dataTable(List<Map> salesList){
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+      scrollDirection: Axis.horizontal,
       child: Column(
         children: <Widget>[
           DataTable(
-            columnSpacing: 20.0,
+            columnSpacing: 10.0,
             columns: _userType == 'Admin' ? [
               DataColumn(label: Text('SN', style: TextStyle(fontWeight: FontWeight.bold),)),
               DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.bold),)),

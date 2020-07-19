@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bizgienelimited/model/linear_sales.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -102,6 +104,12 @@ class _ProfitChartsState extends State<ProfitCharts> {
     );
   }
 
+  /// Function to round a double value to 2 decimal places
+  double roundDouble(double value, int places){
+    double mod = pow(10.0, places);
+    return ((value * mod).round().toDouble() / mod);
+  }
+
   /// It calls [getReports()] while initializing my state
   @override
   void initState() {
@@ -127,7 +135,7 @@ class _ProfitChartsState extends State<ProfitCharts> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            '+ N$average',
+            '+ N${roundDouble(average, 2)}',
             style: TextStyle(
               fontSize: 18.0,
               color: Color(0xFF008752),

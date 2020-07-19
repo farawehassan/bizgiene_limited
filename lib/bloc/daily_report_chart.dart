@@ -1,4 +1,5 @@
 import 'package:bizgienelimited/model/reportsDB.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pie_chart/pie_chart.dart';
@@ -49,10 +50,18 @@ class _DailyChartState extends State<DailyChart> {
         for(int i = 0; i < value.length; i++){
           if(reportValue.checkIfToday(value[i].createdAt)){
             _dataLength += 1;
-            if(data.containsKey(value[i].productName)){
-              data[value[i].productName] = (double.parse(data[value[i].productName]) + double.parse(value[i].quantity)).toString();
-            }else{
-              data[value[i].productName] = '${value[i].quantity}';
+            if(Constants.sevenUpItems.contains(value[i].productName)){
+              if(data.containsKey(value[i].productName)){
+                data[value[i].productName] = (double.parse(data[value[i].productName]) + double.parse(value[i].quantity)).toString();
+              }else{
+                data[value[i].productName] = '${value[i].quantity}';
+              }
+            } else {
+              if(data.containsKey('Others')){
+                data['Others'] = (double.parse(data['Others']) + double.parse(value[i].quantity)).toString();
+              }else{
+                data['Others'] = '${value[i].quantity}';
+              }
             }
           }
         }

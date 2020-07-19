@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'login_screen_presenter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 
 /// A StatefulWidget class that displays the login screen of the app
 class LoginScreen extends StatefulWidget {
@@ -25,6 +26,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   /// A [GlobalKey] to hold the Scaffold state of my build widget
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  /// A [GlobalKey] to hold the form state of my form widget for form validation
+  final _formKey = GlobalKey<FormState>();
 
   /// An variable to hold an instance of [LoginScreenPresenter]
   LoginScreenPresenter _presenter;
@@ -63,6 +67,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   Color left = Colors.black;
   Color right = Colors.white;
 
+  double _animatedHeight = 190;
+  double _loginMargin = 170;
+
   /// Setting device orientation to portraitUp or portraitDown only for this page
   @override
   void initState() {
@@ -75,6 +82,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return new Scaffold(
       key: _scaffoldKey,
       body: ModalProgressHUD(
@@ -84,9 +92,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ),
         child: SingleChildScrollView(
           child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height >= 775.0
-                ? MediaQuery.of(context).size.height
+            width: SizeConfig.screenWidth,
+            height: SizeConfig.screenHeight >= 775.0
+                ? SizeConfig.screenHeight
                 : 775.0,
             decoration: new BoxDecoration(
               gradient: new LinearGradient(
@@ -99,33 +107,20 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   stops: [0.0, 1.0],
                   tileMode: TileMode.clamp),
             ),
-            child: SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        child: Container(
-                          padding: EdgeInsets.all(5.0),
-                          child: Text(
-                            'BIZGENIE',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 36.0,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Container(
                         padding: EdgeInsets.all(5.0),
                         child: Text(
-                          'LIMITED',
+                          'BIZGENIE',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 36.0,
@@ -133,31 +128,42 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 75.0),
-                    child: new Image(
-                        width: 250.0,
-                        height: 191.0,
-                        fit: BoxFit.fill,
-                        image: new AssetImage('Assets/images/login_logo.png')),
-                  ),
-                  Container(
-                    child: _buildSignIn(context),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(5.0),
-                    child: Text(
-                      "3, Fawehinmi street Off Ojuelegba Road Surulere Lagos",
-                      style: TextStyle(
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(5.0),
+                      child: Text(
+                        'LIMITED',
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16.0
+                          fontSize: 36.0,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 75.0),
+                  child: new Image(
+                      width: 250.0,
+                      height: 191.0,
+                      fit: BoxFit.fill,
+                      image: new AssetImage('Assets/images/login_logo.png')),
+                ),
+                Container(
+                  child: _buildSignIn(context),
+                ),
+                /*Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: Text(
+                    "3, Fawehinmi street Off Ojuelegba Road Surulere Lagos",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0
+                    ),
                   ),
-                ],
-              ),
+                ),*/
+              ],
             ),
           ),
         ),
@@ -202,97 +208,129 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             alignment: Alignment.topCenter,
             overflow: Overflow.visible,
             children: <Widget>[
-              Card(
-                elevation: 2.0,
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Container(
-                  width: 300.0,
-                  height: 190.0,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
-                        child: TextField(
-                          focusNode: myFocusNodePhoneLogin,
-                          controller: loginPhoneController,
-                          keyboardType: TextInputType.phone,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.black
-                          ),
-                          onChanged: (value){
-                            _phoneNumber = value;
-                          },
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(
-                              FontAwesomeIcons.phone,
-                              color: Colors.black,
-                              size: 22.0,
+              Form(
+                key: _formKey,
+                child: Card(
+                  elevation: 2.0,
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: AnimatedContainer(
+                    width: 300.0,
+                    height: _animatedHeight,
+                    duration: Duration(seconds: 0),
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
+                          child: TextFormField(
+                            focusNode: myFocusNodePhoneLogin,
+                            controller: loginPhoneController,
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                setState(() {
+                                  _animatedHeight = 230;
+                                  _loginMargin = 200;
+                                });
+                                return 'Enter a phone number';
+                              }
+                              setState(() {
+                                _animatedHeight = 190;
+                                _loginMargin = 170;
+                              });
+                              return null;
+                            },
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.black
                             ),
-                            hintText: "Phone Number",
-                            hintStyle: TextStyle(
-                              fontSize: 17.0,
-                              color: Colors.black54
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 250.0,
-                        height: 1.0,
-                        color: Colors.grey[400],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
-                        child: TextField(
-                          focusNode: myFocusNodePasswordLogin,
-                          controller: loginPasswordController,
-                          obscureText: _obscureTextLogin,
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.black
-                          ),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(
-                              FontAwesomeIcons.lock,
-                              size: 22.0,
-                              color: Colors.black,
-                            ),
-                            hintText: "Pin",
-                            hintStyle: TextStyle(
-                              fontSize: 17.0,
-                              color: Colors.black54
-                            ),
-                            suffixIcon: GestureDetector(
-                              onTap: _toggleLogin,
-                              child: Icon(
-                                _obscureTextLogin
-                                    ? FontAwesomeIcons.eye
-                                    : FontAwesomeIcons.eyeSlash,
-                                size: 15.0,
+                            onChanged: (value){
+                              _phoneNumber = value;
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              icon: Icon(
+                                FontAwesomeIcons.phone,
                                 color: Colors.black,
+                                size: 22.0,
+                              ),
+                              hintText: "Phone Number",
+                              hintStyle: TextStyle(
+                                fontSize: 17.0,
+                                color: Colors.black54
                               ),
                             ),
                           ),
-                          onChanged: (value){
-                            _pin = value;
-                          },
                         ),
-                      ),
-                    ],
+                        Container(
+                          width: 250.0,
+                          height: 1.0,
+                          color: Colors.grey[400],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
+                          child: TextFormField(
+                            focusNode: myFocusNodePasswordLogin,
+                            controller: loginPasswordController,
+                            obscureText: _obscureTextLogin,
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                setState(() {
+                                  _animatedHeight = 230;
+                                  _loginMargin = 210;
+                                });
+                                return 'Enter a pin';
+                              }
+                              setState(() {
+                                _animatedHeight = 200;
+                                _loginMargin = 170;
+                              });
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.black
+                            ),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              icon: Icon(
+                                FontAwesomeIcons.lock,
+                                size: 22.0,
+                                color: Colors.black,
+                              ),
+                              hintText: "Pin",
+                              hintStyle: TextStyle(
+                                fontSize: 17.0,
+                                color: Colors.black54
+                              ),
+                              suffixIcon: GestureDetector(
+                                onTap: _toggleLogin,
+                                child: Icon(
+                                  _obscureTextLogin
+                                      ? FontAwesomeIcons.eye
+                                      : FontAwesomeIcons.eyeSlash,
+                                  size: 15.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            onChanged: (value){
+                              _pin = value;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 170.0),
+                margin: EdgeInsets.only(top: _loginMargin),
                 decoration: new BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
                   boxShadow: <BoxShadow>[
@@ -332,7 +370,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       ),
                     ),
                     onPressed: () async {
-                      _submit();
+                      if(_formKey.currentState.validate()) {
+                        _submit();
+                      }
                     }
                 ),
               ),

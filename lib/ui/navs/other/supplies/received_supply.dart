@@ -2,6 +2,7 @@ import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/model/supply_products.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
@@ -21,7 +22,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
 
-  /// Variable of int to hold the numbers of product on the page
+  /// Variable of int to hold the numbers of supplies
   int _supplyLength;
 
   /// Variable of List<Supply> to hold the details of all the supply
@@ -42,16 +43,14 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
     List<Supply> tempList = new List();
     Future<List<Supply>> receivedSupply = futureValue.getReceivedSuppliesFromDB();
     await receivedSupply.then((value) {
-      print(value);
       if(value.length != 0){
-        print(value.length);
         for (int i = 0; i < value.length; i++){
           tempList.add(value[i]);
         }
         if (!mounted) return;
         setState(() {
           _supplyLength = tempList.length;
-          _receivedSupplies = tempList;
+          _receivedSupplies = tempList.reversed.toList();
         });
       } else if(value.length == 0 || value.isEmpty){
         print(value.length);
@@ -70,7 +69,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   /// Converting [dateTime] in string format to return a formatted time
   /// of weekday, month, day and year
   String _getFormattedTime(String dateTime) {
-    return DateFormat('EEE, MMM d, ''yy').format(DateTime.parse(dateTime)).toString();
+    return DateFormat('MMM d, ''yyyy').format(DateTime.parse(dateTime)).toString();
   }
 
   /// Convert a double [value] to naira
@@ -84,15 +83,14 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   Widget _buildList() {
     if(_receivedSupplies.length > 0 && _receivedSupplies.isNotEmpty){
       return ListView.builder(
-        //reverse: true,
         itemCount: _receivedSupplies == null ? 0 : _receivedSupplies.length,
         itemBuilder: (BuildContext context, int index) {
           final paymentDate = DateTime.parse(_receivedSupplies[index].createdAt);
           final time = DateTime.parse(_receivedSupplies[index].receivedAt);
           final difference = time.difference(paymentDate).inDays;
           return Container(
-            margin: EdgeInsets.all(10.0),
-            height: 80.0,
+            margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            height: SizeConfig.safeBlockVertical * 15,
             child: GestureDetector(
               onTap: (){},
               onLongPress: (){
@@ -106,14 +104,14 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24.0),
                   ),
-                  padding: EdgeInsets.all(15.0),
+                  padding: EdgeInsets.all(10.0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Row(
                             children: <Widget>[
@@ -121,7 +119,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                                 '${_receivedSupplies[index].dealer}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 20.0,
+                                  fontSize: SizeConfig.safeBlockHorizontal * 4,
                                 ),
                               ),
                               SizedBox(width: 6.0,),
@@ -129,12 +127,12 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                                 '${_getFormattedTime(paymentDate.toString())}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.normal,
-                                  fontSize: 18.0,
+                                  fontSize: SizeConfig.safeBlockHorizontal * 3.6,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 6.0,),
+                          //SizedBox(height: 6.0,),
                           Row(
                             children: <Widget>[
                               Text(
@@ -142,7 +140,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                                 style: TextStyle(
                                   color: Color(0xFF008752),
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 15.0,
+                                  fontSize: SizeConfig.safeBlockHorizontal * 3.5,
                                 ),
                               ),
                               Text(
@@ -150,7 +148,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                                 style: TextStyle(
                                   //color: Colors.black45,
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 15.0,
+                                    fontSize: SizeConfig.safeBlockHorizontal * 3.5
                                 ),
                               ),
                             ],
@@ -208,6 +206,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Container(
       child: _buildList(),
     );
@@ -224,7 +223,6 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
         ),
         elevation: 0.0,
         child: Container(
-          //height: 320.0,
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -316,7 +314,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                         Navigator.of(context).pop(); // To close the dialog
                         deleteSupply(id);
                       },
-                      textColor: Color(0xFF008752),
+                      textColor: Colors.red,
                       child: Text('YES'),
                     ),
                   ),
@@ -327,7 +325,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                         Navigator.of(context)
                             .pop(); // To close the dialog
                       },
-                      textColor: Color(0xFF008752),
+                      textColor: Colors.red,
                       child: Text('NO'),
                     ),
                   ),
@@ -346,13 +344,13 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   /// the values of each DataColumn in the [supplyList] as DataRows
   SingleChildScrollView _dataTable(List<Map> supplyList, double total){
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+      scrollDirection: Axis.horizontal,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           DataTable(
-            columnSpacing: 20.0,
+            columnSpacing: 10.0,
             columns: [
               DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.normal),)),
               DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.normal),)),

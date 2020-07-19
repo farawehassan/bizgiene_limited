@@ -2,6 +2,7 @@ import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/model/supply_products.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
@@ -21,7 +22,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
 
-  /// Variable of int to hold the numbers of product on the page
+  /// Variable of int to hold the numbers of supplies
   int _supplyLength;
 
   /// Variable of List<Supply> to hold the details of all the supply
@@ -39,7 +40,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
   /// Converting [dateTime] in string format to return a formatted time
   /// of weekday, month, day and year
   String _getFormattedTime(String dateTime) {
-    return DateFormat('EEE, MMM d, ''yy').format(DateTime.parse(dateTime)).toString();
+    return DateFormat('MMM d, ''yyyy').format(DateTime.parse(dateTime)).toString();
   }
 
   /// Function to get all the supplies from the database and
@@ -57,7 +58,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
         if (!mounted) return;
         setState(() {
           _supplyLength = tempList.length;
-          _supplyInProgress = tempList;
+          _supplyInProgress = tempList.reversed.toList();
         });
       } else if(value.length == 0 || value.isEmpty){
         print(value.length);
@@ -80,19 +81,18 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
     return val;
   }
 
-  /// A function to build the list of the received supply
+  /// A function to build the list of the supply in progress
   Widget _buildList() {
     if(_supplyInProgress.length > 0 && _supplyInProgress.isNotEmpty){
       return ListView.builder(
-        //reverse: true,
         itemCount: _supplyInProgress == null ? 0 : _supplyInProgress.length,
         itemBuilder: (BuildContext context, int index) {
           final paymentDate = DateTime.parse(_supplyInProgress[index].createdAt);
           final now = DateTime.now();
           final difference = now.difference(paymentDate).inDays;
           return Container(
-            margin: EdgeInsets.all(10.0),
-            height: 80.0,
+            margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            height: SizeConfig.safeBlockVertical * 15,
             child: GestureDetector(
               onTap: (){},
               onLongPress: (){
@@ -106,14 +106,14 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24.0),
                   ),
-                  padding: EdgeInsets.all(15.0),
+                  padding: EdgeInsets.all(10.0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Row(
                             children: <Widget>[
@@ -121,7 +121,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                                 '${_supplyInProgress[index].dealer}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 20.0,
+                                  fontSize: SizeConfig.safeBlockHorizontal * 4,
                                 ),
                               ),
                               SizedBox(width: 6.0,),
@@ -129,19 +129,19 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                                 '${_getFormattedTime(paymentDate.toString())}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.normal,
-                                  fontSize: 18.0,
+                                  fontSize: SizeConfig.safeBlockHorizontal * 3.6,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 6.0,),
+                          //SizedBox(height: 6.0,),
                           difference == 0
                               ? Text(
                             'Payed today',
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF004C7F),
-                              fontSize: 15.0,
+                                fontSize: SizeConfig.safeBlockHorizontal * 3.5
                             ),
                           )
                               : Text(
@@ -149,14 +149,13 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF004C7F),
-                              fontSize: 15.0,
+                                fontSize: SizeConfig.safeBlockHorizontal * 3.5
                             ),
                           ),
                         ],
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          //color: Color(0xFFF5FAFF),
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                         child: IconButton(
@@ -206,6 +205,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Container(
       child: _buildList(),
     );
@@ -222,7 +222,6 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
         ),
         elevation: 0.0,
         child: Container(
-          //height: 320.0,
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -300,7 +299,6 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
         ),
         elevation: 0.0,
         child: Container(
-          //height: 320.0,
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -395,7 +393,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                         Navigator.of(context).pop(); // To close the dialog
                         deleteSupply(id);
                       },
-                      textColor: Color(0xFF008752),
+                      textColor: Colors.red,
                       child: Text('YES'),
                     ),
                   ),
@@ -406,7 +404,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                         Navigator.of(context)
                             .pop(); // To close the dialog
                       },
-                      textColor: Color(0xFF008752),
+                      textColor: Colors.red,
                       child: Text('NO'),
                     ),
                   ),
@@ -426,13 +424,13 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
   SingleChildScrollView _dataTable(List<Map> supplyList, double total){
     print(supplyList);
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
+      scrollDirection: Axis.horizontal,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           DataTable(
-            columnSpacing: 20.0,
+            columnSpacing: 10.0,
             columns: [
               DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.normal),)),
               DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.normal),)),
@@ -467,7 +465,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                 Text(
                   'Total Amount = ',
                   style: TextStyle(
-                      fontWeight: FontWeight.w500
+                    fontWeight: FontWeight.w500
                   ),
                 ),
                 Text(

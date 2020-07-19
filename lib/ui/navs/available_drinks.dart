@@ -73,7 +73,7 @@ class _ProductsState extends State<Products> {
   Icon _searchIcon = new Icon(Icons.search);
 
   /// Variable to hold a Widget of Text for the appBarText
-  Widget _appBarTitle = new Text('Available Products');
+  Widget _appBarTitle = new Text('Products');
 
   /// Checking if the filter controller is empty to reset the
   /// _searchText on the appBar to "" and the filteredNames to Names
@@ -151,6 +151,8 @@ class _ProductsState extends State<Products> {
       productNames = futureValue.getAvailableProductsFromDB();
     } else if(productsToShow == 3){
       productNames = futureValue.getFinishedProductFromDB();
+    } else if(productsToShow == 4){
+      productNames = futureValue.getOtherProductFromDB();
     }
 
     await productNames.then((value) {
@@ -200,7 +202,7 @@ class _ProductsState extends State<Products> {
       }
       else {
         this._searchIcon = new Icon(Icons.search);
-        this._appBarTitle = new Text('Available Products');
+        this._appBarTitle = new Text('Products');
         _filteredNames = _names;
         _filter.clear();
       }
@@ -255,6 +257,13 @@ class _ProductsState extends State<Products> {
       if (!mounted) return;
       setState(() {
         productsToShow = 3;
+        _refresh();
+      });
+    }
+    else if(choice == Constants.ShowOther){
+      if (!mounted) return;
+      setState(() {
+        productsToShow = 4;
         _refresh();
       });
     }
@@ -327,6 +336,8 @@ class _ProductsState extends State<Products> {
       productNames = futureValue.getAvailableProductsFromDB();
     } else if(productsToShow == 3){
       productNames = futureValue.getFinishedProductFromDB();
+    } else if(productsToShow == 4){
+      productNames = futureValue.getOtherProductFromDB();
     }
     return productNames.then((value) {
       for (int i = 0; i < value.length; i++){

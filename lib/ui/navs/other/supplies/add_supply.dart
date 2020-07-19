@@ -1,9 +1,11 @@
+import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/model/supply_products.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/styles/theme.dart' as Theme;
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/round_icon.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,6 +21,9 @@ class AddSupply extends StatefulWidget {
 }
 
 class _AddSupplyState extends State<AddSupply> {
+
+  /// Instantiating a class of the [FutureValues]
+  var futureValue = FutureValues();
 
   /// A [GlobalKey] to hold the form state of my form widget for form validation
   final _formKey = GlobalKey<FormState>();
@@ -45,9 +50,6 @@ class _AddSupplyState extends State<AddSupply> {
   /// Variable to hold the totalPrice of an item recorded
   double _totalPrice = 0.0;
 
-  /// Variable to hold the total supply Price
-  //double _totalSupplyPrice = 0.0;
-
   /// A variable holding the number of rows
   int increment = 0;
 
@@ -64,9 +66,12 @@ class _AddSupplyState extends State<AddSupply> {
   /// [ModalProgressHUD] widget
   bool showSpinner = false;
 
+  /// A boolean variable to hold the value of  whether the picker should show
+  bool showPicker = false;
+
   /// Method to capitalize the first letter of each word in a productName [string]
   /// while adding a new product or updating a particular product
-  String capitalize(String string) {
+  String _capitalize(String string) {
     String result = '';
 
     if (string == null) {
@@ -116,31 +121,27 @@ class _AddSupplyState extends State<AddSupply> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Flexible(
-            fit: FlexFit.loose,
             child: Container(
-              margin: EdgeInsets.symmetric(vertical: 10.0),
-
-              width: 150.0,
+              margin: EdgeInsets.symmetric(vertical: 8.0),
+              width: SizeConfig.safeBlockHorizontal * 25,//150.0,
               child: TextField(
                 keyboardType: TextInputType.text,
                 controller: productController,
                 onChanged: (value) {
                   if (!mounted) return;
                   setState(() {
-                    _productName = value;
+                    _productName = _capitalize(value);
                     _details['product'] = '$_productName';
                   });
                 },
-                decoration: kTextFieldDecoration.copyWith(hintText: "Name"),
+                decoration: kTextFieldDecoration.copyWith(labelText: "Name"),
               ),
             ),
           ),
           Flexible(
-            fit: FlexFit.loose,
             child: Container(
-              margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-
-              width: 100.0,
+              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              width: SizeConfig.safeBlockHorizontal * 15,//100.0,
               child: TextField(
                 keyboardType: TextInputType.number,
                 controller: qtyController,
@@ -156,15 +157,14 @@ class _AddSupplyState extends State<AddSupply> {
                     }
                   });
                 },
-                decoration: kTextFieldDecoration.copyWith(hintText: "Qty"),
+                decoration: kTextFieldDecoration.copyWith(labelText: "Qty"),
               ),
             ),
           ),
           Flexible(
-            fit: FlexFit.loose,
             child: Container(
-              width: 80.0,
-              margin: EdgeInsets.symmetric(vertical: 10.0),
+              width: SizeConfig.safeBlockHorizontal * 15,//80.0,
+              margin: EdgeInsets.symmetric(vertical: 8.0),
               child: TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
@@ -178,15 +178,14 @@ class _AddSupplyState extends State<AddSupply> {
                     _details['totalPrice'] = '$_totalPrice';
                   });
                 },
-                decoration: kTextFieldDecoration.copyWith(hintText: '0.0'),
+                decoration: kTextFieldDecoration.copyWith(labelText: 'Unit Price'),
               ),
             ),
           ),
           Flexible(
-            fit: FlexFit.loose,
             child: Container(
-              margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              width: 150.0,
+              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              width: SizeConfig.safeBlockHorizontal * 20,//150.0,
               child: TextField(
                 controller: totalPriceController,
                 decoration: kTextFieldDecoration.copyWith(hintText: '0.0'),
@@ -234,6 +233,8 @@ class _AddSupplyState extends State<AddSupply> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    _nameController.text = '7up Bottling Company';
     return Scaffold(
       appBar: GradientAppBar(
         backgroundColorStart: Color(0xFF004C7F),
@@ -256,7 +257,8 @@ class _AddSupplyState extends State<AddSupply> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Padding(
+                    Container(
+                      width: SizeConfig.safeBlockHorizontal * 80,
                       padding: EdgeInsets.all(16.0),
                       child: TextFormField(
                         decoration: kTextFieldDecoration.copyWith(labelText: "Dealer Name"),
@@ -294,7 +296,7 @@ class _AddSupplyState extends State<AddSupply> {
                     Flexible(
                       fit: FlexFit.loose,
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
                         child: ListView(
                           shrinkWrap: true,
                           children: _rows.map((data) {
@@ -392,25 +394,35 @@ class _AddSupplyState extends State<AddSupply> {
                       ),
                       onPressed: () {
                         if(_formKey.currentState.validate()){
-                          setState(() {
-                            showSpinner = true;
-                          });
-                          List<SupplyProducts> products = new List();
-                          for(int i = 0; i < _detailsList.length; i++){
-                            var supplyProducts = SupplyProducts();
-                            supplyProducts.qty = _detailsList[i]['qty'].toString();
-                            supplyProducts.name = _detailsList[i]['product'].toString();
-                            supplyProducts.unitPrice = _detailsList[i]['unitPrice'].toString();
-                            supplyProducts.totalPrice = _detailsList[i]['totalPrice'].toString();
-                            products.add(supplyProducts);
+                          if(_detailsList.isNotEmpty && _detailsList != null){
+                            List<SupplyProducts> products = new List();
+                            for(int i = 0; i < _detailsList.length; i++){
+                              if(_detailsList[i].isNotEmpty){
+                                var supplyProducts = SupplyProducts();
+                                supplyProducts.qty = _detailsList[i]['qty'].toString();
+                                supplyProducts.name = _detailsList[i]['product'].toString();
+                                supplyProducts.unitPrice = _detailsList[i]['unitPrice'].toString();
+                                supplyProducts.totalPrice = _detailsList[i]['totalPrice'].toString();
+                                products.add(supplyProducts);
+                              }
+
+                            }
+                            if(products.isNotEmpty){
+                              setState(() {
+                                showSpinner = true;
+                              });
+                              createSupply(
+                                  _nameController.text,
+                                  products,
+                                  double.parse(_amountController.text),
+                                  _noteController.text
+                              );
+                            } else {
+                              _showMessage('No products recorded');
+                            }
+                          } else {
+                            _showMessage('No products recorded');
                           }
-                          print(_nameController.text);
-                          createSupply(
-                              _nameController.text,
-                              products,
-                              double.parse(_amountController.text),
-                              _noteController.text
-                          );
                         }
                       }
                   ),
@@ -441,7 +453,7 @@ class _AddSupplyState extends State<AddSupply> {
     var supply = Supply();
     var api = new RestDataSource();
     try {
-      supply.dealer = capitalize(name);
+      supply.dealer = _capitalize(name);
       supply.amount = amount.toString();
       supply.products = products;
       supply.notes = notes;
