@@ -42,17 +42,13 @@ class Supply {
 
   /// Creating a method to map my JSON values to the model details accordingly
   factory Supply.fromJson(Map<String, dynamic> json) {
-    //Map userMap = jsonDecode(json['products']);
-    //var user = User.fromJson(userMap);
     var productsJson = jsonDecode(json['products']) as List;
     List<SupplyProducts> res = productsJson.map((json) => SupplyProducts.fromJson(json)).toList();
-    //var rest = json["products"] as List;
     return Supply(
       id: json["_id"].toString(),
       dealer: json["dealer"].toString(),
       amount: json["amount"].toString(),
       products: res,
-      //products: rest.map<SupplyProducts>((json) => SupplyProducts.fromJson(json)).toList(),
       notes: json["notes"],
       received: json["received"],
       createdAt: json["createdAt"].toString(),

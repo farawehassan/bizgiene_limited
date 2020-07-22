@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:bizgienelimited/bloc/future_values.dart';
+import 'package:bizgienelimited/model/customerDB.dart';
+import 'package:bizgienelimited/model/customer_reports.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/model/create_user.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
@@ -42,6 +44,15 @@ class RestDataSource {
   static final FETCH_SUPPLIES_URL = BASE_URL + "/supply/fetchAllSupplies";
   static final FETCH_SUPPLY_URL = BASE_URL + "/supply/fetchSupply";
   static final DELETE_SUPPLY_URL = BASE_URL + "/supply/deleteSupply";
+
+  static final ADD_CUSTOMER_URL = BASE_URL + "/customer/addNewCustomer";
+  static final ADD_CUSTOMER_REPORT_URL = BASE_URL + "/customer/addNewCustomerReports";
+  static final UPDATE_CUSTOMER_REPORT_URL = BASE_URL + "/customer/updateCustomerReport";
+  static final UPDATE_PAYMENT_CUSTOMER_URL = BASE_URL + "/customer/updatePaymentMadeReport";
+  static final SETTLE_PAYMENT_CUSTOMER_URL = BASE_URL + "/customer/settlePaymentReport";
+  static final FETCH_CUSTOMERS_URL = BASE_URL + "/customer/fetchAllCustomers";
+  static final FETCH_CUSTOMER_URL = BASE_URL + "/customer/fetchCustomer";
+  static final DELETE_CUSTOMER_URL = BASE_URL + "/customer/deleteCustomer";
 
   /// A function that verifies login details from the server POST.
   /// with [phoneNumber] and [pin]
@@ -524,6 +535,190 @@ class RestDataSource {
         throw ("Unable to connect to the server, check your internet connection");
       }
       throw ("Error in deleting supply, try again");
+    });
+  }
+
+
+
+  /// A function that adds new customer to the server POST
+  /// with [Supply] model
+  Future<dynamic> addCustomer(Customer customer) async{
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.post(ADD_SUPPLY_URL, headers: header, body: {
+      "name": customer.name.toString(),
+      "phone": customer.phone.toString(),
+      "reports": jsonEncode(customer.reports),
+      "createdAt": customer.createdAt.toString(),
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in adding customer, try again");
+    });
+  }
+
+  /// A function that adds new reports to a customer supply details POST.
+  /// with [CustomerReport]
+  Future<dynamic> addCustomerReports(String id, CustomerReport customerReport) async{
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.post(UPDATE_SUPPLY_URL, headers: header, body: {
+      "id": id,
+      "reports": jsonEncode(customerReport),
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in adding reports to customer, try again");
+    });
+  }
+
+  /// A function that updates received in supply details to True PUT.
+  /// with [Supply]
+  Future<dynamic> receivedCustomer(String id, bool received) async{
+    /// Variable holding today's datetime
+    DateTime dateTime = DateTime.now();
+
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.put(RECEIVED_SUPPLY_URL, headers: header, body: {
+      "id": id,
+      "received": received.toString(),
+      "receivedAt": dateTime.toString(),
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in updating supply, try again");
+    });
+  }
+
+  /// A function that fetches a particular customer from the server
+  /// into a model of [Customer] GET.
+  Future<Customer> fetchCustomer(String id) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}"};
+    });
+    final FETCH_URL = FETCH_CUSTOMER_URL + "$id";
+    return _netUtil.get(FETCH_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        return Customer.fromJson(res["data"]);
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in fetching customer, try again");
+    });
+  }
+
+  /// A function that fetches all customers from the server
+  /// into a List of [Customer] GET.
+  Future<List<Customer>> fetchAllCustomers() async {
+    List<Customer> customers;
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}"};
+    });
+    return _netUtil.get(FETCH_CUSTOMERS_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        var rest = res["data"] as List;
+        customers = rest.map<Customer>((json) => Customer.fromJson(json)).toList();
+        return customers;
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      print(e);
+      throw ("Error in fetching customers, try again");
+    });
+  }
+
+  /// A function that deletes a customer from the server using the [id]
+  Future<dynamic> deleteCustomer(String id) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    final DELETE_URL = DELETE_CUSTOMER_URL + "/$id";
+    return _netUtil.delete(DELETE_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in deleting customer, try again");
     });
   }
 
