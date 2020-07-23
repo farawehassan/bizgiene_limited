@@ -1,13 +1,12 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/bloc/monthly_report_charts.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 
 /// A StatefulWidget class that displays a Month's Reports details
 class MonthReport extends StatefulWidget {
@@ -122,7 +121,7 @@ class _MonthReportState extends State<MonthReport> {
       _totalSalesPrice = _availableCash + _totalTransfer;
     }).catchError((onError){
       print(onError.toString());
-      _showMessage(onError.toString());
+      Constants.showMessage(onError.toString());
     });
     if (!mounted) return;
     setState(() {
@@ -212,13 +211,6 @@ class _MonthReportState extends State<MonthReport> {
     return Container();
   }
 
-  /// Convert a double [value] to naira
-  FlutterMoneyFormatter _money(double value){
-    FlutterMoneyFormatter val;
-    val = FlutterMoneyFormatter(amount: value, settings: MoneyFormatterSettings(symbol: 'N'));
-    return val;
-  }
-
   /// Converting [dateTime] in string format to return a formatted time
   /// of hrs, minutes and am/pm
   String _getFormattedTime(String dateTime) {
@@ -253,10 +245,10 @@ class _MonthReportState extends State<MonthReport> {
                     Text(report['productName'].toString()),
                   ),
                   DataCell(
-                    Text(_money(double.parse(report['unitPrice'])).output.symbolOnLeft),
+                    Text(Constants.money(double.parse(report['unitPrice'])).output.symbolOnLeft),
                   ),
                   DataCell(
-                    Text(_money(double.parse(report['totalPrice'])).output.symbolOnLeft),
+                    Text(Constants.money(double.parse(report['totalPrice'])).output.symbolOnLeft),
                   ),
                   DataCell(
                     Text(report['paymentMode'].toString()),
@@ -280,7 +272,7 @@ class _MonthReportState extends State<MonthReport> {
                   ),
                 ),
                 Text(
-                  '${_money(_totalSalesPrice).output.symbolOnLeft}',
+                  '${Constants.money(_totalSalesPrice).output.symbolOnLeft}',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF008752),
@@ -328,13 +320,4 @@ class _MonthReportState extends State<MonthReport> {
     );
   }
 
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black
-    );
-  }
 }

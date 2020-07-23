@@ -1,8 +1,7 @@
 import 'dart:math';
-
 import 'package:bizgienelimited/model/linear_sales.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'future_values.dart';
 
@@ -48,7 +47,7 @@ class _ProfitChartsState extends State<ProfitCharts> {
       });
       getQuarterlyMonth();
     }).catchError((onError){
-      _showMessage(onError);
+      Constants.showMessage(onError);
     });
   }
 
@@ -148,16 +147,6 @@ class _ProfitChartsState extends State<ProfitCharts> {
           child: _buildChart(),
         ),
       ],
-    );
-  }
-
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black
     );
   }
 

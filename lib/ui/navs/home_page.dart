@@ -11,14 +11,13 @@ import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../profile_page.dart';
 import '../welcome_screen.dart';
 import 'available_drinks.dart';
 import 'daily/daily_reports.dart';
-import 'other/supply_page.dart';
+import 'other/supplies/supply_page.dart';
 
 /// A StatefulWidget class that displays the sales record
 class MyHomePage extends StatefulWidget {
@@ -105,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }).catchError((error){
       print(error);
-      _showMessage(error.toString());
+      Constants.showMessage(error.toString());
     });
   }
 
@@ -248,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print(_detailsList);
       } catch (e) {
         print(e);
-        _showMessage("Error in records");
+        Constants.showMessage("Error in records");
       }
     }
 
@@ -265,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _detailsList.removeAt(index);
       } catch (e) {
         print(e);
-        _showMessage(e);
+        Constants.showMessage(e);
       }
     });
   }
@@ -303,7 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     } catch (e) {
       print(e);
-      _showMessage("Error in fetching sales");
+      Constants.showMessage("Error in fetching sales");
       response = true;
     }
     print(response);
@@ -336,11 +335,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 } catch (e) {
                   print(e);
-                  _showMessage("Error in records");
+                  Constants.showMessage("Error in records");
                 }
               }
               else{
-                _showMessage("Error in records or no records");
+                Constants.showMessage("Error in records or no records");
               }
             },
           ),
@@ -598,15 +597,6 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _addRow
       )
     );
-  }
-
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black);
   }
 
   /// Function to show profile of the account if the user is an Admin 'Farawe'

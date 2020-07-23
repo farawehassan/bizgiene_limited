@@ -3,7 +3,6 @@ import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/styles/theme.dart' as Theme;
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -223,27 +222,18 @@ class _CreateWorkerState extends State<CreateWorker> {
         setState(() {
           showSpinner = false;
         });
-        _showMessage('User successfully created');
+        Constants.showMessage('User successfully created');
       }).catchError((error) {
         _phoneController.clear();
         _pinController.clear();
         _confirmPinController.clear();
-        _showMessage(error.toString());
+        Constants.showMessage(error.toString());
       });
 
     } catch (e) {
       print(e);
-      _showMessage(e.toString());
+      Constants.showMessage(e.toString());
     }
-  }
-
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black);
   }
 
 }

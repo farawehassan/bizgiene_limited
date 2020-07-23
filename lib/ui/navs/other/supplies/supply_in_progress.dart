@@ -2,11 +2,10 @@ import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/model/supply_products.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_money_formatter/flutter_money_formatter.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class SupplyInProgress extends StatefulWidget {
@@ -70,15 +69,8 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
       }
     }).catchError((error){
       print(error);
-      _showMessage(error.toString());
+      Constants.showMessage(error.toString());
     });
-  }
-
-  /// Convert a double [value] to naira
-  FlutterMoneyFormatter _money(double value){
-    FlutterMoneyFormatter val;
-    val = FlutterMoneyFormatter(amount: value, settings: MoneyFormatterSettings(symbol: 'N'));
-    return val;
   }
 
   /// A function to build the list of the supply in progress
@@ -447,10 +439,10 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                       Text(supply['productName'].toString()),
                     ),
                     DataCell(
-                      Text(_money(double.parse(supply['unitPrice'])).output.symbolOnLeft.toString()),
+                      Text(Constants.money(double.parse(supply['unitPrice'])).output.symbolOnLeft.toString()),
                     ),
                     DataCell(
-                      Text(_money(double.parse(supply['totalPrice'])).output.symbolOnLeft.toString()),
+                      Text(Constants.money(double.parse(supply['totalPrice'])).output.symbolOnLeft.toString()),
                     ),
                   ]
               );
@@ -469,7 +461,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                   ),
                 ),
                 Text(
-                  '${_money(total).output.symbolOnLeft}',
+                  '${Constants.money(total).output.symbolOnLeft}',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: Color(0xFF008752),
@@ -489,15 +481,15 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
     var api = new RestDataSource();
     try {
       api.receivedSupply(id, true).then((value) {
-        _showMessage('Supply successfully received');
+        Constants.showMessage('Supply successfully received');
         _refreshData();
       }).catchError((error) {
-        _showMessage(error.toString());
+        Constants.showMessage(error.toString());
       });
 
     } catch (e) {
       print(e);
-      _showMessage(e.toString());
+      Constants.showMessage(e.toString());
     }
   }
 
@@ -507,26 +499,16 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
     var api = new RestDataSource();
     try {
       api.deleteSupply(id).then((value) {
-        _showMessage('Supply successfully deleted');
+        Constants.showMessage('Supply successfully deleted');
         _refreshData();
       }).catchError((error) {
-        _showMessage(error.toString());
+        Constants.showMessage(error.toString());
       });
 
     } catch (e) {
       print(e);
-      _showMessage(e.toString());
+      Constants.showMessage(e.toString());
     }
-  }
-
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black
-    );
   }
 
 }

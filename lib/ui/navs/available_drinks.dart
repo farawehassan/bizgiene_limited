@@ -6,7 +6,6 @@ import 'package:bizgienelimited/utils/round_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:folding_cell/folding_cell.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
@@ -179,7 +178,7 @@ class _ProductsState extends State<Products> {
       }
     }).catchError((error){
       print(error);
-      _showMessage(error.toString());
+      Constants.showMessage(error.toString());
     });
   }
 
@@ -814,16 +813,6 @@ class _ProductsState extends State<Products> {
     });
   }
 
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-      msg: "$message",
-      toastLength: Toast.LENGTH_SHORT,
-      backgroundColor: Colors.white,
-      textColor: Colors.black
-    );
-  }
-
   /// Function to check whether a product exists or not
   /// It returns true if it does and false if it does not
   Future<bool> _checkIfProductExists(String name) async {
@@ -870,19 +859,19 @@ class _ProductsState extends State<Products> {
           product.createdAt = DateTime.now().toString();
 
           api.addProduct(product).then((value) {
-            _showMessage("${product.productName} was added");
+            Constants.showMessage("${product.productName} was added");
           }).catchError((error) {
             print(error);
-            _showMessage(error.toString());
+            Constants.showMessage(error.toString());
           });
         } catch (e) {
           print(e);
-          _showMessage(e.toString());
+          Constants.showMessage(e.toString());
         }
       }
     }).catchError((onError){
       print(onError.toString());
-      _showMessage(onError.toString());
+      Constants.showMessage(onError.toString());
     });
 
   }
@@ -905,14 +894,14 @@ class _ProductsState extends State<Products> {
       product.currentQuantity = currentQty.toString();
 
       api.updateProduct(product, id).then((value){
-        _showMessage( "$name is updated");
+        Constants.showMessage( "$name is updated");
       }).catchError((error) {
         print(error);
-        _showMessage(error.toString());
+        Constants.showMessage(error.toString());
       });
     } catch (e) {
       print(e);
-      _showMessage( "Error in adding data");
+      Constants.showMessage( "Error in adding data");
     }
   }
 

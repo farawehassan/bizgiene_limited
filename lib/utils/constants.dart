@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_money_formatter/flutter_money_formatter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 /// A class to set constants for menu options in the profile page
 class Constants{
@@ -43,6 +45,23 @@ class Constants{
     'Aquafina Water 75cl',
     'Aquafina Water 50cl',
   ];
+
+  /// Convert a double [value] to naira
+  static FlutterMoneyFormatter money(double value){
+    FlutterMoneyFormatter val;
+    val = FlutterMoneyFormatter(amount: value, settings: MoneyFormatterSettings(symbol: 'N'));
+    return val;
+  }
+
+  /// Using FlutterToast to display toast message of value [message]
+  static showMessage(String message){
+    Fluttertoast.showToast(
+        msg: "$message",
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.white,
+        textColor: Colors.black
+    );
+  }
 
 }
 

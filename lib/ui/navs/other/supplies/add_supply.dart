@@ -8,7 +8,6 @@ import 'package:bizgienelimited/utils/round_icon.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -208,7 +207,7 @@ class _AddSupplyState extends State<AddSupply> {
         print(_detailsList);
       } catch (e) {
         print(e);
-        _showMessage("Error in products");
+        Constants.showMessage("Error in products");
       }
     }
 
@@ -226,7 +225,7 @@ class _AddSupplyState extends State<AddSupply> {
         generateTotal();
       } catch (e) {
         print(e);
-        _showMessage(e);
+        Constants.showMessage(e);
       }
     });
   }
@@ -418,10 +417,10 @@ class _AddSupplyState extends State<AddSupply> {
                                   _noteController.text
                               );
                             } else {
-                              _showMessage('No products recorded');
+                              Constants.showMessage('No products recorded');
                             }
                           } else {
-                            _showMessage('No products recorded');
+                            Constants.showMessage('No products recorded');
                           }
                         }
                       }
@@ -468,12 +467,12 @@ class _AddSupplyState extends State<AddSupply> {
         setState(() {
           showSpinner = false;
         });
-        _showMessage('Supply successfully created');
+        Constants.showMessage('Supply successfully created');
       }).catchError((error) {
         setState(() {
           showSpinner = false;
         });
-        _showMessage(error.toString());
+        Constants.showMessage(error.toString());
       });
 
     } catch (e) {
@@ -481,17 +480,8 @@ class _AddSupplyState extends State<AddSupply> {
       setState(() {
         showSpinner = false;
       });
-      _showMessage(e.toString());
+      Constants.showMessage(e.toString());
     }
   }
 
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black);
-  }
-  
 }

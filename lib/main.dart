@@ -5,7 +5,7 @@ import 'package:bizgienelimited/ui/navs/home_page.dart';
 import 'package:bizgienelimited/ui/navs/other/monthly/reports_page.dart';
 import 'package:bizgienelimited/ui/navs/other/other_reports.dart';
 import 'package:bizgienelimited/ui/navs/other/supplies/add_supply.dart';
-import 'package:bizgienelimited/ui/navs/other/supply_page.dart';
+import 'file:///C:/FlutterWorkspace/bizgiene_limited/lib/ui/navs/other/supplies/supply_page.dart';
 import 'package:bizgienelimited/ui/navs/other/products_sold.dart';
 import 'package:bizgienelimited/ui/profile_page.dart';
 import 'package:bizgienelimited/ui/register/create_worker.dart';

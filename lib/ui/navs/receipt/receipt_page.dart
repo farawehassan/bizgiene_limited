@@ -2,9 +2,8 @@ import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/ui/navs/receipt/printing_receipt.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
 
@@ -61,13 +60,6 @@ class _ReceiptState extends State<Receipt> {
   /// of hrs, minutes and am/pm
   String _getFormattedTime(String dateTime) {
     return DateFormat('h:mm a').format(DateTime.parse(dateTime)).toString();
-  }
-
-  /// Convert a double [value] to naira
-  FlutterMoneyFormatter _money(double value){
-    FlutterMoneyFormatter val;
-    val = FlutterMoneyFormatter(amount: value, settings: MoneyFormatterSettings(symbol: 'N'));
-    return val;
   }
 
   /// This adds the product details [sentProducts] to [receivedProducts] if it's
@@ -135,10 +127,10 @@ class _ReceiptState extends State<Receipt> {
             Text(product['product'].toString()),
           ),
           DataCell(
-            Text(_money(double.parse(product['unitPrice'])).output.symbolOnLeft.toString()),
+            Text(Constants.money(double.parse(product['unitPrice'])).output.symbolOnLeft.toString()),
           ),
           DataCell(
-            Text(_money(double.parse(product['totalPrice'])).output.symbolOnLeft.toString()),
+            Text(Constants.money(double.parse(product['totalPrice'])).output.symbolOnLeft.toString()),
           ),
         ]);
       }).toList(),
@@ -442,7 +434,7 @@ class _ReceiptState extends State<Receipt> {
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      '${_money(totalPrice).output.symbolOnLeft.toString()}',
+                      '${Constants.money(totalPrice).output.symbolOnLeft.toString()}',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -453,15 +445,6 @@ class _ReceiptState extends State<Receipt> {
         ),
       ),
     );
-  }
-
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message) async {
-    await Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black);
   }
 
   /// This function calls [saveNewDailyReport()] with the details in
@@ -484,17 +467,17 @@ class _ReceiptState extends State<Receipt> {
               'totalPrice']),
               paymentMode)
               .then((value){
-            _showMessage("${product['product']} was sold successfully");
+            Constants.showMessage("${product['product']} was sold successfully");
             });
         } catch (e) {
           print(e);
-          _showMessage(e.toString());
+          Constants.showMessage(e.toString());
         }
       }
       Navigator.pop(context);
     }
     else {
-      _showMessage("Empty receipt");
+      Constants.showMessage("Empty receipt");
       Navigator.pop(context);
     }
   }

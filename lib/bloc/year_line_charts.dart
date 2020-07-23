@@ -1,9 +1,8 @@
 import 'package:bizgienelimited/model/linear_sales.dart';
 import 'package:bizgienelimited/model/store_details.dart';
-import 'package:flutter_money_formatter/flutter_money_formatter.dart';
+import 'package:bizgienelimited/utils/constants.dart';
 import 'package:flutter_sparkline/flutter_sparkline.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'future_values.dart';
 
 /// A StatefulWidget class creating a point line chart for my yearly report records
@@ -27,13 +26,6 @@ class _PointsLineChartState extends State<PointsLineChart> {
   /// A variable holding my total sales value so far
   double totalSales = 0;
 
-  /// Convert a double [value] to naira
-  FlutterMoneyFormatter money(double value){
-    FlutterMoneyFormatter val;
-    val = FlutterMoneyFormatter(amount: value, settings: MoneyFormatterSettings(symbol: 'N'));
-    return val;
-  }
-
   /// A function to set the value for [totalSales]
   /// from the [StoreDetails] model fetching from the database
   void _getStoreValues() async {
@@ -44,7 +36,7 @@ class _PointsLineChartState extends State<PointsLineChart> {
         totalSales = value.totalSalesMade;
       });
     }).catchError((onError){
-      _showMessage(onError);
+      Constants.showMessage(onError);
     });
   }
 
@@ -61,7 +53,7 @@ class _PointsLineChartState extends State<PointsLineChart> {
         }
       });
     }).catchError((onError){
-      _showMessage(onError);
+      Constants.showMessage(onError);
     });
   }
 
@@ -108,7 +100,7 @@ class _PointsLineChartState extends State<PointsLineChart> {
           Padding(
             padding: EdgeInsets.all(1.0),
             child: Text(
-              money(totalSales).output.symbolOnLeft,
+              Constants.money(totalSales).output.symbolOnLeft,
               style: TextStyle(
                 fontSize: 20.0,
                 color: Colors.white,
@@ -123,16 +115,6 @@ class _PointsLineChartState extends State<PointsLineChart> {
       ),
     );
 
-  }
-
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black
-    );
   }
 
 }

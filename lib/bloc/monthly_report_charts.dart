@@ -1,8 +1,6 @@
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'daily_report_value.dart';
 import 'future_values.dart';
 import 'package:bizgienelimited/utils/constants.dart';
@@ -55,15 +53,8 @@ class _MonthlyReportChartsState extends State<MonthlyReportCharts> {
     await futureValue.getCurrentUser().then((user) {
       userType = user.type;
     }).catchError((Object error) {
-      _showMessage(error.toString());
+      Constants.showMessage(error.toString());
     });
-  }
-
-  /// Convert a double [value] to naira
-  FlutterMoneyFormatter money(double value){
-    FlutterMoneyFormatter val;
-    val = FlutterMoneyFormatter(amount: value, settings: MoneyFormatterSettings(symbol: 'N'));
-    return val;
   }
 
   /// Function to get this [month] report and map [data] it's product name to
@@ -98,7 +89,7 @@ class _MonthlyReportChartsState extends State<MonthlyReportCharts> {
       });
       getColors();
     }).catchError((onError){
-      _showMessage(onError);
+      Constants.showMessage(onError);
     });
   }
 
@@ -190,7 +181,7 @@ class _MonthlyReportChartsState extends State<MonthlyReportCharts> {
                 ),
                 Center(
                   child: Text(
-                    '${money(totalProfitMade).output.symbolOnLeft.toString()}',
+                    '${Constants.money(totalProfitMade).output.symbolOnLeft.toString()}',
                     style: TextStyle(
                       fontSize: 18.0,
                       color: Color(0xFF008752),
@@ -203,16 +194,6 @@ class _MonthlyReportChartsState extends State<MonthlyReportCharts> {
           ) : Container(),
         ],
       ),
-    );
-  }
-
-  /// Using flutter toast to display a toast message [message]
-  void _showMessage(String message){
-    Fluttertoast.showToast(
-        msg: "$message",
-        toastLength: Toast.LENGTH_SHORT,
-        backgroundColor: Colors.white,
-        textColor: Colors.black
     );
   }
 
