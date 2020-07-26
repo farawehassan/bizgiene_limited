@@ -1,13 +1,12 @@
 import 'dart:io';
+import 'package:bizgienelimited/ui/navs/customers/customer_page.dart';
 import 'package:bizgienelimited/ui/navs/daily/daily_report_list.dart';
 import 'package:bizgienelimited/ui/navs/daily/daily_reports.dart';
 import 'package:bizgienelimited/ui/navs/home_page.dart';
-import 'package:bizgienelimited/ui/navs/other/customers/customer_page.dart';
-import 'package:bizgienelimited/ui/navs/other/monthly/reports_page.dart';
-import 'package:bizgienelimited/ui/navs/other/other_reports.dart';
-import 'package:bizgienelimited/ui/navs/other/supplies/add_supply.dart';
-import 'file:///C:/FlutterWorkspace/bizgiene_limited/lib/ui/navs/other/supplies/supply_page.dart';
-import 'package:bizgienelimited/ui/navs/other/products_sold.dart';
+import 'package:bizgienelimited/ui/navs/monthly/reports_page.dart';
+import 'package:bizgienelimited/ui/navs/products_sold.dart';
+import 'package:bizgienelimited/ui/navs/supplies/add_supply.dart';
+import 'package:bizgienelimited/ui/navs/supplies/supply_page.dart';
 import 'package:bizgienelimited/ui/profile_page.dart';
 import 'package:bizgienelimited/ui/register/create_worker.dart';
 import 'package:bizgienelimited/ui/register/login_screen.dart';
@@ -68,7 +67,6 @@ class _MyAppState extends State<MyApp> {
               DailyReportList.id: (context) => DailyReportList(),
               Profile.id: (context) => Profile(),
               CreateWorker.id: (context) => CreateWorker(),
-              OtherReports.id: (context) => OtherReports(),
               ReportPage.id: (context) => ReportPage(),
               ProductsSold.id: (context) => ProductsSold(),
               SupplyPage.id: (context) => SupplyPage(),

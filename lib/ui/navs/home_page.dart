@@ -3,8 +3,8 @@ import 'package:bizgienelimited/bloc/select_suggestions.dart';
 import 'package:bizgienelimited/database/user_db_helper.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/styles/theme.dart' as Them;
-import 'package:bizgienelimited/ui/navs/other/other_reports.dart';
 import 'package:bizgienelimited/ui/navs/receipt/receipt_page.dart';
+import 'package:bizgienelimited/ui/navs/supplies/supply_page.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/round_icon.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
@@ -17,8 +17,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../profile_page.dart';
 import '../welcome_screen.dart';
 import 'available_drinks.dart';
+import 'customers/customer_page.dart';
 import 'daily/daily_reports.dart';
-import 'other/supplies/supply_page.dart';
+import 'monthly/reports_page.dart';
+import 'products_sold.dart';
 
 /// A StatefulWidget class that displays the sales record
 class MyHomePage extends StatefulWidget {
@@ -451,9 +453,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   ListTile(
                     leading: Icon(Icons.assignment_returned),
-                    title: Text('Other Reports'),
+                    title: Text('Monthly Reports'),
                     onTap: (){
-                      Navigator.pushNamed(context, OtherReports.id);
+                      Navigator.pushNamed(context, ReportPage.id);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.note),
+                    title: Text('Products Sold'),
+                    onTap: (){
+                      Navigator.pushNamed(context, ProductsSold.id);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.account_circle),
+                    title: Text('Customers'),
+                    onTap: (){
+                      Navigator.pushNamed(context, CustomerPage.id);
                     },
                   ),
                   ListTile(
@@ -597,7 +613,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  /// Function to show profile of the account if the user is an Admin 'Farawe'
+  /// Function to show profile of the account if the user is an Admin
   void _showProfile(){
     if(_user == 'Admin'){
       Navigator.pushNamed(context, Profile.id);

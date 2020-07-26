@@ -1,8 +1,9 @@
-import 'package:bizgienelimited/ui/navs/other/supplies/add_supply.dart';
-import 'package:bizgienelimited/ui/navs/other/supplies/received_supply.dart';
-import 'package:bizgienelimited/ui/navs/other/supplies/supply_in_progress.dart';
+import 'package:bizgienelimited/ui/navs/supplies/received_supply.dart';
+import 'package:bizgienelimited/ui/navs/supplies/supply_in_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
+
+import 'add_supply.dart';
 
 class SupplyPage extends StatefulWidget {
 
@@ -22,8 +23,6 @@ class _SupplyPageState extends State<SupplyPage> with SingleTickerProviderStateM
   final List<Widget> _children = [
     ReceivedSupply(),
     SupplyInProgress()
-    //Container(child: Center(child: Text('This is the Received tab', style: const TextStyle(fontSize: 22),),),),
-    //Container(child: Center(child: Text('This is the In Progress tab', style: const TextStyle(fontSize: 22),),),),
   ];
 
   TabController _tabController;

@@ -539,30 +539,43 @@ class RestDataSource {
     });
   }
 
-
-
   /// A function that adds new customer to the server POST
   /// with [Customer] model
   Future<dynamic> addCustomer(Customer customer, CustomerReport customerReport) async {
     Map<String, String> header;
+    Map<String, dynamic> jsonBody;
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
         throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+      customerReport.paid
+          ? jsonBody = {
+        "name": customer.name.toString(),
+        "phone": customer.phone.toString(),
+        "report": jsonEncode(customerReport.reportDetails),
+        "totalAmount": customerReport.totalAmount,
+        "paymentMade": customerReport.paymentMade,
+        "paid": customerReport.paid.toString(),
+        "soldAt": customerReport.soldAt,
+        "paymentReceivedAt": customerReport.paymentReceivedAt,
+        "createdAt": customer.createdAt.toString(),
+      }
+          : jsonBody = {
+        "name": customer.name.toString(),
+        "phone": customer.phone.toString(),
+        "report": jsonEncode(customerReport.reportDetails),
+        "totalAmount": customerReport.totalAmount,
+        "paymentMade": customerReport.paymentMade,
+        "paid": customerReport.paid.toString(),
+        "soldAt": customerReport.soldAt,
+        "dueDate": customerReport.dueDate,
+        "createdAt": customer.createdAt.toString(),
+      };
     });
-    return _netUtil.post(ADD_CUSTOMER_URL, headers: header, body: {
-      "name": customer.name.toString(),
-      "phone": customer.phone.toString(),
-      "report": jsonEncode(customerReport.reportDetails),
-      "totalAmount": customerReport.totalAmount,
-      "paymentMade": customerReport.paymentMade,
-      "paid": customerReport.paid.toString(),
-      "soldAt": customerReport.soldAt,
-      "dueDate": customerReport.dueDate,
-      "createdAt": customer.createdAt.toString(),
-    }).then((dynamic res) {
+    return _netUtil.post(ADD_CUSTOMER_URL, headers: header, body: jsonBody
+    ).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
         throw (res["message"]);
@@ -582,23 +595,36 @@ class RestDataSource {
   /// with [CustomerReport]
   Future<dynamic> addCustomerReports(String id, CustomerReport customerReport) async {
     Map<String, String> header;
+    Map<String, dynamic> jsonBody;
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
         throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+      customerReport.paid
+          ? jsonBody = {
+              "id" : id,
+              "report": jsonEncode(customerReport.reportDetails),
+              "totalAmount": customerReport.totalAmount,
+              "paymentMade": customerReport.paymentMade,
+              "paid": customerReport.paid.toString(),
+              "soldAt": customerReport.soldAt,
+              "paymentReceivedAt": customerReport.paymentReceivedAt,
+            }
+          : jsonBody = {
+              "id" : id,
+              "report": jsonEncode(customerReport.reportDetails),
+              "totalAmount": customerReport.totalAmount,
+              "paymentMade": customerReport.paymentMade,
+              "paid": customerReport.paid.toString(),
+              "soldAt": customerReport.soldAt,
+              "dueDate": customerReport.dueDate,
+            };
     });
     print(customerReport.toString());
-    return _netUtil.post(ADD_CUSTOMER_REPORT_URL, headers: header, body: {
-      "id" : id,
-      "report": jsonEncode(customerReport.reportDetails),
-      "totalAmount": customerReport.totalAmount,
-      "paymentMade": customerReport.paymentMade,
-      "paid": customerReport.paid.toString(),
-      "soldAt": customerReport.soldAt,
-      "dueDate": customerReport.dueDate,
-    }).then((dynamic res) {
+    return _netUtil.post(ADD_CUSTOMER_REPORT_URL, headers: header, body: jsonBody
+    ).then((dynamic res) {
       if(res["error"] == true){
         throw (res["message"]);
       }else{

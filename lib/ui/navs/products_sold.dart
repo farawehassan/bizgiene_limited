@@ -304,11 +304,11 @@ class _ProductsSoldState extends State<ProductsSold> {
           reverse: false,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               _buildList(),
-              SizedBox(height: 15.0,width: 15.0,),
+              SizedBox(height: 30.0,width: 15.0,),
               Center(child: _buildChart()),
             ],
           ),

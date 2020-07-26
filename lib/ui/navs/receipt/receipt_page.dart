@@ -717,78 +717,8 @@ class _ReceiptState extends State<Receipt> {
                           padding: EdgeInsets.only(right: _paddingSize),
                           width: 150.0,
                           child: GestureDetector(
-                            onDoubleTap: (){
-                              Platform.isIOS ?
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (_) => Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                  elevation: 0.0,
-                                  child: Container(
-                                    height: 350.0,
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Align(
-                                          alignment: Alignment.topCenter,
-                                          child: SizedBox(
-                                            height: 200.0,
-                                            child: CupertinoDatePicker(
-                                              initialDateTime: _dateTime,
-                                              onDateTimeChanged: (DateTime value) {
-                                                if (!mounted) return;
-                                                setState(() {
-                                                  _dueDate = value;
-                                                  _dueDateController.text =
-                                                      _getFormattedDate(_dueDate.toString());
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 24.0,
-                                        ),
-                                        Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: FlatButton(
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pop(); // To close the dialog
-                                            },
-                                            textColor: Color(0xFF008752),
-                                            child: Text('CONFIRM'),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ) : showDatePicker(
-                                  context: context,
-                                  initialDate: _dateTime,
-                                  firstDate: DateTime(2020),
-                                  lastDate: DateTime(2030)
-                              ).then((value) {
-                                if (!mounted) return;
-                                setState(() {
-                                  if(value != null){
-                                    _dueDate = value;
-                                    _dueDateController.text =
-                                        _getFormattedDate(_dueDate.toString());
-                                  }
-                                });
-                              });
-                            },
                             child: Text(
-                              _dueDate != null
-                                  ? '${_getFormattedDate(_dueDate.toString())}'
-                                  : '???',
+                              '${_getFormattedDate(_dateTime.toString())}',
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   fontSize: 16.0,
@@ -860,7 +790,7 @@ class _ReceiptState extends State<Receipt> {
                       _amountPaidController.clear();
                       _outstandingBalanceController.clear();
                       _amountPaid = 0.00;
-                      _fullyPaid = true;
+                      _fullyPaid = false;
                     });
                   },
                   isSelected: _received ? false : true,
@@ -914,10 +844,146 @@ class _ReceiptState extends State<Receipt> {
               ),
             ),
             onPressed: () {
-              if(_dueDate == null){
+              if(_formKey.currentState.validate() && _fullyPaid){
+                showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      elevation: 0.0,
+                      child: Container(
+                        width: SizeConfig.safeBlockHorizontal * 60,
+                        height: 150.0,
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 16.0),
+                                child: Text(
+                                  "Are you sure the product you want to save is confirmed?",
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: FlatButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(); // To close the dialog
+                                    },
+                                    textColor: Color(0xFF008752),
+                                    child: Text('NO'),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: FlatButton(
+                                    onPressed: () {
+                                      Navigator.of(context)
+                                          .pop(); // To close the dialog
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: true,
+                                        builder: (_) => Dialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                            BorderRadius.circular(16.0),
+                                          ),
+                                          elevation: 0.0,
+                                          child: Container(
+                                            width: SizeConfig.safeBlockHorizontal * 60,
+                                            height: 150.0,
+                                            padding: EdgeInsets.all(16.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              children: <Widget>[
+                                                Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(
+                                                        top: 16.0),
+                                                    child: Text(
+                                                      "Select payment mode",
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                                  children: <Widget>[
+                                                    Align(
+                                                      alignment:
+                                                      Alignment.bottomLeft,
+                                                      child: FlatButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop(); // To close the dialog
+                                                          _saveProduct('Transfer');
+                                                        },
+                                                        textColor: Color(0xFF008752),
+                                                        child: Text('Transfer'),
+                                                      ),
+                                                    ),
+                                                    Align(
+                                                      alignment:
+                                                      Alignment.bottomRight,
+                                                      child: FlatButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop(); // To close the dialog
+                                                          _saveProduct('Cash');
+                                                        },
+                                                        textColor: Color(0xFF008752),
+                                                        child: Text('Cash'),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    textColor: Color(0xFF008752),
+                                    child: Text('YES'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ));
+              }
+              if(_dueDate == null && !_fullyPaid){
                 Constants.showMessage("Double tap to select date");
               }
-              if(_formKey.currentState.validate() && _dueDate != null){
+              if(_formKey.currentState.validate() && _dueDate != null && !_fullyPaid){
                 showDialog(
                     context: context,
                     barrierDismissible: false,
@@ -1160,11 +1226,9 @@ class _ReceiptState extends State<Receipt> {
     customerReport.paymentMade = _amountPaid.toString();
     customerReport.paid = _fullyPaid;
     customerReport.soldAt = _dateTime.toString();
-    customerReport.dueDate = _dueDate.toString();
-
-    /*fullyPaid
+    _fullyPaid
         ? customerReport.paymentReceivedAt = _dateTime.toString()
-        : customerReport.dueDate = _dueDate.toString();*/
+        : customerReport.dueDate = _dueDate.toString();
 
     await api.addCustomerReports(_customerDetails[_customerName], customerReport).then((value) {
       print('$_customerName items was successfully added');
