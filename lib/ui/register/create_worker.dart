@@ -144,7 +144,7 @@ class _CreateWorkerState extends State<CreateWorker> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 5.0, horizontal: 21.0),
                         child: Text(
-                          'Submit',
+                          'SUBMIT',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 20.0
