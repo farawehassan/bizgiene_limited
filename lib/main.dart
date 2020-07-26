@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:bizgienelimited/ui/navs/daily/daily_report_list.dart';
 import 'package:bizgienelimited/ui/navs/daily/daily_reports.dart';
 import 'package:bizgienelimited/ui/navs/home_page.dart';
+import 'package:bizgienelimited/ui/navs/other/customers/customer_page.dart';
 import 'package:bizgienelimited/ui/navs/other/monthly/reports_page.dart';
 import 'package:bizgienelimited/ui/navs/other/other_reports.dart';
 import 'package:bizgienelimited/ui/navs/other/supplies/add_supply.dart';
@@ -72,6 +73,7 @@ class _MyAppState extends State<MyApp> {
               ProductsSold.id: (context) => ProductsSold(),
               SupplyPage.id: (context) => SupplyPage(),
               AddSupply.id: (context) => AddSupply(),
+              CustomerPage.id: (context) => CustomerPage(),
             },
           );
         });

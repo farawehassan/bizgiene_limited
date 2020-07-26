@@ -205,7 +205,6 @@ class _ProfileState extends State<Profile> {
                       begin: const FractionalOffset(0.0, 0.0),
                       end: const FractionalOffset(1.0, 1.0),
                       stops: [0.0, 1.0],
-
                     ),
                     borderRadius: BorderRadius.circular(24.0),
                   ),

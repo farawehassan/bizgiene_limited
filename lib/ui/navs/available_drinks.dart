@@ -94,39 +94,6 @@ class _ProductsState extends State<Products> {
     });
   }
 
-  /// Method to capitalize the first letter of each word in a productName [string]
-  /// while adding a new product or updating a particular product
-  String _capitalize(String string) {
-    String result = '';
-
-    if (string == null) {
-      throw ArgumentError("string: $string");
-    }
-
-    if (string.isEmpty) {
-      return string;
-    }
-
-    else{
-      List<String> values = string.split(' ');
-      List<String> valuesToJoin = new List();
-
-      if(values.length == 1){
-        result = string[0].toUpperCase() + string.substring(1);
-      }
-      else{
-        for(int i = 0; i < values.length; i++){
-          if(values[i].isNotEmpty){
-            valuesToJoin.add(values[i][0].toUpperCase() + values[i].substring(1));
-          }
-        }
-        result = valuesToJoin.join(' ');
-      }
-
-    }
-    return result;
-  }
-
   /// Function to refresh details of the Available products
   /// by calling [_getNames()]
   void _refreshData(){
@@ -847,11 +814,11 @@ class _ProductsState extends State<Products> {
     var api = new RestDataSource();
     var product = Product();
 
-    Future<bool> exists = _checkIfProductExists(_capitalize(_productName));
+    Future<bool> exists = _checkIfProductExists(Constants.capitalize(_productName));
     await exists.then((value) async {
       if(value == false) {
         try {
-          product.productName = _capitalize(_productName);
+          product.productName = Constants.capitalize(_productName);
           product.costPrice = _costPrice.toString();
           product.sellingPrice = _sellingPrice.toString();
           product.initialQuantity = _initialQuantity.toString();
@@ -886,7 +853,7 @@ class _ProductsState extends State<Products> {
       if(updateName == ""){
         product.productName = name;
       }else{
-        product.productName = _capitalize(updateName);
+        product.productName = Constants.capitalize(updateName);
       }
       product.costPrice = cp.toString();
       product.sellingPrice = sp.toString();

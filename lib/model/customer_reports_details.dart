@@ -7,9 +7,7 @@ class CustomerReportDetails {
     this.productName,
     this.costPrice,
     this.unitPrice,
-    this.totalPrice,
-    this.paymentMode,
-    this.createdAt
+    this.totalPrice
   });
 
   /// A string variable to hold quantity
@@ -27,35 +25,22 @@ class CustomerReportDetails {
   /// A string variable to hold total price
   String totalPrice;
 
-  /// A string variable to hold payment mode
-  String paymentMode;
-
-  /// A string variable to hold time
-  String createdAt;
-
   /// Creating a method to map my JSON values to the model details accordingly
-  factory CustomerReportDetails.fromJson(Map<String, dynamic> json) {
-    return CustomerReportDetails(
-      quantity: json["quantity"].toString(),
-      productName: json["productName"].toString(),
-      costPrice: json["costPrice"].toString(),
-      unitPrice: json["unitPrice"].toString(),
-      totalPrice: json["totalPrice"].toString(),
-      paymentMode: json["paymentMode"].toString(),
-      createdAt: json["createdAt"].toString(),
-    );
-  }
+  factory CustomerReportDetails.fromJson(Map<String, dynamic> json) => CustomerReportDetails(
+    quantity: json["quantity"],
+    productName: json["productName"],
+    costPrice: json["costPrice"],
+    unitPrice: json["unitPrice"],
+    totalPrice: json["totalPrice"],
+  );
 
-  Map<String, dynamic> toJson(){
-    return {
-      "quantity": this.quantity,
-      "productName": this.productName,
-      "costPrice": this.costPrice,
-      "unitPrice": this.unitPrice,
-      "totalPrice": this.totalPrice,
-      "paymentMode": this.paymentMode,
-      "createdAt": this.createdAt
-    };
-  }
+
+  Map<String, dynamic> toJson() => {
+    "quantity": quantity,
+    "productName": productName,
+    "costPrice": costPrice,
+    "unitPrice": unitPrice,
+    "totalPrice": totalPrice,
+  };
 
 }

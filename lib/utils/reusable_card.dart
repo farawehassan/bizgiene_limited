@@ -54,3 +54,74 @@ class ProfileCard extends StatelessWidget {
   }
 
 }
+
+
+/// A [SelectCard] StatelessWidget class to build a dynamic select card
+class SelectCard extends StatelessWidget {
+
+  SelectCard({
+    @required this.text1,
+    @required this.text2,
+    this.onPress,
+    @required this.isSelected
+  });
+
+  final String text1;
+  final String text2;
+  final Function onPress;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPress,
+      child: Material(
+        elevation: 14.0,
+        borderRadius: BorderRadius.circular(8.0),
+        child: SizedBox(
+          width: 140,
+          height: 80,
+          child: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        text1,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        text2,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Icon(
+                    Icons.check_circle,
+                    color: isSelected ? Color(0xFF008752) : Colors.grey[400],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+}

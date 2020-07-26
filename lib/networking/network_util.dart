@@ -67,7 +67,7 @@ class NetworkHelper{
         final int statusCode = response.statusCode;
 
         if (statusCode < 200 || statusCode > 400 || json == null) {
-          throw ("$statusCode ,${_decoder.convert(res)["message"]}");
+          throw ("${_decoder.convert(res)["message"]}");
         }
         return _decoder.convert(res);
       });
@@ -88,7 +88,7 @@ class NetworkHelper{
         final int statusCode = response.statusCode;
 
         if (statusCode < 200 || statusCode > 400 || json == null) {
-          throw ("$statusCode , ${_decoder.convert(res)["message"]}");
+          throw ("${_decoder.convert(res)["message"]}");
         }
         return _decoder.convert(res);
       });
@@ -109,7 +109,7 @@ class NetworkHelper{
         final int statusCode = response.statusCode;
 
         if (statusCode < 200 || statusCode > 400 || json == null) {
-          throw ("$statusCode , ${_decoder.convert(res)["message"]}");
+          throw ("${_decoder.convert(res)["message"]}");
         }
         return _decoder.convert(res);
       });

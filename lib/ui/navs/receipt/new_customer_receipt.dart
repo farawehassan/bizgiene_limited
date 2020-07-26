@@ -1,37 +1,35 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
-import 'package:bizgienelimited/bloc/select_suggestions.dart';
+import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/customer_reports.dart';
 import 'package:bizgienelimited/model/customer_reports_details.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/styles/theme.dart' as Theme;
+import 'package:bizgienelimited/ui/navs/home_page.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/reusable_card.dart';
-import 'package:bizgienelimited/utils/round_icon.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
-import 'new_customer_receipt.dart';
+import 'dart:io' show Platform;
 
-/// A StatefulWidget class that displays receipt of items recorded
-class Receipt extends StatefulWidget {
+class NewCustomerReceipt extends StatefulWidget {
 
-  static const String id = 'receipt_page';
+  static const String id = 'new_customer_receipt_page';
 
   /// Passing the products recorded in this class constructor
   final List<Map> sentProducts;
 
-  Receipt({@required this.sentProducts});
+  NewCustomerReceipt({@required this.sentProducts});
 
   @override
-  _ReceiptState createState() => _ReceiptState();
+  _NewCustomerReceiptState createState() => _NewCustomerReceiptState();
 }
 
-class _ReceiptState extends State<Receipt> {
+class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
 
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
@@ -41,6 +39,9 @@ class _ReceiptState extends State<Receipt> {
 
   /// A [TextEditingController] to control the input text for the customer name
   TextEditingController _nameController = new TextEditingController();
+
+  /// A [TextEditingController] to control the input text for the customer phone
+  TextEditingController _phoneController = new TextEditingController();
 
   /// A [TextEditingController] to control the input text for the total amount
   TextEditingController _totalAmountController = new TextEditingController();
@@ -78,6 +79,9 @@ class _ReceiptState extends State<Receipt> {
   /// Variable holding the customer's name
   String _customerName;
 
+  /// Variable holding the customer's name
+  String _customerPhone;
+
   /// Variable holding the total price
   double _totalPrice = 0.0;
 
@@ -112,7 +116,7 @@ class _ReceiptState extends State<Receipt> {
   static const double _paddingSize = 12.0;
 
   /// A double variable for the animated height in [_paymentDetails()]
-  double _animatedHeight = 283.0;
+  double _animatedHeight = 340.0;
 
   /// Boolean variables for selection in [_whenToPay()]
   bool _received = false;
@@ -272,14 +276,14 @@ class _ReceiptState extends State<Receipt> {
 
   /// A widget to return a container of payment details and other information
   /// regarding to the customer
-  Widget _paymentDetailsTable() {
+  AnimatedContainer _paymentDetailsTable() {
     _totalAmountController.text = Constants.money(_totalPrice).output
         .symbolOnLeft.toString();
     return AnimatedContainer(
       margin: EdgeInsets.all(_paddingSize),
-      width: SizeConfig.safeBlockHorizontal * 80,
       height: _animatedHeight,
       duration: Duration(seconds: 0),
+      width: SizeConfig.safeBlockHorizontal * 80,
       child: Material(
         elevation: 2.0,
         borderRadius: BorderRadius.circular(_borderSize),
@@ -347,64 +351,140 @@ class _ReceiptState extends State<Receipt> {
                             alignment: Alignment.centerRight,
                             child: Container(
                               padding: EdgeInsets.only(right: _paddingSize),
-                              width: 150.0,
-                              child: TypeAheadFormField(
+                              width: 250.0,
+                              child: TextFormField(
+                                textAlign: TextAlign.end,
+                                controller: _nameController,
+                                keyboardType: TextInputType.text,
                                 validator: (value) {
-                                  if (value.isEmpty) {
+                                  if (value.isEmpty || _customerNames
+                                      .contains(Constants.capitalize(value))) {
                                     setState(() {
-                                      if(_animatedHeight == 283){
-                                        _animatedHeight = 305;
+                                      if(_animatedHeight == 340){
+                                        _animatedHeight = 371;
                                       }
-                                      else if(_animatedHeight == 305){
-                                        _animatedHeight = 326;
+                                      else if(_animatedHeight == 371){
+                                        _animatedHeight = 395;
+                                      }
+                                      else if(_animatedHeight == 395){
+                                        _animatedHeight = 419;
                                       }
                                     });
-                                    return 'Select name';
+                                    return 'Enter a valid name';
                                   }
                                   setState(() {
-                                    if(_animatedHeight == 305){
-                                      _animatedHeight = 305;
+                                    if(_animatedHeight == 371){
+                                      _animatedHeight = 371;
                                     }
-                                    else if(_animatedHeight == 326){
-                                      _animatedHeight = 326;
+                                    else if(_animatedHeight == 395){
+                                      _animatedHeight = 395;
+                                    }else if(_animatedHeight == 419){
+                                      _animatedHeight = 419;
                                     } else {
-                                      _animatedHeight = 283;
+                                      _animatedHeight = 340;
                                     }
                                   });
                                   return null;
                                 },
-                                textFieldConfiguration: TextFieldConfiguration(
-                                  textAlign: TextAlign.right,
-                                  controller: _nameController,
-                                  style: TextStyle(
+                                style: TextStyle(
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.bold
-                                  ),
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Customer Name',
+                                ),
+                                onChanged: (value){
+                                  if (!mounted) return;
+                                  setState(() {
+                                    _customerName = value;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Customer Name",
+                                  hintStyle: TextStyle(
+                                    fontSize: 16.0,
                                   ),
                                 ),
-                                suggestionsCallback: (pattern) {
-                                  return Suggestions.getCustomerSuggestions(pattern, _customerNames);
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        height: 1.0,
+                        color: Colors.grey[300],
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.all(_paddingSize),
+                            child: Text(
+                              'Phone Number',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              padding: EdgeInsets.only(right: _paddingSize),
+                              width: 150.0,
+                              child: TextFormField(
+                                textAlign: TextAlign.end,
+                                controller: _phoneController,
+                                keyboardType: TextInputType.text,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    setState(() {
+                                      if(_animatedHeight == 340){
+                                        _animatedHeight = 371;
+                                      }
+                                      else if(_animatedHeight == 371){
+                                        _animatedHeight = 395;
+                                      }
+                                      else if(_animatedHeight == 395){
+                                        _animatedHeight = 419;
+                                      }
+                                    });
+                                    return 'Enter number';
+                                  }
+                                  setState(() {
+                                    if(_animatedHeight == 371){
+                                      _animatedHeight = 371;
+                                    }
+                                    else if(_animatedHeight == 395){
+                                      _animatedHeight = 395;
+                                    }else if(_animatedHeight == 419){
+                                      _animatedHeight = 419;
+                                    } else {
+                                      _animatedHeight = 340;
+                                    }
+                                  });
+                                  return null;
                                 },
-                                itemBuilder: (context, suggestion) {
-                                  return ListTile(
-                                    title: Text(suggestion),
-                                  );
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold
+                                ),
+                                onChanged: (value){
+                                  if (!mounted) return;
+                                  setState(() {
+                                    _customerPhone = value;
+                                  });
                                 },
-                                transitionBuilder: (context, suggestionsBox, controller) {
-                                  return suggestionsBox;
-                                },
-                                onSuggestionSelected: (suggestion) {
-                                  _nameController.text = suggestion;
-                                  _customerName = _nameController.text;
-                                  //_details['product'] = '$_selectedProduct';
-                                },
-                                onSaved: (value) {
-                                  _customerName = value;
-                                  //_details['product'] = '$_selectedProduct';
-                                },
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "0701...",
+                                  hintStyle: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -443,8 +523,8 @@ class _ReceiptState extends State<Receipt> {
                                 textAlign: TextAlign.end,
                                 keyboardType: TextInputType.number,
                                 style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold
                                 ),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
@@ -486,34 +566,37 @@ class _ReceiptState extends State<Receipt> {
                                 controller: _amountPaidController,
                                 keyboardType: TextInputType.number,
                                 validator: (value) {
-                                  if (value.isEmpty ||
-                                      double.parse(value) > _totalPrice
-                                  ) {
+                                  if (value.isEmpty) {
                                     setState(() {
-                                      if(_animatedHeight == 283){
-                                        _animatedHeight = 305;
+                                      if(_animatedHeight == 340){
+                                        _animatedHeight = 371;
                                       }
-                                      else if(_animatedHeight == 305){
-                                        _animatedHeight = 326;
+                                      else if(_animatedHeight == 371){
+                                        _animatedHeight = 395;
+                                      }
+                                      else if(_animatedHeight == 395){
+                                        _animatedHeight = 419;
                                       }
                                     });
                                     return 'Enter the amount paid';
                                   }
                                   setState(() {
-                                    if(_animatedHeight == 305){
-                                      _animatedHeight = 305;
+                                    if(_animatedHeight == 371){
+                                      _animatedHeight = 371;
                                     }
-                                    else if(_animatedHeight == 326){
-                                      _animatedHeight = 326;
+                                    else if(_animatedHeight == 395){
+                                      _animatedHeight = 395;
+                                    }else if(_animatedHeight == 419){
+                                      _animatedHeight = 419;
                                     } else {
-                                      _animatedHeight = 283;
+                                      _animatedHeight = 340;
                                     }
                                   });
                                   return null;
                                 },
                                 style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold
                                 ),
                                 onChanged: (value){
                                   if (!mounted) return;
@@ -522,7 +605,7 @@ class _ReceiptState extends State<Receipt> {
                                     _outstandingBalance = _totalPrice - _amountPaid;
                                     _outstandingBalanceController.text =
                                         Constants.money(_outstandingBalance)
-                                        .output.symbolOnLeft.toString();
+                                            .output.symbolOnLeft.toString();
                                   });
                                 },
                                 decoration: InputDecoration(
@@ -569,9 +652,15 @@ class _ReceiptState extends State<Receipt> {
                                 controller: _outstandingBalanceController,
                                 textAlign: TextAlign.end,
                                 keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Outstanding balance';
+                                  }
+                                  return null;
+                                },
                                 style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold
                                 ),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
@@ -811,7 +900,7 @@ class _ReceiptState extends State<Receipt> {
 
   /// A widget that displays a container to select payment type if it is already
   /// received or will be received later
-  Widget _whenToPay(){
+  Container _whenToPay(){
     return Container(
       width: SizeConfig.safeBlockHorizontal * 80,
       child: Column(
@@ -822,8 +911,8 @@ class _ReceiptState extends State<Receipt> {
             child: Text(
               'Payment',
               style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20
+                fontWeight: FontWeight.bold,
+                fontSize: 20
               ),
             ),
           ),
@@ -902,159 +991,8 @@ class _ReceiptState extends State<Receipt> {
       appBar: GradientAppBar(
         backgroundColorStart: Color(0xFF004C7F),
         backgroundColorEnd: Color(0xFF008752),
-        title: Text('Receipt'),
+        title: Text('Receipt for a new customer'),
         actions: <Widget>[
-          FlatButton(
-            child: Text(
-              'SAVE',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            onPressed: () {
-              if(_dueDate == null){
-                Constants.showMessage("Double tap to select date");
-              }
-              if(_formKey.currentState.validate() && _dueDate != null){
-                showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => Dialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      elevation: 0.0,
-                      child: Container(
-                        width: SizeConfig.safeBlockHorizontal * 60,
-                        height: 150.0,
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 16.0),
-                                child: Text(
-                                  "Are you sure the product you want to save is confirmed?",
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: FlatButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // To close the dialog
-                                    },
-                                    textColor: Color(0xFF008752),
-                                    child: Text('NO'),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: FlatButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // To close the dialog
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: true,
-                                        builder: (_) => Dialog(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                            BorderRadius.circular(16.0),
-                                          ),
-                                          elevation: 0.0,
-                                          child: Container(
-                                            width: SizeConfig.safeBlockHorizontal * 60,
-                                            height: 150.0,
-                                            padding: EdgeInsets.all(16.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                              children: <Widget>[
-                                                Align(
-                                                  alignment: Alignment.centerLeft,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        top: 16.0),
-                                                    child: Text(
-                                                      "Select payment mode",
-                                                      style: TextStyle(
-                                                        fontSize: 15.0,
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                                  crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                                  children: <Widget>[
-                                                    Align(
-                                                      alignment:
-                                                      Alignment.bottomLeft,
-                                                      child: FlatButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop(); // To close the dialog
-                                                          _saveProduct('Transfer');
-                                                        },
-                                                        textColor: Color(0xFF008752),
-                                                        child: Text('Transfer'),
-                                                      ),
-                                                    ),
-                                                    Align(
-                                                      alignment:
-                                                      Alignment.bottomRight,
-                                                      child: FlatButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop(); // To close the dialog
-                                                          _saveProduct('Cash');
-                                                        },
-                                                        textColor: Color(0xFF008752),
-                                                        child: Text('Cash'),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    textColor: Color(0xFF008752),
-                                    child: Text('YES'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ));
-              }
-            },
-          ),
           /*IconButton(
             icon: Icon(
               Icons.print,
@@ -1090,44 +1028,208 @@ class _ReceiptState extends State<Receipt> {
                     children: <Widget>[_dataTable()],
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      gradient: new LinearGradient(
+                          colors: [
+                            Theme.ColorGradients.loginGradientStart,
+                            Theme.ColorGradients.loginGradientEnd
+                          ],
+                          begin: const FractionalOffset(0.2, 0.2),
+                          end: const FractionalOffset(1.0, 1.0),
+                          stops: [0.0, 1.0],
+                          tileMode: TileMode.clamp),
+                    ),
+                    child: MaterialButton(
+                        highlightColor: Colors.transparent,
+                        splashColor: Theme.ColorGradients.loginGradientEnd,
+                        child: Container(
+                          width: SizeConfig.safeBlockHorizontal * 80,
+                          padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 21.0),
+                          child: Text(
+                            'CONFIRM',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0
+                            ),
+                          ),
+                        ),
+                      onPressed: () {
+                        if(_dueDate == null){
+                          Constants.showMessage("Double tap to select date");
+                        }
+                        if(_formKey.currentState.validate() && _dueDate != null) {
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                elevation: 0.0,
+                                child: Container(
+                                  width: SizeConfig.safeBlockHorizontal * 60,
+                                  height: 150.0,
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 16.0),
+                                          child: Text(
+                                            "Are you sure the product you want to save is confirmed?",
+                                            style: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.bottomLeft,
+                                            child: FlatButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop(); // To close the dialog
+                                              },
+                                              textColor: Color(0xFF008752),
+                                              child: Text('NO'),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.bottomRight,
+                                            child: FlatButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop(); // To close the dialog
+                                                showDialog(
+                                                  context: context,
+                                                  barrierDismissible: true,
+                                                  builder: (_) => Dialog(
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(16.0),
+                                                    ),
+                                                    elevation: 0.0,
+                                                    child: Container(
+                                                      width: SizeConfig.safeBlockHorizontal * 60,
+                                                      height: 150.0,
+                                                      padding: EdgeInsets.all(16.0),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment.spaceBetween,
+                                                        children: <Widget>[
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.only(
+                                                                  top: 16.0),
+                                                              child: Text(
+                                                                "Select payment mode",
+                                                                style: TextStyle(
+                                                                  fontSize: 15.0,
+                                                                  fontWeight: FontWeight.bold,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                            crossAxisAlignment:
+                                                            CrossAxisAlignment.end,
+                                                            children: <Widget>[
+                                                              Align(
+                                                                alignment:
+                                                                Alignment.bottomLeft,
+                                                                child: FlatButton(
+                                                                  onPressed: () {
+                                                                    Navigator.of(context)
+                                                                        .pop(); // To close the dialog
+                                                                    _saveProduct('Transfer');
+                                                                  },
+                                                                  textColor: Color(0xFF008752),
+                                                                  child: Text('Transfer'),
+                                                                ),
+                                                              ),
+                                                              Align(
+                                                                alignment:
+                                                                Alignment.bottomRight,
+                                                                child: FlatButton(
+                                                                  onPressed: () {
+                                                                    Navigator.of(context)
+                                                                        .pop(); // To close the dialog
+                                                                    _saveProduct('Cash');
+                                                                  },
+                                                                  textColor: Color(0xFF008752),
+                                                                  child: Text('Cash'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              textColor: Color(0xFF008752),
+                                              child: Text('YES'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ));
+                        }
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ),
       ),
-      floatingActionButton: RoundIconButton(
-        icon: Icons.add,
-        onPressed: (){
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) =>
-                NewCustomerReceipt(sentProducts: widget.sentProducts)),
-          );
-        }
-      ),
     );
   }
 
-  /// This function calls [_saveCustomerReports()] to save the reports to the
-  /// customer and [saveNewDailyReport()] with the details in [receivedProducts]
+  /// This function calls [_saveNewCustomerReports()] to save the new customer
+  /// with its reports then [saveNewDailyReport()] with the details in [receivedProducts]
   /// to save the reports into reports table
   void _saveProduct(String paymentMode) async {
     if(receivedProducts.length > 0 && receivedProducts.isNotEmpty){
       try {
-        await _saveCustomerReports().then((value) async {
+        await _saveNewCustomerReports().then((value) async {
           Constants.showMessage('$_customerName items were successfully added');
-            for (var product in receivedProducts) {
-              await _saveNewDailyReport(
-                  double.parse(product['qty']),
-                  product['product'],
-                  double.parse(product['costPrice']),
-                  double.parse(product['unitPrice']),
-                  double.parse(product['totalPrice']),
-                  paymentMode
-              ).then((value){
-                print("${product['product']} was sold successfully");
-                });
-            }
+          for (var product in receivedProducts) {
+            await _saveNewDailyReport(
+                double.parse(product['qty']),
+                product['product'],
+                double.parse(product['costPrice']),
+                double.parse(product['unitPrice']),
+                double.parse(product['totalPrice']),
+                paymentMode
+            ).then((value){
+              print("${product['product']} was sold successfully");
+            });
+          }
         }).catchError((e) {
           print(e);
           Constants.showMessage('${e.toString()}');
@@ -1136,7 +1238,7 @@ class _ReceiptState extends State<Receipt> {
         print(e);
         Constants.showMessage('${e.toString()}');
       }
-      Navigator.pop(context);
+      Navigator.popUntil(context, ModalRoute.withName(MyHomePage.id));
     }
     else {
       Constants.showMessage("Empty receipt");
@@ -1144,7 +1246,7 @@ class _ReceiptState extends State<Receipt> {
     }
   }
 
-  /// This function saves new reports to the customer with details collected
+  /// This function saves new customer with the details collected
   /// above into [CustomerReport] object such as :
   ///   reports from [_customerReportList()],
   ///   totalAmount from [_totalPrice],
@@ -1152,8 +1254,14 @@ class _ReceiptState extends State<Receipt> {
   ///   paid from [_fullyPaid],
   ///   soldAt from [_dateTime],
   ///   dueDate from [_dueDate]
-  Future<void> _saveCustomerReports() async {
+  Future<void> _saveNewCustomerReports() async {
     var api = RestDataSource();
+
+    var customer = Customer();
+    customer.name = Constants.capitalize(_customerName);
+    customer.phone = _customerPhone;
+    customer.createdAt = _dateTime.toString();
+
     var customerReport = CustomerReport();
     customerReport.reportDetails = _customerReportList();
     customerReport.totalAmount = _totalPrice.toString();
@@ -1166,7 +1274,7 @@ class _ReceiptState extends State<Receipt> {
         ? customerReport.paymentReceivedAt = _dateTime.toString()
         : customerReport.dueDate = _dueDate.toString();*/
 
-    await api.addCustomerReports(_customerDetails[_customerName], customerReport).then((value) {
+    await api.addCustomer(customer, customerReport).then((value) {
       print('$_customerName items was successfully added');
     }).catchError((e) {
       print(e);

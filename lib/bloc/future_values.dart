@@ -1,4 +1,5 @@
 import 'package:bizgienelimited/database/user_db_helper.dart';
+import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/linear_sales.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
@@ -118,28 +119,7 @@ class FutureValues {
   Future<List<Supply>> getAllSuppliesFromDB() {
     var data = RestDataSource();
     Future<List<Supply>> supply = data.fetchAllSupply();
-    print(supply);
     return supply;
-  }
-
-  /// Method to get all the supply dealer names from the database by storing all
-  /// the dealer names from [getAllSuppliesFromDB()]
-  /// It returns a list of [String]
-  Future<List<String>> getAllSupplyNamesFromDB() async {
-    List<String> names = new List();
-    Future<List<Supply>> receivedSupply = getAllSuppliesFromDB();
-    await receivedSupply.then((value){
-      for(int i = 0; i < value.length; i++){
-        if(!(names.contains(value[i].dealer))){
-          print(value[i].dealer);
-          names.add(value[i].dealer);
-        }
-      }
-    }).catchError((e){
-      throw e;
-    });
-    print(names);
-    return names;
   }
 
   /// Method to get all the received supplies from the database in the server with
@@ -157,7 +137,6 @@ class FutureValues {
     }).catchError((e){
       throw e;
     });
-    print(supply);
     return supply;
   }
 
@@ -176,8 +155,35 @@ class FutureValues {
     }).catchError((e){
       throw e;
     });
-    print(supply);
     return supply;
+  }
+
+  /// Method to get all the customers from the database in the server with
+  /// the help of [RestDataSource]
+  /// It returns a list of [Customer]
+  Future<List<Customer>> getAllCustomersFromDB() {
+    var data = RestDataSource();
+    Future<List<Customer>> customer = data.fetchAllCustomers();
+    print(customer);
+    return customer;
+  }
+
+  /// Method to get all the customer names from the database by storing all
+  /// the names from [getAllCustomersFromDB()]
+  /// It returns a Map
+  Future<Map<String, String>> getAllCustomerNamesFromDB() async {
+    Map<String, String> names = Map<String, String>();
+    Future<List<Customer>> customerNames = getAllCustomersFromDB();
+    await customerNames.then((value){
+      for(int i = 0; i < value.length; i++){
+        if(!(names.containsKey(value[i].name))){
+          names[value[i].name] = value[i].id;
+        }
+      }
+    }).catchError((e){
+      throw e;
+    });
+    return names;
   }
 
   /// Method to get report of a [month] using the class [DailyReportValue]

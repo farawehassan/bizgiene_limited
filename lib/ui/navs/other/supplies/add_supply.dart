@@ -68,39 +68,6 @@ class _AddSupplyState extends State<AddSupply> {
   /// A boolean variable to hold the value of  whether the picker should show
   bool showPicker = false;
 
-  /// Method to capitalize the first letter of each word in a productName [string]
-  /// while adding a new product or updating a particular product
-  String _capitalize(String string) {
-    String result = '';
-
-    if (string == null) {
-      throw ArgumentError("string: $string");
-    }
-
-    if (string.isEmpty) {
-      return string;
-    }
-
-    else{
-      List<String> values = string.split(' ');
-      List<String> valuesToJoin = new List();
-
-      if(values.length == 1){
-        result = string[0].toUpperCase() + string.substring(1);
-      }
-      else{
-        for(int i = 0; i < values.length; i++){
-          if(values[i].isNotEmpty){
-            valuesToJoin.add(values[i][0].toUpperCase() + values[i].substring(1));
-          }
-        }
-        result = valuesToJoin.join(' ');
-      }
-
-    }
-    return result;
-  }
-
   /// Function to add a new row to supply sales details:
   /// [_quantity], [_productName], [_unitPrice] and [_totalPrice]
   void _addRow() {
@@ -129,7 +96,7 @@ class _AddSupplyState extends State<AddSupply> {
                 onChanged: (value) {
                   if (!mounted) return;
                   setState(() {
-                    _productName = _capitalize(value);
+                    _productName = Constants.capitalize(value);
                     _details['product'] = '$_productName';
                   });
                 },
@@ -452,7 +419,7 @@ class _AddSupplyState extends State<AddSupply> {
     var supply = Supply();
     var api = new RestDataSource();
     try {
-      supply.dealer = _capitalize(name);
+      supply.dealer = Constants.capitalize(name);
       supply.amount = amount.toString();
       supply.products = products;
       supply.notes = notes;

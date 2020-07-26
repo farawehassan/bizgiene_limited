@@ -2,8 +2,10 @@ import 'dart:typed_data';
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/ui/navs/home_page.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/round_icon.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
@@ -147,6 +149,7 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       appBar: GradientAppBar(
         title: Text("Printer"),
@@ -166,8 +169,9 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
                   ),
                   elevation: 0.0,
                   child: Container(
-                    height: 200.0,
-                    padding: const EdgeInsets.all(16.0),
+                    width: SizeConfig.safeBlockHorizontal * 60,
+                    height: 150.0,
+                    padding: EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -184,9 +188,6 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 24.0,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -211,7 +212,7 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
                                       .pop(); // To close the dialog
                                   showDialog(
                                     context: context,
-                                    barrierDismissible: false,
+                                    barrierDismissible: true,
                                     builder: (_) => Dialog(
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -219,8 +220,9 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
                                       ),
                                       elevation: 0.0,
                                       child: Container(
+                                        width: SizeConfig.safeBlockHorizontal * 60,
                                         height: 150.0,
-                                        padding: const EdgeInsets.all(16.0),
+                                        padding: EdgeInsets.all(16.0),
                                         child: Column(
                                           crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -240,9 +242,6 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            SizedBox(
-                                              height: 24.0,
                                             ),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -360,7 +359,7 @@ class _PrintingReceiptState extends State<PrintingReceipt> {
           Constants.showMessage(e.toString());
         }
       }
-      Navigator.pop(context);
+      Navigator.popUntil(context, ModalRoute.withName(MyHomePage.id));
     }
     else {
       Constants.showMessage("Empty receipt");

@@ -5,7 +5,7 @@ description: A sales application for bizgiene limited
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -30,7 +30,12 @@ dependencies:
   esc_pos_printer: ^2.1.2
   http: ^0.12.0+4
   dynamic_theme: ^1.0.1
-  rflutter_alert: ^1.0.3
+  google_fonts: ^1.1.0
+
+  # bloc dependencies
+  bloc: ^4.0.0
+  flutter_bloc: ^4.0.0
+  bloc_test: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -47,4 +52,5 @@ flutter:
     - family: SFUIDisplay
       fonts:
         - asset: Assets/fonts/sf-ui-display-light.otf
+
 

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/customer_reports.dart';
+import 'package:bizgienelimited/model/customer_reports_details.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/model/create_user.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
@@ -187,7 +188,7 @@ class RestDataSource {
       }
       header = {"Authorization": "Bearer ${value.token}"};
     });
-    final FETCH_URL = FETCH_PRODUCT_URL + "$id";
+    final FETCH_URL = FETCH_PRODUCT_URL + "/$id";
     return _netUtil.get(FETCH_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
         throw (res["message"]);
@@ -465,7 +466,7 @@ class RestDataSource {
       }
       header = {"Authorization": "Bearer ${value.token}"};
     });
-    final FETCH_URL = FETCH_SUPPLY_URL + "$id";
+    final FETCH_URL = FETCH_SUPPLY_URL + "/$id";
     return _netUtil.get(FETCH_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
         throw (res["message"]);
@@ -541,8 +542,8 @@ class RestDataSource {
 
 
   /// A function that adds new customer to the server POST
-  /// with [Supply] model
-  Future<dynamic> addCustomer(Customer customer) async{
+  /// with [Customer] model
+  Future<dynamic> addCustomer(Customer customer, CustomerReport customerReport) async {
     Map<String, String> header;
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
@@ -551,10 +552,15 @@ class RestDataSource {
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
-    return _netUtil.post(ADD_SUPPLY_URL, headers: header, body: {
+    return _netUtil.post(ADD_CUSTOMER_URL, headers: header, body: {
       "name": customer.name.toString(),
       "phone": customer.phone.toString(),
-      "reports": jsonEncode(customer.reports),
+      "report": jsonEncode(customerReport.reportDetails),
+      "totalAmount": customerReport.totalAmount,
+      "paymentMade": customerReport.paymentMade,
+      "paid": customerReport.paid.toString(),
+      "soldAt": customerReport.soldAt,
+      "dueDate": customerReport.dueDate,
       "createdAt": customer.createdAt.toString(),
     }).then((dynamic res) {
       print(res.toString());
@@ -572,9 +578,9 @@ class RestDataSource {
     });
   }
 
-  /// A function that adds new reports to a customer supply details POST.
+  /// A function that adds new reports to a customer reports details POST.
   /// with [CustomerReport]
-  Future<dynamic> addCustomerReports(String id, CustomerReport customerReport) async{
+  Future<dynamic> addCustomerReports(String id, CustomerReport customerReport) async {
     Map<String, String> header;
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
@@ -583,11 +589,16 @@ class RestDataSource {
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
-    return _netUtil.post(UPDATE_SUPPLY_URL, headers: header, body: {
-      "id": id,
-      "reports": jsonEncode(customerReport),
+    print(customerReport.toString());
+    return _netUtil.post(ADD_CUSTOMER_REPORT_URL, headers: header, body: {
+      "id" : id,
+      "report": jsonEncode(customerReport.reportDetails),
+      "totalAmount": customerReport.totalAmount,
+      "paymentMade": customerReport.paymentMade,
+      "paid": customerReport.paid.toString(),
+      "soldAt": customerReport.soldAt,
+      "dueDate": customerReport.dueDate,
     }).then((dynamic res) {
-      print(res.toString());
       if(res["error"] == true){
         throw (res["message"]);
       }else{
@@ -603,11 +614,11 @@ class RestDataSource {
     });
   }
 
-  /// A function that updates received in supply details to True PUT.
-  /// with [Supply]
-  Future<dynamic> receivedCustomer(String id, bool received) async{
-    /// Variable holding today's datetime
-    DateTime dateTime = DateTime.now();
+  /// A function that updates a particular report details of a customer PUT.
+  Future<dynamic> updateCustomerReport(
+      String customerId, String reportId,
+      List<CustomerReportDetails> report,
+      String totalAmount, String paymentMade) async{
 
     Map<String, String> header;
     Future<User> user = futureValue.getCurrentUser();
@@ -617,10 +628,12 @@ class RestDataSource {
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
-    return _netUtil.put(RECEIVED_SUPPLY_URL, headers: header, body: {
-      "id": id,
-      "received": received.toString(),
-      "receivedAt": dateTime.toString(),
+    return _netUtil.put(UPDATE_CUSTOMER_REPORT_URL, headers: header, body: {
+      "id": customerId,
+      "reportId": reportId,
+      'report': report,
+      'totalAmount': totalAmount,
+      'paymentMade': paymentMade
     }).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
@@ -634,7 +647,78 @@ class RestDataSource {
       if(e is SocketException){
         throw ("Unable to connect to the server, check your internet connection");
       }
-      throw ("Error in updating supply, try again");
+      throw ("Error in updating customer\'s report, try again");
+    });
+  }
+
+  /// A function that updates a particular report payment details of a customer
+  /// PUT.
+  Future<dynamic> updatePaymentMadeReport(
+      String customerId, String reportId, String payment) async{
+
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.put(UPDATE_PAYMENT_CUSTOMER_URL, headers: header, body: {
+      "id": customerId,
+      "reportId": reportId,
+      'payment': payment
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in updating customer\'s payment, try again");
+    });
+  }
+
+  /// A function that settles a particular report payment details of a customer
+  /// PUT.
+  Future<dynamic> settlePaymentReport(
+      String customerId, String reportId, String payment) async{
+
+    /// Variable holding today's datetime
+    DateTime dateTime = DateTime.now();
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.put(SETTLE_PAYMENT_CUSTOMER_URL, headers: header, body: {
+      "id": customerId,
+      "reportId": reportId,
+      'payment': payment,
+      'paymentReceivedAt': dateTime.toString()
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in settling customer\'s payment, try again");
     });
   }
 
@@ -649,7 +733,7 @@ class RestDataSource {
       }
       header = {"Authorization": "Bearer ${value.token}"};
     });
-    final FETCH_URL = FETCH_CUSTOMER_URL + "$id";
+    final FETCH_URL = FETCH_CUSTOMER_URL + "/$id";
     return _netUtil.get(FETCH_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
         throw (res["message"]);

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'customer_reports_details.dart';
 
 /// A class to hold my [CustomerReport] model
@@ -6,6 +7,7 @@ class CustomerReport {
 
   /// Setting constructor for [CustomerReport] class
   CustomerReport({
+    this.id,
     this.reportDetails,
     this.totalAmount,
     this.paymentMade,
@@ -14,6 +16,9 @@ class CustomerReport {
     this.dueDate,
     this.paymentReceivedAt
   });
+
+  /// A string variable to hold the id of a customer report
+  String id;
 
   /// An object variable to hold the report details
   List<CustomerReportDetails> reportDetails;
@@ -27,40 +32,47 @@ class CustomerReport {
   /// A bool variable to hold true or false if the items bought are fully paid
   bool paid;
 
-  /// A string variable to hold the date and time the items was sold
+  /// A String variable to hold the date and time the items was sold
   String soldAt;
 
-  /// A string variable to hold date and time the payment will be due
+  /// A String variable to hold date and time the payment will be due
   String dueDate;
 
-  /// A string variable to hold the date and time the payment was received
+  /// A String variable to hold the date and time the payment was received
   String paymentReceivedAt;
 
-
-  /// Creating a method to map my JSON values to the model details accordingly
   factory CustomerReport.fromJson(Map<String, dynamic> json) {
-    var reportDetailsJson = jsonDecode(json['report']) as List;
-    List<CustomerReportDetails> res = reportDetailsJson.map((json) => CustomerReportDetails.fromJson(json)).toList();
+    var reportsJson = jsonDecode(json['report']) as List;
+    List<CustomerReportDetails> res = reportsJson.map((json) => CustomerReportDetails.fromJson(json)).toList();
     return CustomerReport(
-      reportDetails: res,
-      totalAmount: json["totalAmount"].toString(),
-      paymentMade: json["paymentMade"].toString(),
-      paid: json["paid"],
-      soldAt: json["soldAt"].toString(),
-      dueDate: json["dueDate"].toString(),
-      paymentReceivedAt: json["paymentReceivedAt"].toString(),
-    );
+    id: json["_id"].toString(),
+    reportDetails: res,
+    totalAmount: json["totalAmount"].toString(),
+    paymentMade: json["paymentMade"].toString(),
+    paid: json["paid"],
+    soldAt: json["soldAt"].toString(),
+    dueDate: json["dueDate"].toString(),
+    paymentReceivedAt: json["paymentReceivedAt"].toString(),
+  );
   }
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toJson() => {
+    "report": List<dynamic>.from(reportDetails.map((x) => x.toJson())),
+    "totalAmount": totalAmount,
+    "paymentMade": paymentMade,
+    "paid": paid,
+    "soldAt": soldAt,
+    "dueDate": dueDate,
+  };
+
+  Map<String, dynamic> toFullyPaidJson(){
     return {
-      "report": this.reportDetails,
-      "totalAmount": this.totalAmount,
-      "paymentMade": this.paymentMade,
-      "paid": this.paid,
-      "soldAt": this.soldAt,
-      "dueDate": this.dueDate,
-      "paymentReceivedAt": this.paymentReceivedAt
+      "report": List<dynamic>.from(reportDetails.map((x) => x.toJson())),
+      "totalAmount": totalAmount,
+      "paymentMade": paymentMade,
+      "paid": paid,
+      "soldAt": soldAt,
+      "paymentReceivedAt": paymentReceivedAt
     };
   }
 

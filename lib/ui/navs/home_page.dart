@@ -1,5 +1,5 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
-import 'package:bizgienelimited/bloc/product_suggestions.dart';
+import 'package:bizgienelimited/bloc/select_suggestions.dart';
 import 'package:bizgienelimited/database/user_db_helper.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/styles/theme.dart' as Them;
@@ -7,6 +7,7 @@ import 'package:bizgienelimited/ui/navs/other/other_reports.dart';
 import 'package:bizgienelimited/ui/navs/receipt/receipt_page.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/round_icon.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -168,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: kTextFieldDecoration.copyWith(hintText: 'Product'),
                 ),
                 suggestionsCallback: (pattern) {
-                  return AvailableProducts.getSuggestions(pattern, availableProducts);
+                  return Suggestions.getProductSuggestions(pattern, availableProducts);
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
@@ -305,7 +306,6 @@ class _MyHomePageState extends State<MyHomePage> {
       Constants.showMessage("Error in fetching sales");
       response = true;
     }
-    print(response);
     return response;
   }
 
@@ -315,6 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
   /// calling [_addRow()] and a drawer to show other screens and details when pressed
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       appBar: GradientAppBar(
         title: Center(child: Text('Sales Record')),
@@ -492,8 +493,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           elevation: 0.0,
                           child: Container(
+                            width: SizeConfig.safeBlockHorizontal * 60,
                             height: 150.0,
-                            padding: const EdgeInsets.all(16.0),
+                            padding: EdgeInsets.all(16.0),
                             child:  Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -501,8 +503,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 16.0),
+                                    padding: EdgeInsets.only(top: 16.0),
                                     child: Text(
                                       "Are you sure you want to sign out",
                                       style: TextStyle(
@@ -511,9 +512,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 24.0,
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -39,39 +39,6 @@ class _CreateWorkerState extends State<CreateWorker> {
   /// [ModalProgressHUD] widget
   bool showSpinner = false;
 
-  /// Method to capitalize the first letter of each word in a productName [string]
-  /// while adding a new product or updating a particular product
-  String capitalize(String string) {
-    String result = '';
-
-    if (string == null) {
-      throw ArgumentError("string: $string");
-    }
-
-    if (string.isEmpty) {
-      return string;
-    }
-
-    else{
-      List<String> values = string.split(' ');
-      List<String> valuesToJoin = new List();
-
-      if(values.length == 1){
-        result = string[0].toUpperCase() + string.substring(1);
-      }
-      else{
-        for(int i = 0; i < values.length; i++){
-          if(values[i].isNotEmpty){
-            valuesToJoin.add(values[i][0].toUpperCase() + values[i].substring(1));
-          }
-        }
-        result = valuesToJoin.join(' ');
-      }
-
-    }
-    return result;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,7 +175,7 @@ class _CreateWorkerState extends State<CreateWorker> {
     var user = CreateUser();
     var api = new RestDataSource();
     try {
-      user.name = capitalize(name);
+      user.name = Constants.capitalize(name);
       user.phoneNumber = phoneNumber;
       user.pin = pin;
       user.confirmPin = confirmPin;

@@ -1,3 +1,4 @@
+import 'package:bizgienelimited/ui/navs/other/customers/customer_page.dart';
 import 'package:bizgienelimited/ui/navs/other/monthly/reports_page.dart';
 import 'package:bizgienelimited/ui/navs/other/products_sold.dart';
 import 'package:bizgienelimited/utils/reusable_card.dart';
@@ -33,7 +34,7 @@ class _OtherReportsState extends State<OtherReports> {
               ReusableCard(
                 cardChild: 'My Customers',
                 onPress: (){
-                  //Navigator.pushNamed(context, DailyReportList.id);
+                  Navigator.pushNamed(context, CustomerPage.id);
                 },
               ),
               ReusableCard(
