@@ -90,20 +90,14 @@ class _ReceiptState extends State<Receipt> {
   /// Boolean variable holding true or false if the payment is fully paid
   bool _fullyPaid = false;
 
-  /// A List to hold the widget [TableRow] for my products
-  List<TableRow> items = [];
-
   /// A List to hold the Map of [receivedProducts]
-  List<Map> receivedProducts = [];
+  List<Map> _receivedProducts = [];
 
   /// A Map to hold the names of all the customers in the database
   Map _customerDetails = Map();
 
   /// A List to hold the names of all the customers in the database
   List<String> _customerNames = List();
-
-  /// Instantiating a class of the [Reports]
-  Reports dailyReportsData = new Reports();
 
   /// A constant for border radius size in my [_paymentDetailsTable()]
   static const double _borderSize = 15.0;
@@ -141,7 +135,7 @@ class _ReceiptState extends State<Receipt> {
           && product.containsKey('unitPrice')
           && product.containsKey('totalPrice')
       )  {
-        receivedProducts.add(product);
+        _receivedProducts.add(product);
         _totalPrice += double.parse(product['totalPrice']);
       }
     }
@@ -247,7 +241,7 @@ class _ReceiptState extends State<Receipt> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
         ],
-        rows: receivedProducts.map((product) {
+        rows: _receivedProducts.map((product) {
           return DataRow(cells: [
             DataCell(
               Text((widget.sentProducts.indexOf(product) + 1).toString()),
@@ -1178,11 +1172,11 @@ class _ReceiptState extends State<Receipt> {
   /// customer and [saveNewDailyReport()] with the details in [receivedProducts]
   /// to save the reports into reports table
   void _saveProduct(String paymentMode) async {
-    if(receivedProducts.length > 0 && receivedProducts.isNotEmpty){
+    if(_receivedProducts.length > 0 && _receivedProducts.isNotEmpty){
       try {
         await _saveCustomerReports().then((value) async {
           Constants.showMessage('$_customerName items were successfully added');
-            for (var product in receivedProducts) {
+            for (var product in _receivedProducts) {
               await _saveNewDailyReport(
                   double.parse(product['qty']),
                   product['product'],
@@ -1243,7 +1237,7 @@ class _ReceiptState extends State<Receipt> {
   /// of [CustomerReportDetails]
   List<CustomerReportDetails> _customerReportList() {
     List<CustomerReportDetails> reports = new List();
-    for (var product in receivedProducts) {
+    for (var product in _receivedProducts) {
       var customerReportDetails = CustomerReportDetails();
       customerReportDetails.quantity = product['qty'].toString();
       customerReportDetails.productName = product['product'].toString();
@@ -1269,7 +1263,7 @@ class _ReceiptState extends State<Receipt> {
       dailyReport.unitPrice = unitPrice.toString();
       dailyReport.totalPrice = total.toString();
       dailyReport.paymentMode = paymentMode;
-      dailyReport.createdAt = DateTime.now().toString();
+      dailyReport.createdAt = _dateTime.toString();
 
       await api.addNewDailyReport(dailyReport).then((value) {
         print('$productName saved successfully');

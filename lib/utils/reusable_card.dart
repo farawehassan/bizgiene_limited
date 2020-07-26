@@ -95,14 +95,14 @@ class SelectCard extends StatelessWidget {
                       Text(
                         text1,
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           fontSize: 16,
                         ),
                       ),
                       Text(
                         text2,
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           fontSize: 16,
                         ),
                       ),

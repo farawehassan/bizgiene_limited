@@ -237,8 +237,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ));
 
-      print(_details);
-
     });
 
     if(_details['qty'].toString().isNotEmpty && _details['product'].toString().isNotEmpty && _details['costPrice'].toString().isNotEmpty && _details['unitPrice'].toString().isNotEmpty && _details['totalPrice'].toString().isNotEmpty){
@@ -247,7 +245,6 @@ class _MyHomePageState extends State<MyHomePage> {
         _details.clear();
         qtyController.clear();
         priceController.clear();
-        print(_detailsList);
       } catch (e) {
         print(e);
         Constants.showMessage("Error in records");
@@ -260,10 +257,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _deleteItem(index){
     if (!mounted) return;
     setState((){
-      print(index);
       _rows.removeAt(index);
       try {
-        print(_detailsList[index]);
         _detailsList.removeAt(index);
       } catch (e) {
         print(e);
