@@ -86,7 +86,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
             child: GestureDetector(
               onTap: (){},
               onLongPress: (){
-                confirmDeleteDialog(_receivedSupplies[index].id);
+                _confirmDeleteDialog(_receivedSupplies[index].id);
               },
               child: Material(
                 elevation: 14.0,
@@ -154,13 +154,13 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                           icon: Icon(Icons.more_vert),
                           onPressed: () {
                             List<SupplyProducts> products = _receivedSupplies[index].products;
-                            List<Map> _supplyDetails = new List();
+                            List<Map> _supplyDetails = List();
                             Map data = {};
                             for(int i = 0 ; i < products.length; i++){
                               data = {'qty':'${products[i].qty}', 'productName': '${products[i].name}', 'unitPrice': '${products[i].unitPrice}', 'totalPrice': '${products[i].totalPrice}'};
                               _supplyDetails.add(data);
                             }
-                            displayDialog(_supplyDetails, double.parse(_receivedSupplies[index].amount), _receivedSupplies[index].notes);
+                            _displayDialog(_supplyDetails, double.parse(_receivedSupplies[index].amount), _receivedSupplies[index].notes);
                           },
                         ),
                       ),
@@ -205,7 +205,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
 
   /// Function to display dialog of supply details [details] the optional notes
   /// [note] if it is not empty
-  void displayDialog(List<Map> details, double total, String note){
+  void _displayDialog(List<Map> details, double total, String note){
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -266,7 +266,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   }
 
   /// Function to confirm if a supply wants to be deleted
-  void confirmDeleteDialog(String id){
+  void _confirmDeleteDialog(String id){
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -303,7 +303,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                     child: FlatButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // To close the dialog
-                        deleteSupply(id);
+                        _deleteSupply(id);
                       },
                       textColor: Colors.red,
                       child: Text('YES'),
@@ -396,7 +396,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
 
   /// Function that deletes a supply by calling
   /// [receivedSupply] in the [RestDataSource] class
-  void deleteSupply(String id){
+  void _deleteSupply(String id){
     var api = new RestDataSource();
     try {
       api.deleteSupply(id).then((value) {

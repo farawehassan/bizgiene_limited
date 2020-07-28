@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 
+import 'outstanding_balance_customers.dart';
+
 class CustomerPage extends StatefulWidget {
 
   static const String id = 'customer_page';
@@ -18,9 +20,9 @@ class _CustomerPageState extends State<CustomerPage> with SingleTickerProviderSt
 
   final List<Widget> _children = [
     //ReceivedSupply(),
-    //SupplyInProgress()
+    OutstandingBalance(),
     Container(child: Center(child: Text('This is the outstanding balance tab', style: const TextStyle(fontSize: 22),),),),
-    Container(child: Center(child: Text('This is the all customers tab', style: const TextStyle(fontSize: 22),),),),
+    //Container(child: Center(child: Text('This is the all customers tab', style: const TextStyle(fontSize: 22),),),),
   ];
 
   TabController _tabController;

@@ -1,3 +1,4 @@
+import 'package:bizgienelimited/bloc/merge_sort.dart';
 import 'package:bizgienelimited/database/user_db_helper.dart';
 import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/linear_sales.dart';
@@ -170,7 +171,7 @@ class FutureValues {
 
   /// Method to get all the customer names from the database by storing all
   /// the names from [getAllCustomersFromDB()]
-  /// It returns a Map
+  /// It returns a Map of strings
   Future<Map<String, String>> getAllCustomerNamesFromDB() async {
     Map<String, String> names = Map<String, String>();
     Future<List<Customer>> customerNames = getAllCustomersFromDB();
@@ -184,6 +185,68 @@ class FutureValues {
       throw e;
     });
     return names;
+  }
+
+  /// Method to get all the customers that has an outstanding balance by checking
+  /// if any report's paid == false under a customer
+  /// It returns a list of [Customer]
+  Future<List<Customer>> getCustomersWithOutstandingBalance() async {
+    List<Customer> customers = new List();
+    Future<List<Customer>> customerNames = getAllCustomersFromDB();
+    await customerNames.then((value){
+      for(int i = 0; i < value.length; i++){
+        for(int j = 0; j < value[j].reports.length; j++){
+          if(!value[i].reports[j].paid){
+            customers.add(value[i]);
+          }
+        }
+      }
+    }).catchError((e){
+      throw e;
+    });
+    return customers;
+  }
+
+  /// Function to get difference of a particular date time to the current
+  /// dateTime
+  /// It returns an Integer
+  int getTimeDifference(String dateTime){
+    var now = DateTime.now();
+    var time = DateTime.parse(dateTime);
+    var difference = now.difference(time).inDays;
+    return difference;
+  }
+
+  /// Method to get all the customers sorted according to the last time they
+  /// bought products which is a customer report's soldAt datetime
+  /// It returns a list of [Customer]
+  Future<List<Customer>> sortCustomers() async {
+    List<Customer> sortedCustomers = List();
+    Future<List<Customer>> customers = getAllCustomersFromDB();
+    await customers.then((value){
+      value.sort((a, b) => getTimeDifference(a.reports.last.soldAt).compareTo(getTimeDifference(b.reports.last.soldAt)));
+      sortedCustomers.addAll(value);
+    }).catchError((e){
+      throw e;
+    });
+    return sortedCustomers;
+  }
+
+  /// Method to get all the customer's reports sorted according to the last time they
+  /// bought products which is a customerReports createdAt datetime
+  /// It returns a list of [Customer]
+  Future<List<Customer>> sortCustomerReports() async {
+    List<Customer> sortedCustomers = List();
+    Future<List<Customer>> customers = getAllCustomersFromDB();
+    await customers.then((value){
+      for(int i = 0; i < value.length; i++){
+        value[i].reports.sort((a, b) => getTimeDifference(a.soldAt).compareTo(getTimeDifference(b.soldAt)));
+        sortedCustomers.addAll(value);
+      }
+    }).catchError((e){
+      throw e;
+    });
+    return sortedCustomers;
   }
 
   /// Method to get report of a [month] using the class [DailyReportValue]

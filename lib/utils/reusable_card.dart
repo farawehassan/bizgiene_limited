@@ -45,7 +45,6 @@ class ProfileCard extends StatelessWidget {
     return Material(
       elevation: 14.0,
       borderRadius: BorderRadius.circular(24.0),
-      shadowColor: Color(0xFF004C7F),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: cardChild,
