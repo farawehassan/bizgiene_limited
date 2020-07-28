@@ -1,4 +1,3 @@
-  import 'package:bizgienelimited/utils/reusable_card.dart';
   import 'package:flutter/cupertino.dart';
   import 'package:flutter/material.dart';
   import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,7 +17,7 @@
       return Column(
         children: <Widget>[
           Container(
-            height: 100,
+            height: 120,
             margin: const EdgeInsets.all(10.0),
             child: Material(
               elevation: 14.0,
@@ -27,7 +26,7 @@
                 //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Container(
-                    height: 49.25,
+                    height: 69.25,
                     padding: const EdgeInsets.only(top: 10.0, left: 12.0, right: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -47,11 +46,26 @@
                                 color: Colors.green[50]
                               ),
                             ),
-                            Text(
-                              "Mr Farawe Taiwo",
-                              style: GoogleFonts.mcLaren(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Mr Farawe Taiwo",
+                                    style: GoogleFonts.mcLaren(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Lorem ipsum snmsvb",
+                                    style: GoogleFonts.mcLaren(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
