@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-
+import 'all_customers.dart';
 import 'outstanding_balance_customers.dart';
 
+/// A stateful widget class to display tabs for both [OutstandingBalance] and
+/// [AllCustomers]
 class CustomerPage extends StatefulWidget {
 
   static const String id = 'customer_page';
@@ -19,10 +21,8 @@ class _CustomerPageState extends State<CustomerPage> with SingleTickerProviderSt
   ];
 
   final List<Widget> _children = [
-    //ReceivedSupply(),
     OutstandingBalance(),
-    Container(child: Center(child: Text('This is the outstanding balance tab', style: const TextStyle(fontSize: 22),),),),
-    //Container(child: Center(child: Text('This is the all customers tab', style: const TextStyle(fontSize: 22),),),),
+    AllCustomers(),
   ];
 
   TabController _tabController;

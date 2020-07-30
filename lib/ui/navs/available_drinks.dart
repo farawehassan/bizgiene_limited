@@ -333,6 +333,7 @@ class _ProductsState extends State<Products> {
       body: RefreshIndicator(
         key: _refreshIndicatorKey,
         onRefresh: _refresh,
+        color: Color(0xFF008752),
         child: Container(
           child: _buildList(),
         ),

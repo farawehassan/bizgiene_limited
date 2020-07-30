@@ -1372,6 +1372,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
     try {
       var api = RestDataSource();
       var dailyReport = Reports();
+      dailyReport.customerName = Constants.capitalize(_customerName);
       dailyReport.quantity = qty.toString();
       dailyReport.productName = productName.toString();
       dailyReport.costPrice = costPrice.toString();

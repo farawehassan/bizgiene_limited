@@ -14,6 +14,15 @@ class Constants{
   static const String ShowFinished = 'Display finished products';
   static const String ShowOther = 'Display other products';
 
+  static const String ShowUpdate = 'Update payment';
+  static const String ShowSettle = 'Settle payment';
+
+  /// List of string to hold the menu options in [OutstandingBalance]
+  static const List<String> showUpdateChoices = <String>[
+    ShowUpdate,
+    ShowSettle
+  ];
+
   /// List of string to hold the menu options in [Products]
   static const List<String> showProductChoices = <String>[
     ShowAll,

@@ -18,6 +18,9 @@ class SupplyInProgress extends StatefulWidget {
 
 class _SupplyInProgressState extends State<SupplyInProgress> {
 
+  /// GlobalKey of a my RefreshIndicatorState to refresh my list items in the page
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
 
@@ -27,12 +30,34 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
   /// Variable of List<Supply> to hold the details of all the supply
   List<Supply> _supplyInProgress = new List();
 
-  /// Function to refresh details of the Available products
-  /// by calling [_getNames()]
-  void _refreshData(){
-    if (!mounted) return;
-    setState(() {
-      _getSupplyInProgress();
+  /// Function to refresh details of the supply in progress similar to
+  /// [_getSupplyInProgress()]
+  Future<Null> _refreshData(){
+    List<Supply> tempList = new List();
+    Future<List<Supply>> supplies = futureValue.getInProgressSuppliesFromDB();
+    return supplies.then((value) {
+      print(value);
+      if(value.length != 0){
+        print(value.length);
+        for (int i = 0; i < value.length; i++){
+          tempList.add(value[i]);
+        }
+        if (!mounted) return;
+        setState(() {
+          _supplyLength = tempList.length;
+          _supplyInProgress = tempList.reversed.toList();
+        });
+      } else if(value.length == 0 || value.isEmpty){
+        print(value.length);
+        if (!mounted) return;
+        setState(() {
+          _supplyLength = 0;
+          _supplyInProgress = [];
+        });
+      }
+    }).catchError((error){
+      print(error);
+      Constants.showMessage(error.toString());
     });
   }
 
@@ -188,6 +213,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
     );
   }
 
+  /// Calls [_getSupplyInProgress()] before the class builds its widgets
   @override
   void initState() {
     super.initState();
@@ -197,8 +223,13 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Container(
-      child: _buildList(),
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: _refreshData,
+      color: Color(0xFF008752),
+      child: Container(
+        child: _buildList(),
+      ),
     );
   }
 

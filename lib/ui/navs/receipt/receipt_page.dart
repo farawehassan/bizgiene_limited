@@ -393,11 +393,9 @@ class _ReceiptState extends State<Receipt> {
                                 onSuggestionSelected: (suggestion) {
                                   _nameController.text = suggestion;
                                   _customerName = _nameController.text;
-                                  //_details['product'] = '$_selectedProduct';
                                 },
                                 onSaved: (value) {
                                   _customerName = value;
-                                  //_details['product'] = '$_selectedProduct';
                                 },
                               ),
                             ),
@@ -1257,13 +1255,14 @@ class _ReceiptState extends State<Receipt> {
     try {
       var api = RestDataSource();
       var dailyReport = Reports();
+      dailyReport.customerName = _customerName;
       dailyReport.quantity = qty.toString();
       dailyReport.productName = productName.toString();
       dailyReport.costPrice = costPrice.toString();
       dailyReport.unitPrice = unitPrice.toString();
       dailyReport.totalPrice = total.toString();
       dailyReport.paymentMode = paymentMode;
-      dailyReport.createdAt = _dateTime.toString();
+      dailyReport.createdAt = _dateTime.toString( );
 
       await api.addNewDailyReport(dailyReport).then((value) {
         print('$productName saved successfully');

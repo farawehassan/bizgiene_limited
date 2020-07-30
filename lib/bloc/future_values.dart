@@ -1,4 +1,3 @@
-import 'package:bizgienelimited/bloc/merge_sort.dart';
 import 'package:bizgienelimited/database/user_db_helper.dart';
 import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/linear_sales.dart';
@@ -6,6 +5,7 @@ import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/model/store_details.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
+import 'package:bizgienelimited/model/customer_reports.dart';
 import 'package:bizgienelimited/model/user.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/utils/constants.dart';
@@ -189,22 +189,53 @@ class FutureValues {
 
   /// Method to get all the customers that has an outstanding balance by checking
   /// if any report's paid == false under a customer
-  /// It returns a list of [Customer]
-  Future<List<Customer>> getCustomersWithOutstandingBalance() async {
-    List<Customer> customers = new List();
-    Future<List<Customer>> customerNames = getAllCustomersFromDB();
-    await customerNames.then((value){
+  /// It returns a Map of [CustomerReport], [Customer]
+  Future<Map<CustomerReport, Customer>> getCustomersWithOutstandingBalance() async {
+    Map<CustomerReport, Customer> sortedMap;
+    Map<CustomerReport, Customer> customerReports = Map();
+    List<Customer> sortedCustomer = new List();
+    Future<List<Customer>> customers = getAllCustomersFromDB();
+    await customers.then((value){
       for(int i = 0; i < value.length; i++){
-        for(int j = 0; j < value[j].reports.length; j++){
-          if(!value[i].reports[j].paid){
-            customers.add(value[i]);
+        if (value[i].reports.isNotEmpty){
+          for(int j = 0; j < value[i].reports.length; j++){
+            if(value[i].reports[j].paid == false){
+              sortedCustomer.add(value[i]);
+              customerReports[value[i].reports[j]] = value[i];
+            }
           }
         }
       }
+      var sortedKeys = customerReports.keys.toList(growable:false)
+        ..sort((a, b) => getTimeDifference(a.soldAt).compareTo(getTimeDifference(b.soldAt)));
+      sortedMap = Map<CustomerReport, Customer>
+          .fromIterable(sortedKeys, key: (k) => k, value: (k) => customerReports[k]);
     }).catchError((e){
       throw e;
     });
-    return customers;
+    return sortedMap;
+  }
+
+  /// Method to get all the customers sorted
+  /// It returns a Map of [Customer], List<[CustomerReport]>
+  Future<Map<Customer, List<CustomerReport>>> getAllCustomersSorted() async {
+    Map<Customer, List<CustomerReport>> sortedMap;
+    Map<Customer, List<CustomerReport>> customerReports = Map();
+    List<Customer> sortedCustomer = new List();
+    Future<List<Customer>> customers = getAllCustomersFromDB();
+    await customers.then((value){
+      for(int i = 0; i < value.length; i++){
+        sortedCustomer.add(value[i]);
+        customerReports[value[i]] = value[i].reports;
+      }
+      var sortedKeys = customerReports.keys.toList(growable:false)
+        ..sort((a, b) => getTimeDifference(a.reports.last.soldAt).compareTo(getTimeDifference(b.reports.last.soldAt)));
+      sortedMap = Map<Customer, List<CustomerReport>>
+          .fromIterable(sortedKeys, key: (k) => k, value: (k) => customerReports[k]);
+    }).catchError((e){
+      throw e;
+    });
+    return sortedMap;
   }
 
   /// Function to get difference of a particular date time to the current
@@ -214,6 +245,7 @@ class FutureValues {
     var now = DateTime.now();
     var time = DateTime.parse(dateTime);
     var difference = now.difference(time).inDays;
+    print(difference);
     return difference;
   }
 

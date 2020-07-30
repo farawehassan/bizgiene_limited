@@ -18,6 +18,9 @@ class ReceivedSupply extends StatefulWidget {
 
 class _ReceivedSupplyState extends State<ReceivedSupply> {
 
+  /// GlobalKey of a my RefreshIndicatorState to refresh my list items in the page
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
 
@@ -27,12 +30,32 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   /// Variable of List<Supply> to hold the details of all the supply
   List<Supply> _receivedSupplies = new List();
 
-  /// Function to refresh details of the Available products
-  /// by calling [_getNames()]
-  void _refreshData(){
-    if (!mounted) return;
-    setState(() {
-      _getReceivedSupply();
+  /// Function to refresh details of the received supplies similar to
+  /// [_getReceivedSupply()]
+  Future<Null> _refreshData(){
+    List<Supply> tempList = new List();
+    Future<List<Supply>> receivedSupply = futureValue.getReceivedSuppliesFromDB();
+    return receivedSupply.then((value) {
+      if(value.length != 0){
+        for (int i = 0; i < value.length; i++){
+          tempList.add(value[i]);
+        }
+        if (!mounted) return;
+        setState(() {
+          _supplyLength = tempList.length;
+          _receivedSupplies = tempList.reversed.toList();
+        });
+      } else if(value.length == 0 || value.isEmpty){
+        print(value.length);
+        if (!mounted) return;
+        setState(() {
+          _supplyLength = 0;
+          _receivedSupplies = [];
+        });
+      }
+    }).catchError((error){
+      print(error);
+      Constants.showMessage(error.toString());
     });
   }
 
@@ -189,6 +212,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
     );
   }
 
+  /// Calls [_getReceivedSupply()] before the class builds its widgets
   @override
   void initState() {
     super.initState();
@@ -198,8 +222,13 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Container(
-      child: _buildList(),
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: _refreshData,
+      color: Color(0xFF008752),
+      child: Container(
+        child: _buildList(),
+      ),
     );
   }
 

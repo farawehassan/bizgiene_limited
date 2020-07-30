@@ -246,6 +246,7 @@ class RestDataSource {
     });
 
     return _netUtil.post(ADD_REPORT_URL, headers: header, body: {
+      "customerName": reportsData.customerName,
       "quantity": reportsData.quantity.toString(),
       "productName": reportsData.productName,
       "costPrice": reportsData.costPrice.toString(),
@@ -676,6 +677,7 @@ class RestDataSource {
       throw ("Error in updating customer\'s report, try again");
     });
   }
+
 
   /// A function that updates a particular report payment details of a customer
   /// PUT.

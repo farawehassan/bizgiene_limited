@@ -4,6 +4,7 @@ class Reports {
   /// Setting constructor for [Reports] class
   Reports({
     this.id,
+    this.customerName,
     this.quantity,
     this.productName,
     this.costPrice,
@@ -15,6 +16,9 @@ class Reports {
 
   /// A string variable to hold id
   String id;
+
+  /// A string variable to hold customer name
+  String customerName;
 
   /// A string variable to hold quantity
   String quantity;
@@ -42,6 +46,7 @@ class Reports {
   factory Reports.fromJson(Map<String, dynamic> json) {
     return Reports(
       id: json["_id"].toString(),
+      customerName: json["customerName"].toString(),
       quantity: json["quantity"].toString(),
       productName: json["productName"].toString(),
       costPrice: json["costPrice"].toString(),

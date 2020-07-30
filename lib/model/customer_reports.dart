@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'customer_reports_details.dart';
 
 /// A class to hold my [CustomerReport] model

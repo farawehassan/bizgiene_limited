@@ -27,7 +27,7 @@ class DailyReportList extends StatelessWidget {
   }
 
   /// Creating a [DataTable] widget from a List of Map [salesList]
-  /// using QTY, PRODUCT, UNIT, TOTAL, PAYMENT, TIME as DataColumn and
+  /// using QTY, PRODUCT, UNIT, TOTAL, PAYMENT, TIME, CUSTOMER as DataColumn and
   /// the values of each DataColumn in the [salesList] as DataRows
   SingleChildScrollView _dataTable(List<Map> salesList){
     return SingleChildScrollView(
@@ -41,6 +41,7 @@ class DailyReportList extends StatelessWidget {
           DataColumn(label: Text('TOTAL', style: TextStyle(fontWeight: FontWeight.bold),)),
           DataColumn(label: Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.bold),)),
           DataColumn(label: Text('TIME', style: TextStyle(fontWeight: FontWeight.bold),)),
+          DataColumn(label: Text('CUSTOMER', style: TextStyle(fontWeight: FontWeight.bold),)),
         ],
         rows: salesList.map((report) => DataRow(
             cells: [
@@ -61,6 +62,9 @@ class DailyReportList extends StatelessWidget {
               ),
               DataCell(
                 Text(_getFormattedTime(report['time'])),
+              ),
+              DataCell(
+                Text(report['customerName'].toString()),
               ),
             ]
         )).toList(),
@@ -110,7 +114,7 @@ class DailyReportList extends StatelessWidget {
                     }
                     if(snapshot.hasData){
                       for (int i = 0; i < snapshot.data.length; i++){
-                        _data = {'qty':'${snapshot.data[i].quantity}', 'productName': '${snapshot.data[i].productName}','unitPrice':'${snapshot.data[i].unitPrice}','totalPrice':'${snapshot.data[i].totalPrice}', 'paymentMode':'${snapshot.data[i].paymentMode}', 'time':'${snapshot.data[i].createdAt}'};
+                        _data = {'qty':'${snapshot.data[i].quantity}', 'productName': '${snapshot.data[i].productName}','unitPrice':'${snapshot.data[i].unitPrice}','totalPrice':'${snapshot.data[i].totalPrice}', 'paymentMode':'${snapshot.data[i].paymentMode}', 'time':'${snapshot.data[i].createdAt}', 'customerName':'${snapshot.data[i].customerName}'};
                         _reports.add(_data);
                       }
                       return _dataTable(_reports);

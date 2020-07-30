@@ -37,6 +37,9 @@ class _ProductsSoldState extends State<ProductsSold> {
   /// Variable to hold the total sales made
   double _totalSalesPrice = 0.0;
 
+  /// Variable to hold the outstanding payment in today's report
+  double _outstandingPayment = 0.0;
+
   /// Variable to hold the total profit made
   double _totalProfitMade = 0.0;
 
@@ -47,7 +50,7 @@ class _ProductsSoldState extends State<ProductsSold> {
   String _userType;
 
   /// Setting the current user's type logged in to [_userType]
-  void getCurrentUser() async {
+  void _getCurrentUser() async {
     await futureValue.getCurrentUser().then((user) {
       _userType = user.type;
     }).catchError((Object error) {
@@ -58,7 +61,7 @@ class _ProductsSoldState extends State<ProductsSold> {
   /// Function to get this [month] report and map [_data] it's product name to
   /// its quantity accordingly
   /// It also calls the function [getColors()]
-  void getReports() async {
+  void _getReports() async {
     Future<List<Reports>> report = futureValue.getAllReportsFromDB();
     await report.then((value) {
       if (!mounted) return;
@@ -95,6 +98,21 @@ class _ProductsSoldState extends State<ProductsSold> {
     }).catchError((onError){
       print(onError.toString());
       Constants.showMessage(onError.toString());
+    });
+  }
+
+  /// Function to get all the outstanding payment and set the value
+  /// to [_outstandingPayment]
+  void _getOutstandingPayment() async {
+    Future<double> value = reportValue.getAllOutstandingPayment();
+    await value.then((value) {
+      if (!mounted) return;
+      setState(() {
+        _outstandingPayment = value;
+      });
+    }).catchError((error){
+      print(error);
+      Constants.showMessage(error.toString());
     });
   }
 
@@ -253,6 +271,28 @@ class _ProductsSoldState extends State<ProductsSold> {
               ],
             ),
           ),
+          Container(
+            margin: EdgeInsets.only(left: 5.0, right: 40.0),
+            padding: EdgeInsets.only(right: 20.0, top: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Text(
+                  'OUTSTANDING PAYMENT = ',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600
+                  ),
+                ),
+                Text(
+                  '${Constants.money(_outstandingPayment).output.symbolOnLeft}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF008752),
+                  ),
+                ),
+              ],
+            ),
+          ),
           _userType == 'Admin' ? Container(
             margin: EdgeInsets.only(left: 5.0, right: 40.0),
             padding: EdgeInsets.only(right: 20.0, top: 20.0),
@@ -280,12 +320,14 @@ class _ProductsSoldState extends State<ProductsSold> {
     );
   }
 
-  /// It calls [getReports()] and [getCurrentUser()] while initializing my state
+  /// It calls [getReports()], [getCurrentUser()] and [_getOutstandingPayment()]
+  /// while initializing my state
   @override
   void initState() {
     super.initState();
-    getReports();
-    getCurrentUser();
+    _getReports();
+    _getCurrentUser();
+    _getOutstandingPayment();
   }
 
   /// It doesn't show user's [_totalProfitMade] if the [_userType] is not 'Admin'

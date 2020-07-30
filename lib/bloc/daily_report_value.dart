@@ -1,3 +1,5 @@
+import 'package:bizgienelimited/model/customerDB.dart';
+import 'package:bizgienelimited/model/customer_reports.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'future_values.dart';
 
@@ -68,6 +70,62 @@ class DailyReportValue{
     return profitMade;
   }
 
+  /// Method to get all outstanding payment from the customers
+  /// It returns a double
+  Future<double> getAllOutstandingPayment() async {
+    double payment = 0.0;
+    Future<Map<CustomerReport, Customer>> sortedMap = futureValue.getCustomersWithOutstandingBalance();
+    await sortedMap.then((value) {
+      if(value.length != 0) {
+        value.forEach((k, v) {
+          payment += double.parse(k.totalAmount) - double.parse(k.paymentMade);
+        });
+      }
+    }).catchError((error){
+      throw error;
+    });
+    return payment;
+  }
+
+  /// Method to get all outstanding payment from the customers that is today
+  /// It returns a double
+  Future<double> getTodayOutstandingPayment() async {
+    double payment = 0.0;
+    Future<Map<CustomerReport, Customer>> sortedMap = futureValue.getCustomersWithOutstandingBalance();
+    await sortedMap.then((value) {
+      if(value.length != 0) {
+        value.forEach((k, v) {
+          if(checkIfToday(k.soldAt)){
+            payment += double.parse(k.totalAmount) - double.parse(k.paymentMade);
+          }
+        });
+      }
+    }).catchError((error){
+      throw error;
+    });
+    return payment;
+  }
+
+  /// Method to get all outstanding payment from the customers for this month
+  /// [month]
+  /// It returns a double
+  Future<double> getMonthOutstandingPayment(DateTime month) async {
+    double payment = 0.0;
+    Future<Map<CustomerReport, Customer>> sortedMap = futureValue.getCustomersWithOutstandingBalance();
+    await sortedMap.then((value) {
+      if(value.length != 0) {
+        value.forEach((k, v) {
+          if(checkMonth(k.soldAt, month)){
+            payment += double.parse(k.totalAmount) - double.parse(k.paymentMade);
+          }
+        });
+      }
+    }).catchError((error){
+      throw error;
+    });
+    return payment;
+  }
+
   /// Method to get today's report based on time
   /// It returns a list of [Reports]
   Future<List<Reports>> getTodayReport() async {
@@ -77,6 +135,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkIfToday(value[i].createdAt)){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -102,6 +161,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.january))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -127,6 +187,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.february))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -152,6 +213,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.march))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -177,6 +239,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.april))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -202,6 +265,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.may))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -227,6 +291,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.june))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -252,6 +317,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.july))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -277,6 +343,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.august))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -302,6 +369,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.september))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -327,6 +395,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.october))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -352,6 +421,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.november))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;
@@ -377,6 +447,7 @@ class DailyReportValue{
       for(int i = 0; i < value.length; i++){
         if(checkMonth(value[i].createdAt, DateTime(now.year, DateTime.december))){
           Reports reportsData = new Reports();
+          reportsData.customerName = value[i].customerName;
           reportsData.quantity = value[i].quantity;
           reportsData.productName = value[i].productName;
           reportsData.costPrice = value[i].costPrice;

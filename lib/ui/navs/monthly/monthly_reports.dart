@@ -1,3 +1,4 @@
+import 'package:bizgienelimited/bloc/daily_report_value.dart';
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/bloc/monthly_report_charts.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
@@ -26,11 +27,19 @@ class _MonthReportState extends State<MonthReport> {
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
 
+  /// Instantiating a class of the [DailyReportValue]
+  var reportValue = DailyReportValue();
+
+  DateTime now = DateTime.now();
+
   /// Variable to hold the total SalesMade in [_Widget.month] report
   double _totalSalesPrice = 0.0;
 
   /// Variable to hold the total availableCash of [_Widget.month] report
   double _availableCash = 0.0;
+
+  /// Variable to hold the outstanding payment in today's report
+  double _outstandingPayment = 0.0;
 
   /// Variable to hold the total totalTransfer of [_Widget.month] report
   double _totalTransfer = 0.0;
@@ -109,7 +118,7 @@ class _MonthReportState extends State<MonthReport> {
     await dailySales.then((value) {
       Map details = {};
       for (int i = 0; i < value.length; i++){
-        details = {'qty':'${value[i].quantity}', 'productName': '${value[i].productName}','unitPrice':'${value[i].unitPrice}','totalPrice':'${value[i].totalPrice}', 'paymentMode':'${value[i].paymentMode}', 'time':'${value[i].createdAt}'};
+        details = {'qty':'${value[i].quantity}', 'productName': '${value[i].productName}','unitPrice':'${value[i].unitPrice}','totalPrice':'${value[i].totalPrice}', 'paymentMode':'${value[i].paymentMode}', 'time':'${value[i].createdAt}', 'customerName':'${value[i].customerName}'};
         if(value[i].paymentMode == 'Cash'){
           _availableCash += double.parse(value[i].totalPrice);
         }
@@ -128,6 +137,189 @@ class _MonthReportState extends State<MonthReport> {
       _sales = tempList;
       _filteredSales = _sales;
     });
+  }
+
+  /// Function to get all the outstanding payment for [widget.month] and set the
+  /// value to [_outstandingPayment]
+  void _getOutstandingPayment() async {
+    switch(widget.month) {
+      case 'Jan': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.january));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Feb': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.february));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Mar': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.march));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Apr': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.april));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'May': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.may));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Jun': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.june));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Jul': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.july));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Aug': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.august));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Sep': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.september));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Oct': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.october));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Nov': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.november));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      case 'Dec': {
+        Future<double> value = reportValue.getMonthOutstandingPayment(DateTime(now.year, DateTime.december));
+        value.then((value) {
+          if (!mounted) return;
+          setState(() {
+            _outstandingPayment = value;
+          });
+        }).catchError((error){
+          print(error);
+          Constants.showMessage(error.toString());
+        });
+      }
+      break;
+
+      default: {
+        if (!mounted) return;
+        setState(() {
+          _outstandingPayment = 0.0;
+        });
+        return null;
+      }
+      break;
+    }
   }
 
   /// Function to change icons on the appBar when the searchIcon or closeIcon
@@ -235,6 +427,7 @@ class _MonthReportState extends State<MonthReport> {
               DataColumn(label: Text('TOTAL', style: TextStyle(fontWeight: FontWeight.bold),)),
               DataColumn(label: Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.bold),)),
               DataColumn(label: Text('TIME', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('CUSTOMER', style: TextStyle(fontWeight: FontWeight.bold),)),
             ],
             rows: salesList.map((report) => DataRow(
                 cells: [
@@ -255,6 +448,9 @@ class _MonthReportState extends State<MonthReport> {
                   ),
                   DataCell(
                     Text(_getFormattedTime(report['time'])),
+                  ),
+                  DataCell(
+                    Text(report['customerName'].toString()),
                   ),
                 ]
             )).toList(),
@@ -280,17 +476,41 @@ class _MonthReportState extends State<MonthReport> {
                 ),
               ],
             ),
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 5.0, right: 40.0),
+            padding: EdgeInsets.only(right: 20.0, top: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Text(
+                  'OUTSTANDING PAYMENT = ',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600
+                  ),
+                ),
+                Text(
+                  '${Constants.money(_outstandingPayment).output.symbolOnLeft}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF008752),
+                  ),
+                ),
+              ],
+            ),
           )
         ],
       ),
     );
   }
 
-  /// Calls [_getSales()] before the class builds its widgets
+  /// Calls [_getSales()] and [ _getOutstandingPayment()] before the class
+  /// builds its widgets
   @override
   void initState() {
-    _getSales();
     super.initState();
+    _getSales();
+    _getOutstandingPayment();
   }
 
   /// Building a Scaffold Widget to display [_buildList()]

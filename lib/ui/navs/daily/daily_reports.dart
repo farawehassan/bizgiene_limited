@@ -33,6 +33,9 @@ class _DailyReportsState extends State<DailyReports> {
   /// Variable to hold the total totalTransfer of today's report
   double _totalTransfer = 0.0;
 
+  /// Variable to hold the outstanding payment in today's report
+  double _outstandingPayment = 0.0;
+
   /// Variable to hold the total ProfitMade in today's report
   double _totalProfitMade = 0.0;
 
@@ -90,13 +93,29 @@ class _DailyReportsState extends State<DailyReports> {
     });
   }
 
-  /// Calls [_getCurrentUser()] and [_getReports()]
+  /// Function to get all the outstanding payment from today's report and set
+  /// the value to [_outstandingPayment]
+  void _getOutstandingPayment() async {
+    Future<double> value = reportValue.getTodayOutstandingPayment();
+    await value.then((value) {
+      if (!mounted) return;
+      setState(() {
+        _outstandingPayment = value;
+      });
+    }).catchError((error){
+      print(error);
+      Constants.showMessage(error.toString());
+    });
+  }
+
+  /// Calls [_getCurrentUser()], [_getReports()] and [_getOutstandingPayment()]
   /// before the class builds its widgets
   @override
   void initState() {
     super.initState();
     _getCurrentUser();
     _getReports();
+    _getOutstandingPayment();
   }
 
   /// Building a Scaffold Widget to display today's report, [DailyChart],
@@ -143,11 +162,13 @@ class _DailyReportsState extends State<DailyReports> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    titleText('Available Cash: ${Constants.money(_availableCash).output.symbolOnLeft}'),
-                    SizedBox(height: 8.0,),
                     titleText('Transferred Cash: ${Constants.money(_totalTransfer).output.symbolOnLeft}'),
                     SizedBox(height: 8.0,),
                     titleText('Total Cash: ${Constants.money(_availableCash + _totalTransfer).output.symbolOnLeft}'),
+                    SizedBox(height: 8.0,),
+                    titleText('Outstanding Payment: ${Constants.money(_outstandingPayment).output.symbolOnLeft}'),
+                    SizedBox(height: 8.0,),
+                    titleText('Available Cash: ${Constants.money(_availableCash - _outstandingPayment).output.symbolOnLeft}'),
                     SizedBox(height: 8.0,),
                     _user == 'Admin' ? titleText('Profit made: ${Constants.money(_totalProfitMade).output.symbolOnLeft}') : Container(),
                   ],
