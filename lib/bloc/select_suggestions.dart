@@ -1,4 +1,3 @@
-import 'package:bizgienelimited/utils/constants.dart';
 
 /// This class loads available products while entering data in the sales record
 class Suggestions {
