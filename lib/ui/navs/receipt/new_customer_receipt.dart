@@ -283,7 +283,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
       margin: EdgeInsets.all(_paddingSize),
       height: _animatedHeight,
       duration: Duration(seconds: 0),
-      width: SizeConfig.safeBlockHorizontal * 80,
+      width: SizeConfig.safeBlockHorizontal * 90,
       child: Material(
         elevation: 2.0,
         borderRadius: BorderRadius.circular(_borderSize),
@@ -351,7 +351,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
                             alignment: Alignment.centerRight,
                             child: Container(
                               padding: EdgeInsets.only(right: _paddingSize),
-                              width: 250.0,
+                              width: 200.0,
                               child: TextFormField(
                                 textAlign: TextAlign.end,
                                 controller: _nameController,
@@ -832,7 +832,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
   /// received or will be received later
   Container _whenToPay(){
     return Container(
-      width: SizeConfig.safeBlockHorizontal * 80,
+      width: SizeConfig.safeBlockHorizontal * 90,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

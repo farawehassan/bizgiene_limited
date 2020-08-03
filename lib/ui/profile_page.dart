@@ -63,7 +63,6 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Color(0xFFf2f4fb),
       appBar: GradientAppBar(
         title: Text('BizGenie Limited'),
         backgroundColorStart: Color(0xFF004C7F),
@@ -110,7 +109,7 @@ class _ProfileState extends State<Profile> {
                               backgroundColor: Color(0xFF004C7F),
                               maxRadius: 80.0,
                               minRadius: 40.0,
-                              backgroundImage: AssetImage('Assets/images/mum.JPG'),
+                              backgroundImage: AssetImage('Assets/images/bizgenie_logo.png'),
                             ),
                           ),
                         ),

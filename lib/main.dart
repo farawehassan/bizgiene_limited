@@ -46,10 +46,6 @@ class _MyAppState extends State<MyApp> {
               brightness: brightness,
               cursorColor: Color(0xFF008752),
               primaryColor: Color(0xFF004C7F),
-              //rest of the themeData
-              //you can also use conditioning here based on the current
-              //brightness mode (dark or light). For ex:
-              // primarySwatch: brightness == Brighness.dark ? Colors.white : Colors.black
             ),
         themedWidgetBuilder: (context, theme) {
           return MaterialApp(

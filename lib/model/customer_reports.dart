@@ -64,15 +64,4 @@ class CustomerReport {
     "dueDate": dueDate,
   };
 
-  Map<String, dynamic> toFullyPaidJson(){
-    return {
-      "report": List<dynamic>.from(reportDetails.map((x) => x.toJson())),
-      "totalAmount": totalAmount,
-      "paymentMade": paymentMade,
-      "paid": paid,
-      "soldAt": soldAt,
-      "paymentReceivedAt": paymentReceivedAt
-    };
-  }
-
 }

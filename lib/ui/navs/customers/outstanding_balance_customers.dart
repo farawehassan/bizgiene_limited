@@ -417,51 +417,54 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
         elevation: 0.0,
         child: Container(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(left: 5.0, right: 5.0),
-                padding: EdgeInsets.only(right: 20.0, top: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Date Sold = ${_getFormattedDate(details.soldAt)}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                  padding: EdgeInsets.only(right: 20.0, top: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'Date Sold = ${_getFormattedDate(details.soldAt)} ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500
+                          ),
                         ),
                       ),
-                    ),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        'Due Date = ${_getFormattedDate(details.dueDate)}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          ' Due Date = ${_getFormattedDate(details.dueDate)}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              _dataTable(details),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: FlatButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pop(); // To close the dialog
-                  },
-                  textColor: Color(0xFF008752),
-                  child: Text('OK'),
+                _dataTable(details),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: FlatButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pop(); // To close the dialog
+                    },
+                    textColor: Color(0xFF008752),
+                    child: Text('OK'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -487,149 +490,152 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(left: 5.0, right: 5.0),
-                  padding: EdgeInsets.only(right: 20.0, top: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Date Sold = ${_getFormattedDate(details.soldAt)}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: Text(
-                          'Due Date = ${_getFormattedDate(details.dueDate)}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 5.0, right: 40.0),
-                  padding: EdgeInsets.only(right: 20.0, top: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Total Amount = ',
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                    padding: EdgeInsets.only(right: 20.0, top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            'Date Sold = ${_getFormattedDate(details.soldAt)} ',
                             style: TextStyle(
                                 fontWeight: FontWeight.w500
                             ),
                           ),
-                          Text(
-                            '${Constants.money(double.parse(details.totalAmount)).output.symbolOnLeft}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF008752),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Amount Paid =  ',
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            ' Due Date = ${_getFormattedDate(details.dueDate)}',
                             style: TextStyle(
                                 fontWeight: FontWeight.w500
                             ),
                           ),
-                          Text(
-                            '${Constants.money(double.parse(details.paymentMade)).output.symbolOnLeft}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF008752),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 5.0, right: 40.0),
+                    padding: EdgeInsets.only(right: 20.0, top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Total Amount = ',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500
+                              ),
                             ),
+                            Text(
+                              '${Constants.money(double.parse(details.totalAmount)).output.symbolOnLeft}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF008752),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Amount Paid =  ',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500
+                              ),
+                            ),
+                            Text(
+                              '${Constants.money(double.parse(details.paymentMade)).output.symbolOnLeft}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF008752),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 5.0, right: 40.0),
+                    padding: EdgeInsets.only(right: 20.0, top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Outstanding balance = ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 5.0, right: 40.0),
-                  padding: EdgeInsets.only(right: 20.0, top: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Outstanding balance = ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500
                         ),
-                      ),
-                      Text(
-                        '${Constants.money(balance).output.symbolOnLeft}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.red,
+                        Text(
+                          '${Constants.money(balance).output.symbolOnLeft}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  width: 200.0,
-                  padding: EdgeInsets.all(16.0),
-                  child: TextFormField(
-                    decoration: kTextFieldDecoration.copyWith(labelText: "Amount Paid"),
-                    keyboardType: TextInputType.text,
-                    controller: amountController,
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Enter the amount paid';
-                      }
-                      if (double.parse(value) >= balance) {
-                        return 'Enter a valid amount';
-                      }
-                      return null;
-                    },
+                  Container(
+                    width: 200.0,
+                    padding: EdgeInsets.all(16.0),
+                    child: TextFormField(
+                      decoration: kTextFieldDecoration.copyWith(labelText: "Amount Paid"),
+                      keyboardType: TextInputType.text,
+                      controller: amountController,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Enter the amount paid';
+                        }
+                        if (double.parse(value) >= balance) {
+                          return 'Enter a valid amount';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      FlatButton(
-                        onPressed: () {
-                          //Navigator.of(context).pop();
-                          if(_formKey.currentState.validate()){
-                            _confirmUpdateDialog(customer, details, amountController.text);
-                          }
-                        },
-                        textColor: Color(0xFF008752),
-                        child: Text('UPDATE'),
-                      ),
-                      FlatButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // To close the dialog
-                        },
-                        textColor: Color(0xFF008752),
-                        child: Text('CANCEL'),
-                      ),
-                    ],
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        FlatButton(
+                          onPressed: () {
+                            //Navigator.of(context).pop();
+                            if(_formKey.currentState.validate()){
+                              _confirmUpdateDialog(customer, details, amountController.text);
+                            }
+                          },
+                          textColor: Color(0xFF008752),
+                          child: Text('UPDATE'),
+                        ),
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // To close the dialog
+                          },
+                          textColor: Color(0xFF008752),
+                          child: Text('CANCEL'),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

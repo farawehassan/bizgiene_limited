@@ -78,7 +78,7 @@ class SelectCard extends StatelessWidget {
         elevation: 14.0,
         borderRadius: BorderRadius.circular(8.0),
         child: SizedBox(
-          width: 140,
+          width: 150,
           height: 80,
           child: Padding(
             padding: const EdgeInsets.all(6.0),

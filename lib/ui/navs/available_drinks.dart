@@ -1,6 +1,9 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/productDB.dart';
+import 'package:bizgienelimited/model/product_history.dart';
+import 'package:bizgienelimited/model/product_history_details.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/ui/navs/product_history.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/round_icon.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +71,10 @@ class _ProductsState extends State<Products> {
   /// the details of all filtered availableProduct
   List<Product> _filteredNames = new List();
 
+  /// Variable of List<[ProductHistory]> to hold
+  /// the details of all the product history
+  List<ProductHistory> _productHistory = new List();
+
   /// Variable to hold an Icon Widget of Search
   Icon _searchIcon = new Icon(Icons.search);
 
@@ -105,7 +112,7 @@ class _ProductsState extends State<Products> {
 
   /// Function to get all the available products from the database and
   /// setting the details and [_filteredNames] to [_names] plus the numbers of
-  /// products to [_productLength]
+  /// products to [_productLength] with it history and store it to [_productHistory]
   void _getNames() async {
     List<Product> tempList = new List();
 
@@ -121,10 +128,15 @@ class _ProductsState extends State<Products> {
       productNames = futureValue.getOtherProductFromDB();
     }
 
-    await productNames.then((value) {
-      print(value);
+    await productNames.then((value) async {
+      Future<List<ProductHistory>> products = futureValue.getAllProductsHistoryFromDB();
+      await products.then((value) {
+        _productHistory.addAll(value);
+      }).catchError((error){
+        Constants.showMessage(error.toString());
+      });
+
       if(value.length != 0){
-        print(value.length);
         for (int i = 0; i < value.length; i++){
           tempList.add(value[i]);
         }
@@ -305,7 +317,13 @@ class _ProductsState extends State<Products> {
     } else if(productsToShow == 4){
       productNames = futureValue.getOtherProductFromDB();
     }
-    return productNames.then((value) {
+    return productNames.then((value) async {
+      Future<List<ProductHistory>> products = futureValue.getAllProductsHistoryFromDB();
+      await products.then((value) {
+        _productHistory.addAll(value);
+      }).catchError((error){
+        Constants.showMessage(error.toString());
+      });
       for (int i = 0; i < value.length; i++){
         tempList.add(value[i]);
       }
@@ -571,11 +589,11 @@ class _ProductsState extends State<Products> {
           foldingCellState?.toggleFold();
         },
         child: Card(
-          margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+          margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 0.0),
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
                   icon: Icon(Icons.expand_less, color: Color(0xFF008752)),
@@ -616,162 +634,191 @@ class _ProductsState extends State<Products> {
                     Text('SP: ${spVal.output.symbolOnLeft}'),
                   ],
                 ),
-                IconButton(
-                  icon: Icon(Icons.info, color: Color(0xFF004C7F)),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => Dialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        elevation: 0.0,
-                        child: Container(
-                          height: 320.0,
-                          padding: const EdgeInsets.all(16.0),
-                          child: Form(
-                            key: _updateFormKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Text(
-                                    "Update incoming product",
-                                    style: TextStyle(
-                                      color: Color(0xFF008752),
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: 270.0,
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.text,
-                                    controller: controllerProduct,
-                                    decoration: kAddProductDecoration.copyWith(
-                                        hintText: "Product name (if needed)"),
-                                  ),
-                                ),
-                                Container(
-                                  width: 150.0,
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    validator: (val) =>
-                                    val.length == 0 ? "Enter Qty" : null,
-                                    onChanged: (value) {
-                                      controllerQty.text = value;
-                                    },
-                                    onSaved: (value) {
-                                      controllerQty.text = value;
-                                    },
-                                    decoration: kAddProductDecoration.copyWith(
-                                        hintText: "Qty"),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.history, color: Color(0xFF004C7F)),
+                      onPressed: (){
+                        String id;
+                        for(int i = 0; i <_productHistory.length; i++){
+                          if(_productHistory[i].productName == name) {
+                            setState(() {
+                              id = _productHistory[i].id;
+                            });
+                          }
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProductHistoryPage(productHistoryId: id,)),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.info, color: Color(0xFF004C7F)),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            elevation: 0.0,
+                            child: Container(
+                              height: 320.0,
+                              padding: const EdgeInsets.all(16.0),
+                              child: Form(
+                                key: _updateFormKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Text(
+                                        "Update incoming product",
+                                        style: TextStyle(
+                                          color: Color(0xFF008752),
+                                          fontSize: 15.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                     Container(
-                                      width: 110.0,
+                                      width: 270.0,
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.text,
+                                        controller: controllerProduct,
+                                        decoration: kAddProductDecoration.copyWith(
+                                            hintText: "Product name (if needed)"),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 150.0,
                                       child: TextFormField(
                                         keyboardType: TextInputType.number,
                                         validator: (val) =>
-                                        val.length == 0 ? "Enter CP" : null,
+                                        val.length == 0 ? "Enter Qty" : null,
                                         onChanged: (value) {
-                                          controllerCp.text = value;
+                                          controllerQty.text = value;
                                         },
                                         onSaved: (value) {
-                                          controllerCp.text = value;
+                                          controllerQty.text = value;
                                         },
-                                        decoration: kAddProductDecoration
-                                            .copyWith(hintText: "CP"),
+                                        decoration: kAddProductDecoration.copyWith(
+                                            hintText: "Qty"),
                                       ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Container(
+                                          width: 110.0,
+                                          child: TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            validator: (val) =>
+                                            val.length == 0 ? "Enter CP" : null,
+                                            onChanged: (value) {
+                                              controllerCp.text = value;
+                                            },
+                                            onSaved: (value) {
+                                              controllerCp.text = value;
+                                            },
+                                            decoration: kAddProductDecoration
+                                                .copyWith(hintText: "CP"),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 20.0,
+                                        ),
+                                        Container(
+                                          width: 110.0,
+                                          child: TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            validator: (val) =>
+                                            val.length == 0 ? "Enter SP" : null,
+                                            onChanged: (value) {
+                                              controllerSp.text = value;
+                                            },
+                                            onSaved: (value) {
+                                              controllerSp.text = value;
+                                            },
+                                            decoration: kAddProductDecoration
+                                                .copyWith(hintText: "SP"),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     SizedBox(
-                                      width: 20.0,
+                                      height: 24.0,
                                     ),
-                                    Container(
-                                      width: 110.0,
-                                      child: TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        validator: (val) =>
-                                        val.length == 0 ? "Enter SP" : null,
-                                        onChanged: (value) {
-                                          controllerSp.text = value;
-                                        },
-                                        onSaved: (value) {
-                                          controllerSp.text = value;
-                                        },
-                                        decoration: kAddProductDecoration
-                                            .copyWith(hintText: "SP"),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 24.0,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: FlatButton(
-                                        onPressed: () {
-                                          Navigator.of(context)
-                                              .pop(); // To close the dialog
-                                        },
-                                        textColor: Color(0xFF008752),
-                                        child: Text('CANCEL'),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: FlatButton(
-                                        onPressed: () {
-                                          if (this._updateFormKey.currentState.validate()) {
-                                            _updateFormKey.currentState.save();
-                                          } else {
-                                            return null;
-                                          }
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: FlatButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // To close the dialog
+                                            },
+                                            textColor: Color(0xFF008752),
+                                            child: Text('CANCEL'),
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.bottomRight,
+                                          child: FlatButton(
+                                            onPressed: () {
+                                              if (this._updateFormKey.currentState.validate()) {
+                                                _updateFormKey.currentState.save();
+                                              } else {
+                                                return null;
+                                              }
 
-                                          double initialQty = double.parse(controllerQty.text) + iq;
-                                          double currentQty =  double.parse(controllerQty.text) + cq;
+                                              double initialQty = double.parse(controllerQty.text) + iq;
+                                              double currentQty =  double.parse(controllerQty.text) + cq;
 
-                                          _updateProduct(
-                                            id,
-                                            name.toString(),
-                                            controllerProduct.text.toString(),
-                                            initialQty,
-                                            double.parse(controllerCp.text),
-                                            double.parse(controllerSp.text),
-                                            currentQty
-                                          );
+                                              var productHistoryDetails = ProductHistoryDetails();
+                                              productHistoryDetails.initialQty = cq.toString();
+                                              productHistoryDetails.qtyReceived = controllerQty.text.toString();
+                                              productHistoryDetails.currentQty = currentQty.toString();
+                                              productHistoryDetails.collectedAt = DateTime.now().toString();
 
-                                          _refreshData();
+                                              _updateProduct(
+                                                productHistoryDetails,
+                                                id,
+                                                name.toString(),
+                                                controllerProduct.text.toString(),
+                                                initialQty,
+                                                double.parse(controllerCp.text),
+                                                double.parse(controllerSp.text),
+                                                currentQty
+                                              );
 
-                                          Navigator.of(context)
-                                              .pop(); // To close the dialog
-                                        },
-                                        textColor: Color(0xFF008752),
-                                        child: Text('SAVE'),
-                                      ),
+                                              _refreshData();
+
+                                              Navigator.of(context)
+                                                  .pop(); // To close the dialog
+                                            },
+                                            textColor: Color(0xFF008752),
+                                            child: Text('SAVE'),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      barrierDismissible: false,
-                    );
-                  },
+                          barrierDismissible: false,
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -791,6 +838,7 @@ class _ProductsState extends State<Products> {
       for (int i = 0; i < value.length; i++){
          if(name == value[i].productName){
            _updateProduct(
+             null,
                value[i].id,
                name,
                value[i].productName,
@@ -812,8 +860,10 @@ class _ProductsState extends State<Products> {
   /// Function that adds new product to the database by calling
   /// [addProduct] in the [RestDataSource] class
   void _saveNewProduct() async {
+    var now = DateTime.now();
     var api = new RestDataSource();
     var product = Product();
+    var productHistoryDetails = ProductHistoryDetails();
 
     Future<bool> exists = _checkIfProductExists(Constants.capitalize(_productName));
     await exists.then((value) async {
@@ -824,10 +874,20 @@ class _ProductsState extends State<Products> {
           product.sellingPrice = _sellingPrice.toString();
           product.initialQuantity = _initialQuantity.toString();
           product.currentQuantity = _initialQuantity.toString();
-          product.createdAt = DateTime.now().toString();
+          product.createdAt = now.toString();
+
+          productHistoryDetails.initialQty = 0.toString();
+          productHistoryDetails.qtyReceived = _initialQuantity.toString();
+          productHistoryDetails.currentQty = _initialQuantity.toString();
+          productHistoryDetails.collectedAt = now.toString();
 
           api.addProduct(product).then((value) {
-            Constants.showMessage("${product.productName} was added");
+            api.addProductHistory(Constants.capitalize(_productName), productHistoryDetails).then((result) {
+              Constants.showMessage("${product.productName} was added");
+            }).catchError((error) {
+              print(error);
+              Constants.showMessage(error.toString());
+            });
           }).catchError((error) {
             print(error);
             Constants.showMessage(error.toString());
@@ -846,15 +906,31 @@ class _ProductsState extends State<Products> {
 
   /// Function to update the details of a product in the database by calling
   /// [updateProduct] in the [RestDataSource] class
-  void _updateProduct(String id, String name, String updateName, double initialQty, double cp, double sp, double currentQty,){
+  void _updateProduct(ProductHistoryDetails details, String id, String name, String updateName, double initialQty, double cp, double sp, double currentQty,){
     var api = new RestDataSource();
     var product = Product();
+
+    String productHistoryId;
+    for(int i = 0; i <_productHistory.length; i++){
+      if(_productHistory[i].productName == name) {
+        setState(() {
+          productHistoryId = _productHistory[i].id;
+        });
+      }
+    }
 
     try {
       if(updateName == ""){
         product.productName = name;
       }else{
         product.productName = Constants.capitalize(updateName);
+        api.updateProductHistoryName(productHistoryId,
+            Constants.capitalize(updateName)).then((value) {
+          print("Updated name in history successfully");
+        }).catchError((error) {
+          print(error);
+          Constants.showMessage(error.toString());
+        });
       }
       product.costPrice = cp.toString();
       product.sellingPrice = sp.toString();
@@ -862,7 +938,12 @@ class _ProductsState extends State<Products> {
       product.currentQuantity = currentQty.toString();
 
       api.updateProduct(product, id).then((value){
-        Constants.showMessage( "$name is updated");
+        api.addHistoryToProduct(productHistoryId, details).then((value) {
+          Constants.showMessage( "$name is updated");
+        }).catchError((error) {
+          print(error);
+          Constants.showMessage(error.toString());
+        });
       }).catchError((error) {
         print(error);
         Constants.showMessage(error.toString());

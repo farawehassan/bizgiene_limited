@@ -416,7 +416,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       currentAccountPicture: Hero(
                         tag: 'displayPicture',
                         child: CircleAvatar(
-                          backgroundImage: AssetImage('Assets/images/mum.JPG'),
+                          backgroundImage: AssetImage('Assets/images/bizgenie_logo.png'),
                           backgroundColor: Color(0xFF008752),
                         ),
                       ),

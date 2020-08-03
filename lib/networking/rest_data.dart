@@ -7,6 +7,8 @@ import 'package:bizgienelimited/model/customer_reports.dart';
 import 'package:bizgienelimited/model/customer_reports_details.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/model/create_user.dart';
+import 'package:bizgienelimited/model/product_history.dart';
+import 'package:bizgienelimited/model/product_history_details.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/model/store_details.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
@@ -55,7 +57,14 @@ class RestDataSource {
   static final FETCH_CUSTOMER_URL = BASE_URL + "/customer/fetchCustomer";
   static final DELETE_CUSTOMER_URL = BASE_URL + "/customer/deleteCustomer";
 
-  /// A function that verifies login details from the server POST.
+  static final ADD_PRODUCT_HISTORY_URL = BASE_URL + "/history/addProductHistory";
+  static final ADD_HISTORY_TO_PRODUCT_URL = BASE_URL + "/history/addNewProductToHistory";
+  static final FETCH_PRODUCT_HISTORY_URL = BASE_URL + "/history/fetchProductHistory";
+  static final FIND_PRODUCT_HISTORY_URL = BASE_URL + "/history/findProductHistory";
+  static final UPDATE_PRODUCT_HISTORY_NAME_URL = BASE_URL + "/history/updateProductName";
+  static final DELETE_PRODUCT_HISTORY_URL = BASE_URL + "/history/deleteHistory";
+
+  /// A function that verifies login details from the database POST.
   /// with [phoneNumber] and [pin]
   Future<User> login(String phoneNumber, String pin) {
     return _netUtil.postLogin(LOGIN_URL, body: {
@@ -102,7 +111,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that adds new product to the server POST
+  /// A function that adds new product to the database POST
   /// with [Product] model
   Future<dynamic> addProduct(Product product) async{
     Map<String, String> header;
@@ -177,7 +186,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches a particular product from the server
+  /// A function that fetches a particular product from the database
   /// into a model of [Product] GET.
   Future<Product> fetchProduct(String id) async {
     Map<String, String> header;
@@ -204,7 +213,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches all products from the server
+  /// A function that fetches all products from the database
   /// into a List of [Product] GET.
   Future<List<Product>> fetchAllProducts() async {
     List<Product> products;
@@ -233,7 +242,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that adds new daily reports to the server POST.
+  /// A function that adds new daily reports to the database POST.
   /// with [Reports] model
   Future<dynamic> addNewDailyReport(Reports reportsData) async{
     Map<String, String> header;
@@ -270,7 +279,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches all reports from the server
+  /// A function that fetches all reports from the database
   /// into a List of [Reports] GET.
   Future<List<Reports>> fetchAllReports() async {
     List<Reports> reports;
@@ -326,7 +335,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches a the store details from the server
+  /// A function that fetches a the store details from the database
   /// into a model of [StoreDetails] GET.
   Future<StoreDetails> fetchStoreDetails() async {
     Map<String, String> header;
@@ -352,7 +361,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that adds new supply to the server POST
+  /// A function that adds new supply to the database POST
   /// with [Supply] model
   Future<dynamic> addSupply(Supply supply) async{
     Map<String, String> header;
@@ -456,7 +465,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches a particular supply from the server
+  /// A function that fetches a particular supply from the database
   /// into a model of [Supply] GET.
   Future<Supply> fetchSupply(String id) async {
     Map<String, String> header;
@@ -483,7 +492,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches all supplies from the server
+  /// A function that fetches all supplies from the database
   /// into a List of [Supply] GET.
   Future<List<Supply>> fetchAllSupply() async {
     List<Supply> supplies;
@@ -513,7 +522,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that deletes a supply from the server using the [id]
+  /// A function that deletes a supply from the database using the [id]
   Future<dynamic> deleteSupply(String id) async {
     Map<String, String> header;
     Future<User> user = futureValue.getCurrentUser();
@@ -540,7 +549,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that adds new customer to the server POST
+  /// A function that adds new customer to the database POST
   /// with [Customer] model
   Future<dynamic> addCustomer(Customer customer, CustomerReport customerReport) async {
     Map<String, String> header;
@@ -750,7 +759,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches a particular customer from the server
+  /// A function that fetches a particular customer from the database
   /// into a model of [Customer] GET.
   Future<Customer> fetchCustomer(String id) async {
     Map<String, String> header;
@@ -777,7 +786,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that fetches all customers from the server
+  /// A function that fetches all customers from the database
   /// into a List of [Customer] GET.
   Future<List<Customer>> fetchAllCustomers() async {
     List<Customer> customers;
@@ -807,7 +816,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that deletes a customer from the server using the [id]
+  /// A function that deletes a customer from the database using the [id]
   Future<dynamic> deleteCustomer(String id) async {
     Map<String, String> header;
     Future<User> user = futureValue.getCurrentUser();
@@ -834,5 +843,185 @@ class RestDataSource {
     });
   }
 
+  /// A function that adds new product history to the database POST
+  /// with [ProductHistoryDetails] model
+  Future<dynamic> addProductHistory(String productName, ProductHistoryDetails productHistoryDetails) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.post(ADD_PRODUCT_HISTORY_URL, headers: header, body: {
+      "productName": productName,
+      "initialQty": productHistoryDetails.initialQty,
+      "qtyReceived": productHistoryDetails.qtyReceived,
+      "currentQty": productHistoryDetails.currentQty,
+      "collectedAt": productHistoryDetails.collectedAt,
+      "createdAt": DateTime.now().toString(),
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in adding product history, try again");
+    });
+  }
+
+  /// A function that adds new reports to a customer reports details POST.
+  /// with [ProductHistoryDetails]
+  Future<dynamic> addHistoryToProduct(String id, ProductHistoryDetails productHistoryDetails) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.post(ADD_HISTORY_TO_PRODUCT_URL, headers: header, body: {
+      "id": id,
+      "initialQty": productHistoryDetails.initialQty,
+      "qtyReceived": productHistoryDetails.qtyReceived,
+      "currentQty": productHistoryDetails.currentQty,
+      "collectedAt": productHistoryDetails.collectedAt,
+    }).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in adding history to product history, try again");
+    });
+  }
+
+  /// A function that fetches a particular product history from the database
+  /// into a model of [ProductHistory] GET.
+  Future<ProductHistory> findProductHistory(String id) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}"};
+    });
+    final FETCH_URL = FIND_PRODUCT_HISTORY_URL + "/$id";
+    return _netUtil.get(FETCH_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        return ProductHistory.fromJson(res["data"]);
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in fetching product history, try again");
+    });
+  }
+
+  /// A function that fetches all product history from the database
+  /// into a List of [ProductHistory] GET.
+  Future<List<ProductHistory>> fetchAllProductHistory() async {
+    List<ProductHistory> history;
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}"};
+    });
+    return _netUtil.get(FETCH_PRODUCT_HISTORY_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        var rest = res["data"] as List;
+        history = rest.map<ProductHistory>((json) => ProductHistory.fromJson(json)).toList();
+        return history;
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      print(e);
+      throw ("Error in fetching product history, try again");
+    });
+  }
+
+  /// A function that updates a product history name from the database using the [id]
+  /// and the [name] to be updated to  PUT
+  Future<dynamic> updateProductHistoryName(String id, String name) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.put(UPDATE_PRODUCT_HISTORY_NAME_URL, headers: header, body: {
+      "id": id,
+      "name": name,
+    }).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in deleting product history, try again");
+    });
+  }
+
+  /// A function that deletes a product history from the database using the [id]
+  Future<dynamic> deleteProductHistory(String id) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    final DELETE_URL = DELETE_PRODUCT_HISTORY_URL + "/$id";
+    return _netUtil.delete(DELETE_URL, headers: header).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in deleting product history, try again");
+    });
+  }
 
 }

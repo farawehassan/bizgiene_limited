@@ -4,7 +4,6 @@ import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:pie_chart/pie_chart.dart';
 
 class ProductsSold extends StatefulWidget {
 
@@ -22,17 +21,8 @@ class _ProductsSoldState extends State<ProductsSold> {
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
 
-  /// A variable holding the list of primary colors and accents colors
-  List<Color> colours = (Colors.primaries.cast<Color>() + Colors.accents.cast<Color>());
-
   /// A variable holding my report data as a map
   var _data = new Map();
-
-  /// Creating a map to my [_data]'s product name to it's quantity for my charts
-  Map<String, double> _dataMap = new Map();
-
-  /// A variable holding the list of colors needed for my pie chart
-  List<Color> _colorList = [];
 
   /// Variable to hold the total sales made
   double _totalSalesPrice = 0.0;
@@ -42,9 +32,6 @@ class _ProductsSoldState extends State<ProductsSold> {
 
   /// Variable to hold the total profit made
   double _totalProfitMade = 0.0;
-
-  /// A variable holding the length my monthly report data
-  int _dataLength;
 
   /// Variable to hold the type of the user logged in
   String _userType;
@@ -66,7 +53,6 @@ class _ProductsSoldState extends State<ProductsSold> {
     await report.then((value) {
       if (!mounted) return;
       setState(() {
-        _dataLength = value.length;
         int increment = 0;
         for(int i = 0; i < value.length; i++){
           _totalSalesPrice += double.parse(value[i].totalPrice);
@@ -94,9 +80,8 @@ class _ProductsSoldState extends State<ProductsSold> {
         }
         print(_data);
       });
-      getColors();
     }).catchError((onError){
-      print(onError.toString());
+      print(onError);
       Constants.showMessage(onError.toString());
     });
   }
@@ -135,68 +120,6 @@ class _ProductsSoldState extends State<ProductsSold> {
     }
     else{
       Container(
-        alignment: AlignmentDirectional.center,
-        child: Center(child: Text("No sales yet")),
-      );
-    }
-    return Container();
-  }
-
-  /// Function to get the amount of colors needed for the pie chart and map
-  /// [_data] to [_dataMap]
-  void getColors() {
-    var toMap = new Map();
-    _data.forEach((k,v) {
-      if(Constants.sevenUpItems.contains(k)){
-        if(toMap.containsKey(k)){
-          toMap[k] = toMap[k]+ v[1];
-        }else{
-          toMap[k] = v[1];
-        }
-      }
-      else {
-        if(toMap.containsKey('Others')){
-          toMap['Others'] = toMap['Others'] + v[1];
-        }else{
-          toMap['Others'] = v[1];
-        }
-      }
-    });
-    toMap.forEach((k,v) {
-      _dataMap.putIfAbsent("$k", () => double.parse('$v'));
-    });
-    for(int i = 0; i < _dataMap.length; i++){
-      _colorList.add(colours[i]);
-    }
-  }
-
-  /// Function to build my pie chart if dataMap is not empty and it's length is
-  /// > 0 using pie_chart package
-  Widget _buildChart(){
-    if(_dataMap.length > 0 && _dataMap.isNotEmpty){
-      return PieChart(
-        dataMap: _dataMap,
-        animationDuration: Duration(milliseconds: 800),
-        chartLegendSpacing: 32.0,
-        chartRadius: MediaQuery.of(context).size.width / 2.7,
-        showChartValuesInPercentage: false,
-        showChartValues: true,
-        showChartValuesOutside: false,
-        chartValueBackgroundColor: Colors.grey[200],
-        colorList: _colorList,
-        showLegends: true,
-        legendPosition: LegendPosition.right,
-        decimalPlaces: 1,
-        showChartValueLabel: true,
-        initialAngle: 0,
-        chartValueStyle: defaultChartValueStyle.copyWith(
-          color: Colors.blueGrey[900].withOpacity(0.9),
-        ),
-        chartType: ChartType.ring,
-      );
-    }
-    else if(_dataLength == 0){
-      return Container(
         alignment: AlignmentDirectional.center,
         child: Center(child: Text("No sales yet")),
       );
@@ -340,19 +263,13 @@ class _ProductsSoldState extends State<ProductsSold> {
         title: Center(child: Text('Products Sold')),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          padding: EdgeInsets.only(left: 10.0, right: 10.0),
-          reverse: false,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              _buildList(),
-              SizedBox(height: 30.0,width: 15.0,),
-              Center(child: _buildChart()),
-            ],
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            padding: EdgeInsets.only(left: 10.0, right: 10.0),
+            reverse: false,
+            child:  _buildList(),
           ),
         ),
       ),

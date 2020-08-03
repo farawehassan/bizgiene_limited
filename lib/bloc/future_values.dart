@@ -2,6 +2,7 @@ import 'package:bizgienelimited/database/user_db_helper.dart';
 import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/linear_sales.dart';
 import 'package:bizgienelimited/model/productDB.dart';
+import 'package:bizgienelimited/model/product_history.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/model/store_details.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
@@ -84,6 +85,24 @@ class FutureValues {
       throw e;
     });
     return products;
+  }
+
+  /// Method to get all the product history from the database in the server with
+  /// the help of [RestDataSource]
+  /// It returns a list of [ProductHistory]
+  Future<List<ProductHistory>> getAllProductsHistoryFromDB() {
+    var data = RestDataSource();
+    Future<List<ProductHistory>> productHistory = data.fetchAllProductHistory();
+    return productHistory;
+  }
+
+  /// Method to get a particular the product history from the database
+  /// in the server with the help of [RestDataSource]
+  /// It returns a list of [ProductHistory]
+  Future<ProductHistory> getAProductHistoryFromDB(String id) {
+    var data = RestDataSource();
+    Future<ProductHistory> productHistory = data.findProductHistory(id);
+    return productHistory;
   }
 
   /// Method to get all the reports from the database in the server with
