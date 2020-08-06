@@ -417,7 +417,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         tag: 'displayPicture',
                         child: CircleAvatar(
                           backgroundImage: AssetImage('Assets/images/bizgenie_logo.png'),
-                          backgroundColor: Color(0xFF008752),
+                          backgroundColor: Colors.transparent,
                         ),
                       ),
                       onDetailsPressed: (){

@@ -3,6 +3,7 @@ import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/customer_reports.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/ui/navs/customers/customer_details.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -164,6 +165,7 @@ class _AllCustomersState extends State<AllCustomers> {
                                 children: <Widget>[
                                   Text(
                                     "${customer.name}",
+                                    overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.mcLaren(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -180,6 +182,7 @@ class _AllCustomersState extends State<AllCustomers> {
                                     },
                                     child: Text(
                                       "${customer.phone}",
+                                      overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.mcLaren(
                                         fontWeight: FontWeight.normal,
                                         fontSize: 14,
@@ -225,11 +228,12 @@ class _AllCustomersState extends State<AllCustomers> {
                               left: 12.0,
                             ),
                             child: Text(
-                              "Last Amount - ${Constants.money(lastTotalAmount).output.symbolOnLeft}",
+                              "Last - ${Constants.money(lastTotalAmount).output.symbolOnLeft}",
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: Color(0xFF004C7F),
                                 fontWeight: FontWeight.normal,
-                                fontSize: 17,
+                                fontSize: SizeConfig.safeBlockHorizontal * 4,
                               ),
                             ),
                           ),
@@ -260,9 +264,10 @@ class _AllCustomersState extends State<AllCustomers> {
                                   padding: const EdgeInsets.only(left: 5),
                                   child: Text(
                                     "${_getFormattedDate(customerReport.last.soldAt)}",
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: SizeConfig.safeBlockHorizontal * 4,
                                     ),
                                   ),
                                 ),
@@ -305,6 +310,7 @@ class _AllCustomersState extends State<AllCustomers> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: _refreshData,

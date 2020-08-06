@@ -106,7 +106,7 @@ class _ReceiptState extends State<Receipt> {
   static const double _paddingSize = 12.0;
 
   /// A double variable for the animated height in [_paymentDetails()]
-  double _animatedHeight = 286.0;
+  double _animatedHeight = 289.0;
 
   /// Boolean variables for selection in [_whenToPay()]
   bool _received = false;
@@ -158,6 +158,7 @@ class _ReceiptState extends State<Receipt> {
             ),
           ),
           Container(
+            alignment: Alignment.center,
             child: Text(
               _companyDetails,
               style: TextStyle(
@@ -346,23 +347,23 @@ class _ReceiptState extends State<Receipt> {
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     setState(() {
-                                      if(_animatedHeight == 286){
-                                        _animatedHeight = 308;
+                                      if(_animatedHeight == 289){
+                                        _animatedHeight = 311;
                                       }
-                                      else if(_animatedHeight == 308){
-                                        _animatedHeight = 329;
+                                      else if(_animatedHeight == 311){
+                                        _animatedHeight = 332;
                                       }
                                     });
                                     return 'Select name';
                                   }
                                   setState(() {
-                                    if(_animatedHeight == 308){
-                                      _animatedHeight = 308;
+                                    if(_animatedHeight == 311){
+                                      _animatedHeight = 311;
                                     }
-                                    else if(_animatedHeight == 329){
-                                      _animatedHeight = 329;
+                                    else if(_animatedHeight == 332){
+                                      _animatedHeight = 332;
                                     } else {
-                                      _animatedHeight = 286;
+                                      _animatedHeight = 289;
                                     }
                                   });
                                   return null;
@@ -482,23 +483,23 @@ class _ReceiptState extends State<Receipt> {
                                       double.parse(value) > _totalPrice
                                   ) {
                                     setState(() {
-                                      if(_animatedHeight == 286){
-                                        _animatedHeight = 308;
+                                      if(_animatedHeight == 289){
+                                        _animatedHeight = 311;
                                       }
-                                      else if(_animatedHeight == 308){
-                                        _animatedHeight = 329;
+                                      else if(_animatedHeight == 311){
+                                        _animatedHeight = 332;
                                       }
                                     });
                                     return 'Enter the amount paid';
                                   }
                                   setState(() {
-                                    if(_animatedHeight == 308){
-                                      _animatedHeight = 308;
+                                    if(_animatedHeight == 311){
+                                      _animatedHeight = 311;
                                     }
-                                    else if(_animatedHeight == 329){
-                                      _animatedHeight = 329;
+                                    else if(_animatedHeight == 332){
+                                      _animatedHeight = 332;
                                     } else {
-                                      _animatedHeight = 286;
+                                      _animatedHeight = 289;
                                     }
                                   });
                                   return null;
@@ -752,6 +753,7 @@ class _ReceiptState extends State<Receipt> {
           Container(
             margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 SelectCard(
                   text1: "Payment",
@@ -770,7 +772,6 @@ class _ReceiptState extends State<Receipt> {
                   },
                   isSelected: _later ? false : true,
                 ),
-                SizedBox(width: 20.0,),
                 SelectCard(
                   text1: "Accept",
                   text2: "payment later",

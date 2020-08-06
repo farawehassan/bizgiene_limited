@@ -106,7 +106,7 @@ class _ProfileState extends State<Profile> {
                           child: Hero(
                             tag: 'displayPicture',
                             child: CircleAvatar(
-                              backgroundColor: Color(0xFF004C7F),
+                              backgroundColor: Colors.transparent,
                               maxRadius: 80.0,
                               minRadius: 40.0,
                               backgroundImage: AssetImage('Assets/images/bizgenie_logo.png'),
@@ -275,7 +275,7 @@ class _ProfileState extends State<Profile> {
                             cardChild: Column(
                               children: <Widget>[
                                 Text(
-                                  'Number of Items',
+                                  'Items',
                                   style: TextStyle(
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.w500,

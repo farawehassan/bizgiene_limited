@@ -116,7 +116,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
   static const double _paddingSize = 12.0;
 
   /// A double variable for the animated height in [_paymentDetails()]
-  double _animatedHeight = 340.0;
+  double _animatedHeight = 348.0;
 
   /// Boolean variables for selection in [_whenToPay()]
   bool _received = false;
@@ -168,6 +168,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
             ),
           ),
           Container(
+            alignment: Alignment.center,
             child: Text(
               _companyDetails,
               style: TextStyle(
@@ -351,7 +352,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
                             alignment: Alignment.centerRight,
                             child: Container(
                               padding: EdgeInsets.only(right: _paddingSize),
-                              width: 200.0,
+                              width: SizeConfig.blockSizeHorizontal * 40,
                               child: TextFormField(
                                 textAlign: TextAlign.end,
                                 controller: _nameController,
@@ -360,28 +361,28 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
                                   if (value.isEmpty || _customerNames
                                       .contains(Constants.capitalize(value))) {
                                     setState(() {
-                                      if(_animatedHeight == 340){
-                                        _animatedHeight = 371;
+                                      if(_animatedHeight == 348){
+                                        _animatedHeight = 379;
                                       }
-                                      else if(_animatedHeight == 371){
-                                        _animatedHeight = 395;
+                                      else if(_animatedHeight == 379){
+                                        _animatedHeight = 404;
                                       }
-                                      else if(_animatedHeight == 395){
-                                        _animatedHeight = 419;
+                                      else if(_animatedHeight == 404){
+                                        _animatedHeight = 428;
                                       }
                                     });
                                     return 'Enter a valid name';
                                   }
                                   setState(() {
-                                    if(_animatedHeight == 371){
-                                      _animatedHeight = 371;
+                                    if(_animatedHeight == 379){
+                                      _animatedHeight = 379;
                                     }
-                                    else if(_animatedHeight == 395){
-                                      _animatedHeight = 395;
-                                    }else if(_animatedHeight == 419){
-                                      _animatedHeight = 419;
+                                    else if(_animatedHeight == 404){
+                                      _animatedHeight = 404;
+                                    }else if(_animatedHeight == 428){
+                                      _animatedHeight = 428;
                                     } else {
-                                      _animatedHeight = 340;
+                                      _animatedHeight = 348;
                                     }
                                   });
                                   return null;
@@ -442,28 +443,28 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     setState(() {
-                                      if(_animatedHeight == 340){
-                                        _animatedHeight = 371;
+                                      if(_animatedHeight == 348){
+                                        _animatedHeight = 379;
                                       }
-                                      else if(_animatedHeight == 371){
-                                        _animatedHeight = 395;
+                                      else if(_animatedHeight == 379){
+                                        _animatedHeight = 404;
                                       }
-                                      else if(_animatedHeight == 395){
-                                        _animatedHeight = 419;
+                                      else if(_animatedHeight == 404){
+                                        _animatedHeight = 428;
                                       }
                                     });
                                     return 'Enter number';
                                   }
                                   setState(() {
-                                    if(_animatedHeight == 371){
-                                      _animatedHeight = 371;
+                                    if(_animatedHeight == 379){
+                                      _animatedHeight = 379;
                                     }
-                                    else if(_animatedHeight == 395){
-                                      _animatedHeight = 395;
-                                    }else if(_animatedHeight == 419){
-                                      _animatedHeight = 419;
+                                    else if(_animatedHeight == 404){
+                                      _animatedHeight = 404;
+                                    }else if(_animatedHeight == 428){
+                                      _animatedHeight = 428;
                                     } else {
-                                      _animatedHeight = 340;
+                                      _animatedHeight = 348;
                                     }
                                   });
                                   return null;
@@ -568,28 +569,28 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     setState(() {
-                                      if(_animatedHeight == 340){
-                                        _animatedHeight = 371;
+                                      if(_animatedHeight == 348){
+                                        _animatedHeight = 379;
                                       }
-                                      else if(_animatedHeight == 371){
-                                        _animatedHeight = 395;
+                                      else if(_animatedHeight == 379){
+                                        _animatedHeight = 404;
                                       }
-                                      else if(_animatedHeight == 395){
-                                        _animatedHeight = 419;
+                                      else if(_animatedHeight == 404){
+                                        _animatedHeight = 428;
                                       }
                                     });
                                     return 'Enter the amount paid';
                                   }
                                   setState(() {
-                                    if(_animatedHeight == 371){
-                                      _animatedHeight = 371;
+                                    if(_animatedHeight == 379){
+                                      _animatedHeight = 379;
                                     }
-                                    else if(_animatedHeight == 395){
-                                      _animatedHeight = 395;
-                                    }else if(_animatedHeight == 419){
-                                      _animatedHeight = 419;
+                                    else if(_animatedHeight == 404){
+                                      _animatedHeight = 404;
+                                    }else if(_animatedHeight == 428){
+                                      _animatedHeight = 428;
                                     } else {
-                                      _animatedHeight = 340;
+                                      _animatedHeight = 348;
                                     }
                                   });
                                   return null;
@@ -849,6 +850,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
           Container(
             margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 SelectCard(
                   text1: "Payment",
@@ -867,7 +869,6 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
                   },
                   isSelected: _later ? false : true,
                 ),
-                SizedBox(width: 20.0,),
                 SelectCard(
                   text1: "Accept",
                   text2: "payment later",

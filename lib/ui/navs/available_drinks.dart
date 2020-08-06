@@ -6,6 +6,7 @@ import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/ui/navs/product_history.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/round_icon.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -346,6 +347,7 @@ class _ProductsState extends State<Products> {
   /// floatingActionButton to display a form to add new product when pressed
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       appBar: _buildBar(context),
       body: RefreshIndicator(
@@ -607,19 +609,19 @@ class _ProductsState extends State<Products> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Initial quantity: $iq',
+                      'Initial Qty: $iq',
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                     Text(
-                      'Current quantity: $cq',
+                      'Current Qty: $cq',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
-                      'Quantity Sold: ${iq - cq}',
+                      'Qty Sold: ${iq - cq}',
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                       ),

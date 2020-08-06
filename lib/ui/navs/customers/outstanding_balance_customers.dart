@@ -3,6 +3,7 @@ import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/customer_reports_details.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/utils/constants.dart';
+import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -164,6 +165,7 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
                                 children: <Widget>[
                                   Text(
                                     "${customer.name}",
+                                    overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.mcLaren(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -180,6 +182,7 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
                                     },
                                     child: Text(
                                       "${customer.phone}",
+                                      overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.mcLaren(
                                         fontWeight: FontWeight.normal,
                                         fontSize: 14,
@@ -225,10 +228,11 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
                             ),
                             child: Text(
                               "Balance - ${Constants.money(balance).output.symbolOnLeft}",
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: Color(0xFF004C7F),
                                 fontWeight: FontWeight.normal,
-                                fontSize: 17,
+                                fontSize: SizeConfig.safeBlockHorizontal * 4,
                               ),
                             ),
                           ),
@@ -259,9 +263,10 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
                                   padding: const EdgeInsets.only(left: 5),
                                   child: Text(
                                     "${_getFormattedDate(customerReport.dueDate)}",
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: SizeConfig.safeBlockHorizontal * 4,
                                     ),
                                   ),
                                 ),
@@ -664,6 +669,7 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: _refreshData,
