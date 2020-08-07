@@ -16,7 +16,7 @@ class ReusableCard extends StatelessWidget {
       child: Card(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(40.0),
+            padding: EdgeInsets.all(30.0),
             child: Text(
               cardChild,
               style: TextStyle(

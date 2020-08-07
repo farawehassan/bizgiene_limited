@@ -234,11 +234,13 @@ class _ReceiptState extends State<Receipt> {
           DataColumn(
               label: Text(
                 'UNIT PRICE',
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
           DataColumn(
               label: Text(
                 'TOTAL PRICE',
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
         ],
@@ -899,8 +901,8 @@ class _ReceiptState extends State<Receipt> {
                                           elevation: 0.0,
                                           child: Container(
                                             width: SizeConfig.safeBlockHorizontal * 60,
-                                            height: 150.0,
-                                            padding: EdgeInsets.all(16.0),
+                                            height: 120.0,
+                                            padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 20.0, bottom: 20.0),
                                             child: Column(
                                               crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -909,15 +911,11 @@ class _ReceiptState extends State<Receipt> {
                                               children: <Widget>[
                                                 Align(
                                                   alignment: Alignment.centerLeft,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        top: 16.0),
-                                                    child: Text(
-                                                      "Select payment mode",
-                                                      style: TextStyle(
-                                                        fontSize: 15.0,
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
+                                                  child: Text(
+                                                    "Select payment mode",
+                                                    style: TextStyle(
+                                                      fontSize: 15.0,
+                                                      fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
                                                 ),
@@ -925,8 +923,6 @@ class _ReceiptState extends State<Receipt> {
                                                   mainAxisAlignment:
                                                   MainAxisAlignment
                                                       .spaceBetween,
-                                                  crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
                                                   children: <Widget>[
                                                     Align(
                                                       alignment:

@@ -23,6 +23,28 @@ class FutureValues {
     return user;
   }
 
+  /// Method to get all the product names that is not in the list of product
+  /// names in the database
+  /// It returns a list of [String]
+  Future<List<String>> getAllProductNamesFromDB() async {
+    List<String> names = new List();
+    List<String> suggestions = new List();
+    Future<List<Product>> product = getAllProductsFromDB();
+    await product.then((value){
+      for(int i = 0; i < value.length; i++){
+        names.add(value[i].productName);
+      }
+      for(int i = 0; i < Constants.sevenUpItems.length; i++){
+        if(!(names.contains(Constants.sevenUpItems[i]))){
+          suggestions.add(Constants.sevenUpItems[i]);
+        }
+      }
+    }).catchError((e){
+      throw e;
+    });
+    return suggestions;
+  }
+
   /// Method to get all the products from the database in the server with
   /// the help of [RestDataSource]
   /// It returns a list of [Product]

@@ -1,4 +1,5 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
+import 'package:bizgienelimited/bloc/select_suggestions.dart';
 import 'package:bizgienelimited/model/productDB.dart';
 import 'package:bizgienelimited/model/product_history.dart';
 import 'package:bizgienelimited/model/product_history_details.dart';
@@ -10,6 +11,7 @@ import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:folding_cell/folding_cell.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
@@ -68,6 +70,10 @@ class _ProductsState extends State<Products> {
   /// the details of all the availableProduct
   List<Product> _names = new List();
 
+  /// Variable of List<[String]> to hold the suggestions of product names to add
+  /// while creating a new product
+  List<String> _nameSuggestions = new List();
+
   /// Variable of List<[Product]> to hold
   /// the details of all filtered availableProduct
   List<Product> _filteredNames = new List();
@@ -117,15 +123,20 @@ class _ProductsState extends State<Products> {
   void _getNames() async {
     List<Product> tempList = new List();
 
+    Future<List<String>> suggestionNames;
     Future<List<Product>> productNames;
 
     if(productsToShow == 1){
+      suggestionNames = futureValue.getAllProductNamesFromDB();
       productNames = futureValue.getAllProductsFromDB();
     } else if(productsToShow == 2){
+      suggestionNames = futureValue.getAllProductNamesFromDB();
       productNames = futureValue.getAvailableProductsFromDB();
     } else if(productsToShow == 3){
+      suggestionNames = futureValue.getAllProductNamesFromDB();
       productNames = futureValue.getFinishedProductFromDB();
     } else if(productsToShow == 4){
+      suggestionNames = futureValue.getAllProductNamesFromDB();
       productNames = futureValue.getOtherProductFromDB();
     }
 
@@ -160,6 +171,17 @@ class _ProductsState extends State<Products> {
       print(error);
       Constants.showMessage(error.toString());
     });
+
+    await suggestionNames.then((value) async {
+      if (!mounted) return;
+      setState(() {
+        _nameSuggestions.addAll(value);
+      });
+    }).catchError((error){
+      print(error);
+      Constants.showMessage(error.toString());
+    });
+
   }
 
   /// Function to change icons on the appBar when the searchIcon or closeIcon
@@ -308,17 +330,34 @@ class _ProductsState extends State<Products> {
   Future<Null> _refresh() {
     List<Product> tempList = new List();
 
+    Future<List<String>> suggestionNames;
     Future<List<Product>> productNames;
+
     if(productsToShow == 1){
+      suggestionNames = futureValue.getAllProductNamesFromDB();
       productNames = futureValue.getAllProductsFromDB();
     } else if(productsToShow == 2){
+      suggestionNames = futureValue.getAllProductNamesFromDB();
       productNames = futureValue.getAvailableProductsFromDB();
     } else if(productsToShow == 3){
+      suggestionNames = futureValue.getAllProductNamesFromDB();
       productNames = futureValue.getFinishedProductFromDB();
     } else if(productsToShow == 4){
+      suggestionNames = futureValue.getAllProductNamesFromDB();
       productNames = futureValue.getOtherProductFromDB();
     }
     return productNames.then((value) async {
+
+      await suggestionNames.then((value) async {
+        if (!mounted) return;
+        setState(() {
+          _nameSuggestions.addAll(value);
+        });
+      }).catchError((error){
+        print(error);
+        Constants.showMessage(error.toString());
+      });
+
       Future<List<ProductHistory>> products = futureValue.getAllProductsHistoryFromDB();
       await products.then((value) {
         _productHistory.addAll(value);
@@ -361,6 +400,7 @@ class _ProductsState extends State<Products> {
       floatingActionButton: RoundIconButton(
         icon: Icons.add,
         onPressed: () {
+          final productController = TextEditingController();
           showDialog(
             context: context,
             builder: (_) => Dialog(
@@ -390,18 +430,36 @@ class _ProductsState extends State<Products> {
                       ),
                       Container(
                         width: 200,
-                        child: TextFormField(
-                          keyboardType: TextInputType.text,
+                        child: TypeAheadFormField(
                           validator: (val) =>
-                              val.length == 0 ? "Enter Product" : null,
-                          onChanged: (value) {
-                            _productName = value;
+                          val.length == 0 ? "Enter Product" : null,
+                          textFieldConfiguration: TextFieldConfiguration(
+                            controller: productController,
+                            keyboardType: TextInputType.text,
+                            onChanged: (value) {
+                              _productName = value;
+                            },
+                            decoration: kAddProductDecoration.copyWith(
+                                hintText: "Product name"),
+                          ),
+                          suggestionsCallback: (pattern) {
+                            return Suggestions.get7upSuggestions(pattern, _nameSuggestions);
+                          },
+                          itemBuilder: (context, suggestion) {
+                            return ListTile(
+                              title: Text(suggestion),
+                            );
+                          },
+                          transitionBuilder: (context, suggestionsBox, controller) {
+                            return suggestionsBox;
+                          },
+                          onSuggestionSelected: (suggestion) {
+                            productController.text = suggestion;
+                            _productName = productController.text;
                           },
                           onSaved: (value) {
                             this._productName = value;
                           },
-                          decoration: kAddProductDecoration.copyWith(
-                              hintText: "Product name"),
                         ),
                       ),
                       Container(

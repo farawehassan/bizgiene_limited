@@ -1,6 +1,7 @@
 import 'package:bizgienelimited/bloc/daily_report_value.dart';
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
+import 'package:bizgienelimited/ui/navs/monthly/paginated_table.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
@@ -67,6 +68,18 @@ class _MonthReportState extends State<MonthReport> {
   /// Variable to hold a Widget of Text for the appBarText
   Widget _appBarTitle = new Text('Sales Report');
 
+  /// Variable to hold the type of the user logged in
+  String _userType;
+
+  /// Setting the current user's type logged in to [userType]
+  void _getCurrentUser() async {
+    await futureValue.getCurrentUser().then((user) {
+      _userType = user.type;
+    }).catchError((Object error) {
+      print(error.toString());
+    });
+  }
+
   /// Checking if the filter controller is empty to reset the
   /// _searchText on the appBar to "" and the filteredSales to Sales
   _MonthReportState(){
@@ -98,7 +111,8 @@ class _MonthReportState extends State<MonthReport> {
       _totalTransfer = 0;
 
       for (int i = 0; i < _filteredSales.length; i++){
-        _totalProfitMade += double.parse(_filteredSales[i]['qty']) * (double.parse(_filteredSales[i]['unitPrice']) - double.parse(_filteredSales[i]['costPrice']));
+        _totalProfitMade += double.parse(_filteredSales[i]['qty']) *
+            (double.parse(_filteredSales[i]['unitPrice']) - double.parse(_filteredSales[i]['costPrice']));
         if(_filteredSales[i]['paymentMode'] == 'Cash'){
           _availableCash += double.parse(_filteredSales[i]['totalPrice']);
         }
@@ -433,47 +447,12 @@ class _MonthReportState extends State<MonthReport> {
   /// the values of each DataColumn in the [salesList] as DataRows and
   /// a container to show the [__totalSalesPrice]
   SingleChildScrollView _dataTable(List<Map> salesList){
+    var dts = DTS(salesList: _filteredSales.reversed.toList());
+    int _rowPerPage = 50;
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.vertical,
       child: Column(
         children: <Widget>[
-          DataTable(
-            columnSpacing: 10.0,
-            columns: [
-              DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('UNIT', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('TOTAL', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('TIME', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('CUSTOMER', style: TextStyle(fontWeight: FontWeight.bold),)),
-            ],
-            rows: salesList.map((report) => DataRow(
-                cells: [
-                  DataCell(
-                    Text(report['qty'].toString()),
-                  ),
-                  DataCell(
-                    Text(report['productName'].toString()),
-                  ),
-                  DataCell(
-                    Text(Constants.money(double.parse(report['unitPrice'])).output.symbolOnLeft),
-                  ),
-                  DataCell(
-                    Text(Constants.money(double.parse(report['totalPrice'])).output.symbolOnLeft),
-                  ),
-                  DataCell(
-                    Text(report['paymentMode'].toString()),
-                  ),
-                  DataCell(
-                    Text(_getFormattedTime(report['time'])),
-                  ),
-                  DataCell(
-                    Text(report['customerName'].toString()),
-                  ),
-                ]
-            )).toList(),
-          ),
           Container(
             margin: EdgeInsets.only(left: 5.0, right: 40.0),
             padding: EdgeInsets.only(right: 20.0, top: 20.0),
@@ -518,7 +497,7 @@ class _MonthReportState extends State<MonthReport> {
               ],
             ),
           ),
-          Container(
+          _userType == 'Admin' ? Container(
             margin: EdgeInsets.only(left: 5.0, right: 40.0),
             padding: EdgeInsets.only(right: 20.0, top: 20.0),
             child: Row(
@@ -539,7 +518,64 @@ class _MonthReportState extends State<MonthReport> {
                 ),
               ],
             ),
+          ) : Container(),
+          PaginatedDataTable(
+            header: Text('Reports Table'),
+            columns: [
+              DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('UNIT', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('TOTAL', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('TIME', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('CUSTOMER', style: TextStyle(fontWeight: FontWeight.bold),)),
+            ],
+            source: dts,
+            onRowsPerPageChanged: (r){
+              setState(() {
+                _rowPerPage = r;
+              });
+            },
+            columnSpacing: 5.0,
+            rowsPerPage: _rowPerPage,
           ),
+          /*DataTable(
+            columnSpacing: 10.0,
+            columns: [
+              DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('UNIT', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('TOTAL', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('TIME', style: TextStyle(fontWeight: FontWeight.bold),)),
+              DataColumn(label: Text('CUSTOMER', style: TextStyle(fontWeight: FontWeight.bold),)),
+            ],
+            rows: salesList.map((report) => DataRow(
+                cells: [
+                  DataCell(
+                    Text(report['qty'].toString()),
+                  ),
+                  DataCell(
+                    Text(report['productName'].toString()),
+                  ),
+                  DataCell(
+                    Text(Constants.money(double.parse(report['unitPrice'])).output.symbolOnLeft),
+                  ),
+                  DataCell(
+                    Text(Constants.money(double.parse(report['totalPrice'])).output.symbolOnLeft),
+                  ),
+                  DataCell(
+                    Text(report['paymentMode'].toString()),
+                  ),
+                  DataCell(
+                    Text(_getFormattedTime(report['time'])),
+                  ),
+                  DataCell(
+                    Text(report['customerName'].toString()),
+                  ),
+                ]
+            )).toList(),
+          ),*/
         ],
       ),
     );
@@ -550,6 +586,7 @@ class _MonthReportState extends State<MonthReport> {
   @override
   void initState() {
     super.initState();
+    _getCurrentUser();
     _getSales();
     _getOutstandingPayment();
   }
@@ -565,16 +602,7 @@ class _MonthReportState extends State<MonthReport> {
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.only(left: 10.0, right: 10.0),
-          reverse: true,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              _buildList(),
-              SizedBox(height: 60.0,),
-            ],
-          ),
+          child:_buildList(),
         ),
       ),
     );
