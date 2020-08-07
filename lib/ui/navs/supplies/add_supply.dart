@@ -1,4 +1,5 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
+import 'package:bizgienelimited/bloc/select_suggestions.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/model/supply_products.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
@@ -8,6 +9,7 @@ import 'package:bizgienelimited/utils/round_icon.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -89,18 +91,40 @@ class _AddSupplyState extends State<AddSupply> {
           Flexible(
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 8.0),
-              width: SizeConfig.safeBlockHorizontal * 25,//150.0,
-              child: TextField(
-                keyboardType: TextInputType.text,
-                controller: productController,
-                onChanged: (value) {
-                  if (!mounted) return;
-                  setState(() {
-                    _productName = Constants.capitalize(value);
-                    _details['product'] = '$_productName';
-                  });
+              width: SizeConfig.safeBlockHorizontal * 25,
+              child: TypeAheadFormField(
+                textFieldConfiguration: TextFieldConfiguration(
+                  controller: productController,
+                  keyboardType: TextInputType.text,
+                  decoration: kTextFieldDecoration.copyWith(labelText: "Name"),
+                  onChanged: (value) {
+                    if (!mounted) return;
+                    setState(() {
+                      _productName = Constants.capitalize(value);
+                      _details['product'] = '$_productName';
+                    });
+                  },
+                ),
+                suggestionsCallback: (pattern) {
+                  return Suggestions.getProductSuggestions(pattern, Constants.sevenUpItems);
                 },
-                decoration: kTextFieldDecoration.copyWith(labelText: "Name"),
+                itemBuilder: (context, suggestion) {
+                  return ListTile(
+                    title: Text(suggestion),
+                  );
+                },
+                transitionBuilder: (context, suggestionsBox, controller) {
+                  return suggestionsBox;
+                },
+                onSuggestionSelected: (suggestion) {
+                  productController.text = suggestion;
+                  _productName = productController.text;
+                  _details['product'] = '$_productName';
+                },
+                onSaved: (value) {
+                  this._productName = value;
+                  _details['product'] = '$value';
+                },
               ),
             ),
           ),
@@ -267,17 +291,20 @@ class _AddSupplyState extends State<AddSupply> {
                           shrinkWrap: true,
                           children: _rows.map((data) {
                             int index = _rows.indexOf(data);
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                _rows[index],
-                                AddIconButton(
-                                  icon: Icon(Icons.remove, color: Colors.red,),
-                                  onPressed: (){
-                                    _deleteItem(index);
-                                  },
-                                ),
-                              ],
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  _rows[index],
+                                  AddIconButton(
+                                    icon: Icon(Icons.remove, color: Colors.red,),
+                                    onPressed: (){
+                                      _deleteItem(index);
+                                    },
+                                  ),
+                                ],
+                              ),
                             );
                           }).toList(),
                         ),
@@ -285,31 +312,34 @@ class _AddSupplyState extends State<AddSupply> {
                     ),
                     Padding(
                       padding: EdgeInsets.all(16.0),
-                      child: Row(
-                        children: <Widget>[
-                          AddIconButton(
-                            icon: Icon(Icons.add, color: Color(0xFF008752),),
-                            onPressed: (){
-                              generateTotal();
-                            },
-                          ),
-                          SizedBox(width: 10.0,),
-                          Text(
-                            "Total  = ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 20.0,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: <Widget>[
+                            AddIconButton(
+                              icon: Icon(Icons.add, color: Color(0xFF008752),),
+                              onPressed: (){
+                                generateTotal();
+                              },
                             ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                            width: 200.0,
-                            child: TextField(
-                              controller: _amountController,
-                              decoration: kTextFieldDecoration.copyWith(hintText: '0.0'),
+                            SizedBox(width: 10.0,),
+                            Text(
+                              "Total  = ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 20.0,
+                              ),
                             ),
-                          ),
-                        ],
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+                              width: SizeConfig.safeBlockHorizontal * 50,
+                              child: TextField(
+                                controller: _amountController,
+                                decoration: kTextFieldDecoration.copyWith(hintText: '0.0'),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     Flexible(
