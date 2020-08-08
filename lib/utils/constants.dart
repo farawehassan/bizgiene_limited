@@ -9,10 +9,10 @@ class Constants{
 
   static const String Create = 'Create a worker';
 
-  static const String ShowAll = 'Display all products';
-  static const String ShowAvailable = 'Display available products';
-  static const String ShowFinished = 'Display finished products';
-  static const String ShowOther = 'Display other products';
+  static const String ShowAll = 'All products';
+  static const String ShowAvailable = 'Available products';
+  static const String ShowFinished = 'Products out of stock';
+  static const String ShowOther = 'Other products';
 
   static const String ShowUpdate = 'Update payment';
   static const String ShowSettle = 'Settle payment';

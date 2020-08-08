@@ -616,12 +616,37 @@ class _ProductsState extends State<Products> {
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-      child: Text(
-        productName,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 20.0,
-        ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: Icon(Icons.history, color: Color(0xFF008752)),
+            onPressed: (){
+              String id;
+              for(int i = 0; i <_productHistory.length; i++){
+                if(_productHistory[i].productName == productName) {
+                  setState(() {
+                    id = _productHistory[i].id;
+                  });
+                }
+              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductHistoryPage(productHistoryId: id,)),
+              );
+            },
+          ),
+          SizedBox(
+            width: 5.0,
+          ),
+          Text(
+            productName,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 20.0,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -694,191 +719,169 @@ class _ProductsState extends State<Products> {
                     Text('SP: ${spVal.output.symbolOnLeft}'),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.history, color: Color(0xFF004C7F)),
-                      onPressed: (){
-                        String id;
-                        for(int i = 0; i <_productHistory.length; i++){
-                          if(_productHistory[i].productName == name) {
-                            setState(() {
-                              id = _productHistory[i].id;
-                            });
-                          }
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ProductHistoryPage(productHistoryId: id,)),
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.info, color: Color(0xFF004C7F)),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            elevation: 0.0,
-                            child: Container(
-                              height: 320.0,
-                              padding: const EdgeInsets.all(16.0),
-                              child: Form(
-                                key: _updateFormKey,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                IconButton(
+                  icon: Icon(Icons.info, color: Color(0xFF004C7F)),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        elevation: 0.0,
+                        child: Container(
+                          height: 320.0,
+                          padding: const EdgeInsets.all(16.0),
+                          child: Form(
+                            key: _updateFormKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Text(
+                                    "Update incoming product",
+                                    style: TextStyle(
+                                      color: Color(0xFF008752),
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 270.0,
+                                  child: TextFormField(
+                                    keyboardType: TextInputType.text,
+                                    controller: controllerProduct,
+                                    decoration: kAddProductDecoration.copyWith(
+                                        hintText: "Product name (if needed)"),
+                                  ),
+                                ),
+                                Container(
+                                  width: 150.0,
+                                  child: TextFormField(
+                                    keyboardType: TextInputType.number,
+                                    validator: (val) =>
+                                    val.length == 0 ? "Enter Qty" : null,
+                                    onChanged: (value) {
+                                      controllerQty.text = value;
+                                    },
+                                    onSaved: (value) {
+                                      controllerQty.text = value;
+                                    },
+                                    decoration: kAddProductDecoration.copyWith(
+                                        hintText: "Qty"),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    Align(
-                                      alignment: Alignment.topCenter,
-                                      child: Text(
-                                        "Update incoming product",
-                                        style: TextStyle(
-                                          color: Color(0xFF008752),
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
                                     Container(
-                                      width: 270.0,
-                                      child: TextFormField(
-                                        keyboardType: TextInputType.text,
-                                        controller: controllerProduct,
-                                        decoration: kAddProductDecoration.copyWith(
-                                            hintText: "Product name (if needed)"),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 150.0,
+                                      width: 110.0,
                                       child: TextFormField(
                                         keyboardType: TextInputType.number,
                                         validator: (val) =>
-                                        val.length == 0 ? "Enter Qty" : null,
+                                        val.length == 0 ? "Enter CP" : null,
                                         onChanged: (value) {
-                                          controllerQty.text = value;
+                                          controllerCp.text = value;
                                         },
                                         onSaved: (value) {
-                                          controllerQty.text = value;
+                                          controllerCp.text = value;
                                         },
-                                        decoration: kAddProductDecoration.copyWith(
-                                            hintText: "Qty"),
+                                        decoration: kAddProductDecoration
+                                            .copyWith(hintText: "CP"),
                                       ),
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Container(
-                                          width: 110.0,
-                                          child: TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            validator: (val) =>
-                                            val.length == 0 ? "Enter CP" : null,
-                                            onChanged: (value) {
-                                              controllerCp.text = value;
-                                            },
-                                            onSaved: (value) {
-                                              controllerCp.text = value;
-                                            },
-                                            decoration: kAddProductDecoration
-                                                .copyWith(hintText: "CP"),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 20.0,
-                                        ),
-                                        Container(
-                                          width: 110.0,
-                                          child: TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            validator: (val) =>
-                                            val.length == 0 ? "Enter SP" : null,
-                                            onChanged: (value) {
-                                              controllerSp.text = value;
-                                            },
-                                            onSaved: (value) {
-                                              controllerSp.text = value;
-                                            },
-                                            decoration: kAddProductDecoration
-                                                .copyWith(hintText: "SP"),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
                                     SizedBox(
-                                      height: 24.0,
+                                      width: 20.0,
                                     ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Align(
-                                          alignment: Alignment.bottomLeft,
-                                          child: FlatButton(
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pop(); // To close the dialog
-                                            },
-                                            textColor: Color(0xFF008752),
-                                            child: Text('CANCEL'),
-                                          ),
-                                        ),
-                                        Align(
-                                          alignment: Alignment.bottomRight,
-                                          child: FlatButton(
-                                            onPressed: () {
-                                              if (this._updateFormKey.currentState.validate()) {
-                                                _updateFormKey.currentState.save();
-                                              } else {
-                                                return null;
-                                              }
-
-                                              double initialQty = double.parse(controllerQty.text) + iq;
-                                              double currentQty =  double.parse(controllerQty.text) + cq;
-
-                                              var productHistoryDetails = ProductHistoryDetails();
-                                              productHistoryDetails.initialQty = cq.toString();
-                                              productHistoryDetails.qtyReceived = controllerQty.text.toString();
-                                              productHistoryDetails.currentQty = currentQty.toString();
-                                              productHistoryDetails.collectedAt = DateTime.now().toString();
-
-                                              _updateProduct(
-                                                productHistoryDetails,
-                                                id,
-                                                name.toString(),
-                                                controllerProduct.text.toString(),
-                                                initialQty,
-                                                double.parse(controllerCp.text),
-                                                double.parse(controllerSp.text),
-                                                currentQty
-                                              );
-
-                                              _refreshData();
-
-                                              Navigator.of(context)
-                                                  .pop(); // To close the dialog
-                                            },
-                                            textColor: Color(0xFF008752),
-                                            child: Text('SAVE'),
-                                          ),
-                                        ),
-                                      ],
+                                    Container(
+                                      width: 110.0,
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        validator: (val) =>
+                                        val.length == 0 ? "Enter SP" : null,
+                                        onChanged: (value) {
+                                          controllerSp.text = value;
+                                        },
+                                        onSaved: (value) {
+                                          controllerSp.text = value;
+                                        },
+                                        decoration: kAddProductDecoration
+                                            .copyWith(hintText: "SP"),
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
+                                SizedBox(
+                                  height: 24.0,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: FlatButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // To close the dialog
+                                        },
+                                        textColor: Color(0xFF008752),
+                                        child: Text('CANCEL'),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: FlatButton(
+                                        onPressed: () {
+                                          if (this._updateFormKey.currentState.validate()) {
+                                            _updateFormKey.currentState.save();
+                                          } else {
+                                            return null;
+                                          }
+
+                                          double initialQty = double.parse(controllerQty.text) + iq;
+                                          double currentQty =  double.parse(controllerQty.text) + cq;
+
+                                          var productHistoryDetails = ProductHistoryDetails();
+                                          productHistoryDetails.initialQty = cq.toString();
+                                          productHistoryDetails.qtyReceived = controllerQty.text.toString();
+                                          productHistoryDetails.currentQty = currentQty.toString();
+                                          productHistoryDetails.collectedAt = DateTime.now().toString();
+
+                                          _updateProduct(
+                                              productHistoryDetails,
+                                              id,
+                                              name.toString(),
+                                              controllerProduct.text.toString(),
+                                              initialQty,
+                                              double.parse(controllerCp.text),
+                                              double.parse(controllerSp.text),
+                                              currentQty
+                                          );
+
+                                          _refreshData();
+
+                                          Navigator.of(context)
+                                              .pop(); // To close the dialog
+                                        },
+                                        textColor: Color(0xFF008752),
+                                        child: Text('SAVE'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          barrierDismissible: false,
-                        );
-                      },
-                    ),
-                  ],
+                        ),
+                      ),
+                      barrierDismissible: false,
+                    );
+                  },
                 ),
               ],
             ),

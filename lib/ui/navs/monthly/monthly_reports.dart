@@ -539,43 +539,6 @@ class _MonthReportState extends State<MonthReport> {
             columnSpacing: 5.0,
             rowsPerPage: _rowPerPage,
           ),
-          /*DataTable(
-            columnSpacing: 10.0,
-            columns: [
-              DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('UNIT', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('TOTAL', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('PAYMENT', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('TIME', style: TextStyle(fontWeight: FontWeight.bold),)),
-              DataColumn(label: Text('CUSTOMER', style: TextStyle(fontWeight: FontWeight.bold),)),
-            ],
-            rows: salesList.map((report) => DataRow(
-                cells: [
-                  DataCell(
-                    Text(report['qty'].toString()),
-                  ),
-                  DataCell(
-                    Text(report['productName'].toString()),
-                  ),
-                  DataCell(
-                    Text(Constants.money(double.parse(report['unitPrice'])).output.symbolOnLeft),
-                  ),
-                  DataCell(
-                    Text(Constants.money(double.parse(report['totalPrice'])).output.symbolOnLeft),
-                  ),
-                  DataCell(
-                    Text(report['paymentMode'].toString()),
-                  ),
-                  DataCell(
-                    Text(_getFormattedTime(report['time'])),
-                  ),
-                  DataCell(
-                    Text(report['customerName'].toString()),
-                  ),
-                ]
-            )).toList(),
-          ),*/
         ],
       ),
     );
