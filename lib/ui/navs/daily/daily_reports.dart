@@ -169,8 +169,8 @@ class _DailyReportsState extends State<DailyReports> {
                     titleText('Outstanding Payment: ${Constants.money(_outstandingPayment).output.symbolOnLeft}'),
                     SizedBox(height: 8.0,),
                     titleText('Available Cash: ${Constants.money(_availableCash - _outstandingPayment).output.symbolOnLeft}'),
-                    SizedBox(height: 8.0,),
-                    _user == 'Admin' ? titleText('Profit made: ${Constants.money(_totalProfitMade).output.symbolOnLeft}') : Container(),
+                    /*SizedBox(height: 8.0,),
+                    _user == 'Admin' ? titleText('Profit made: ${Constants.money(_totalProfitMade).output.symbolOnLeft}') : Container(),*/
                   ],
                 ),
               ),

@@ -900,8 +900,14 @@ class _ProductsState extends State<Products> {
       print(name);
       for (int i = 0; i < value.length; i++){
          if(name == value[i].productName){
+           var productHistoryDetails = ProductHistoryDetails();
+           productHistoryDetails.initialQty = value[i].initialQuantity;
+           productHistoryDetails.qtyReceived = _initialQuantity.toString();
+           productHistoryDetails.currentQty = (double.parse(value[i].currentQuantity) + _initialQuantity).toString();
+           productHistoryDetails.collectedAt = DateTime.now().toString();
+
            _updateProduct(
-             null,
+             productHistoryDetails,
                value[i].id,
                name,
                value[i].productName,

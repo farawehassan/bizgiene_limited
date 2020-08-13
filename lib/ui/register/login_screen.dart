@@ -228,7 +228,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           child: TextFormField(
                             focusNode: myFocusNodePhoneLogin,
                             controller: loginPhoneController,
-                            keyboardType: TextInputType.phone,
                             validator: (value) {
                               if (value.isEmpty) {
                                 setState(() {

@@ -173,11 +173,13 @@ class _AllCustomersState extends State<AllCustomers> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      try {
-                                        _callPhone("tel:${customer.phone}");
-                                      } catch (e) {
-                                        print(e);
-                                        Constants.showMessage(e);
+                                      if(customer.phone.isNotEmpty || (customer.phone != "")){
+                                        try {
+                                          _callPhone("tel:${customer.phone}");
+                                        } catch (e) {
+                                          print(e);
+                                          Constants.showMessage(e);
+                                        }
                                       }
                                     },
                                     child: Text(

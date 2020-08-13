@@ -40,7 +40,7 @@ class Constants{
   static const List<String> sevenUpItems = [
     'Pepsi',
     '7up',
-    'Mirinda',
+    'Mirinda Orange',
     'Mirinda Apple Red',
     'Mirinda Apple Green',
     'Teem Lemon',

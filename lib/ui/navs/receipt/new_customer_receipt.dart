@@ -80,7 +80,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
   String _customerName;
 
   /// Variable holding the customer's name
-  String _customerPhone;
+  String _customerPhone = "";
 
   /// Variable holding the total price
   double _totalPrice = 0.0;
@@ -440,35 +440,6 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
                                 textAlign: TextAlign.end,
                                 controller: _phoneController,
                                 keyboardType: TextInputType.text,
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    setState(() {
-                                      if(_animatedHeight == 348){
-                                        _animatedHeight = 379;
-                                      }
-                                      else if(_animatedHeight == 379){
-                                        _animatedHeight = 404;
-                                      }
-                                      else if(_animatedHeight == 404){
-                                        _animatedHeight = 428;
-                                      }
-                                    });
-                                    return 'Enter number';
-                                  }
-                                  setState(() {
-                                    if(_animatedHeight == 379){
-                                      _animatedHeight = 379;
-                                    }
-                                    else if(_animatedHeight == 404){
-                                      _animatedHeight = 404;
-                                    }else if(_animatedHeight == 428){
-                                      _animatedHeight = 428;
-                                    } else {
-                                      _animatedHeight = 348;
-                                    }
-                                  });
-                                  return null;
-                                },
                                 style: TextStyle(
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.bold
