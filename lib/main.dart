@@ -34,6 +34,9 @@ void main() {
 
 /// A StatelessWidget class to hold basic details and routes of my application
 class MyApp extends StatefulWidget {
+
+  static final navigatorKey = new GlobalKey<NavigatorState>();
+
   @override
   _MyAppState createState() => _MyAppState();
 }

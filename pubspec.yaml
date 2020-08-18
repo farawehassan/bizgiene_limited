@@ -32,12 +32,8 @@ dependencies:
   dynamic_theme: ^1.0.1
   google_fonts: ^1.1.0
   url_launcher: ^5.5.0
-  #flutter_local_notifications: ^1.4.4+2
+  flutter_local_notifications: ^1.4.4+2
 
-  # bloc dependencies
-  bloc: ^4.0.0
-  flutter_bloc: ^4.0.0
-  bloc_test: ^5.1.0
 
 dev_dependencies:
   flutter_test:

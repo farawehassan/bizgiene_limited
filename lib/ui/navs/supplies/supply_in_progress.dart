@@ -1,6 +1,5 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
-import 'package:bizgienelimited/model/supply_products.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
@@ -11,6 +10,10 @@ import 'package:intl/intl.dart';
 class SupplyInProgress extends StatefulWidget {
 
   static const String id = 'supply_in_progress_page';
+
+  final String payload;
+
+  const SupplyInProgress({Key key, this.payload}) : super(key: key);
 
   @override
   _SupplyInProgressState createState() => _SupplyInProgressState();
@@ -177,14 +180,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                         child: IconButton(
                           icon: Icon(Icons.more_vert),
                           onPressed: () {
-                            List<SupplyProducts> products = _supplyInProgress[index].products;
-                            List<Map> _supplyDetails = new List();
-                            Map data = {};
-                            for(int i = 0 ; i < products.length; i++){
-                              data = {'qty':'${products[i].qty}', 'productName': '${products[i].name}', 'unitPrice': '${products[i].unitPrice}', 'totalPrice': '${products[i].totalPrice}'};
-                              _supplyDetails.add(data);
-                            }
-                            displayDialog(_supplyInProgress[index].id, _supplyDetails, double.parse(_supplyInProgress[index].amount), _supplyInProgress[index].notes);
+                            displayDialog(_supplyInProgress[index].id, double.parse(_supplyInProgress[index].amount), _supplyInProgress[index].notes);
                           },
                         ),
                       ),
@@ -235,7 +231,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
 
   /// Function to display dialog of supply details [details] the optional notes
   /// [note] if it is not empty
-  void displayDialog(String id, List<Map> details, double total, String note){
+  void displayDialog(String id, double total, String note){
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -250,7 +246,28 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              _dataTable(details, total),
+              Container(
+                margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                padding: EdgeInsets.only(right: 10.0, top: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Total Amount = ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500
+                      ),
+                    ),
+                    Text(
+                      '${Constants.money(total).output.symbolOnLeft}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF008752),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               note != "" ? Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +275,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                   Container(
                     padding: EdgeInsets.only(top: 12.0, bottom: 6.0),
                     child: Text(
-                      "Extra Notes",
+                      "Notes",
                       style: TextStyle(
                         fontWeight: FontWeight.bold
                       ),
@@ -437,71 +454,6 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
         ),
       ),
       //barrierDismissible: false,
-    );
-  }
-
-  /// Creating a [DataTable] widget from a List of Map [supplyList]
-  /// using QTY, PRODUCT, UNIT, TOTAL as DataColumn and
-  /// the values of each DataColumn in the [supplyList] as DataRows
-  SingleChildScrollView _dataTable(List<Map> supplyList, double total){
-    print(supplyList);
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          DataTable(
-            columnSpacing: 10.0,
-            columns: [
-              DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.normal),)),
-              DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.normal),)),
-              DataColumn(label: Text('UNIT', style: TextStyle(fontWeight: FontWeight.normal),)),
-              DataColumn(label: Text('TOTAL', style: TextStyle(fontWeight: FontWeight.normal),)),
-            ],
-            rows: supplyList.map((supply) {
-              return DataRow(
-                  cells: [
-                    DataCell(
-                      Text(supply['qty'].toString()),
-                    ),
-                    DataCell(
-                      Text(supply['productName'].toString()),
-                    ),
-                    DataCell(
-                      Text(Constants.money(double.parse(supply['unitPrice'])).output.symbolOnLeft.toString()),
-                    ),
-                    DataCell(
-                      Text(Constants.money(double.parse(supply['totalPrice'])).output.symbolOnLeft.toString()),
-                    ),
-                  ]
-              );
-            }).toList(),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 5.0, right: 40.0),
-            padding: EdgeInsets.only(right: 20.0, top: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Total Amount = ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500
-                  ),
-                ),
-                Text(
-                  '${Constants.money(total).output.symbolOnLeft}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF008752),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
     );
   }
 

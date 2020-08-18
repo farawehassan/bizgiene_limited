@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:bizgienelimited/model/supply_products.dart';
 
 /// A class to hold my [Supply] model
 class Supply {
@@ -9,7 +6,6 @@ class Supply {
     this.id,
     this.dealer,
     this.amount,
-    this.products,
     this.notes,
     this.received,
     this.createdAt,
@@ -25,9 +21,6 @@ class Supply {
   /// A string variable to hold the amount
   String amount;
 
-  /// An object variable to hold the product type and details
-  List<SupplyProducts> products;
-
   /// A string variable to hold the extra notes
   String notes;
 
@@ -42,13 +35,10 @@ class Supply {
 
   /// Creating a method to map my JSON values to the model details accordingly
   factory Supply.fromJson(Map<String, dynamic> json) {
-    var productsJson = jsonDecode(json['products']) as List;
-    List<SupplyProducts> res = productsJson.map((json) => SupplyProducts.fromJson(json)).toList();
     return Supply(
       id: json["_id"].toString(),
       dealer: json["dealer"].toString(),
       amount: json["amount"].toString(),
-      products: res,
       notes: json["notes"],
       received: json["received"],
       createdAt: json["createdAt"].toString(),

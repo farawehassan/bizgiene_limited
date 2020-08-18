@@ -375,7 +375,6 @@ class RestDataSource {
     return _netUtil.post(ADD_SUPPLY_URL, headers: header, body: {
       "dealer": supply.dealer.toString(),
       "amount": supply.amount.toString(),
-      "products": jsonEncode(supply.products),
       "notes": supply.notes.toString(),
       "received": supply.received.toString(),
       "createdAt": supply.createdAt.toString(),
@@ -410,7 +409,6 @@ class RestDataSource {
       "id": supply.id,
       "dealer": supply.dealer.toString(),
       "amount": supply.amount.toString(),
-      "products": supply.products,
       "notes": supply.notes,
       "received": supply.received,
     }).then((dynamic res) {

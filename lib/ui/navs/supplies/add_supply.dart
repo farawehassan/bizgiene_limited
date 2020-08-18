@@ -1,15 +1,11 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
-import 'package:bizgienelimited/bloc/select_suggestions.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
-import 'package:bizgienelimited/model/supply_products.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/styles/theme.dart' as Theme;
 import 'package:bizgienelimited/utils/constants.dart';
-import 'package:bizgienelimited/utils/round_icon.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -39,30 +35,6 @@ class _AddSupplyState extends State<AddSupply> {
   /// A [TextEditingController] to control the input text for the optional notes
   TextEditingController _noteController = new TextEditingController();
 
-  /// Variable to hold the quantity of an item recorded
-  double _quantity;
-
-  /// Variable to hold the name of an item recorded
-  String _productName;
-
-  /// Variable to hold the unitPrice of an item recorded
-  double _unitPrice;
-
-  /// Variable to hold the totalPrice of an item recorded
-  double _totalPrice = 0.0;
-
-  /// A variable holding the number of rows
-  int increment = 0;
-
-  /// A Map to hold the details of a sales record
-  Map _details = {};
-
-  /// A List to hold the Map of the data above
-  List<Map> _detailsList = [];
-
-  /// A List to hold all the supply products in a row
-  List<Row> _rows = [];
-
   /// A boolean variable to hold the [inAsyncCall] value in my
   /// [ModalProgressHUD] widget
   bool showSpinner = false;
@@ -70,156 +42,6 @@ class _AddSupplyState extends State<AddSupply> {
   /// A boolean variable to hold the value of  whether the picker should show
   bool showPicker = false;
 
-  /// Function to add a new row to supply sales details:
-  /// [_quantity], [_productName], [_unitPrice] and [_totalPrice]
-  void _addRow() {
-
-    final TextEditingController qtyController = TextEditingController();
-    final TextEditingController priceController = TextEditingController();
-    final TextEditingController productController = TextEditingController();
-    final TextEditingController totalPriceController = TextEditingController();
-
-    if (!mounted) return;
-    setState(() {
-      _details = {'qty':'$_quantity','productName':_productName,'unitPrice':'$_unitPrice','totalPrice':'$_totalPrice'};
-      increment ++;
-
-      _rows.add(Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Flexible(
-            child: Container(
-              margin: EdgeInsets.symmetric(vertical: 8.0),
-              width: SizeConfig.safeBlockHorizontal * 25,
-              child: TypeAheadFormField(
-                textFieldConfiguration: TextFieldConfiguration(
-                  controller: productController,
-                  keyboardType: TextInputType.text,
-                  decoration: kTextFieldDecoration.copyWith(labelText: "Name"),
-                  onChanged: (value) {
-                    if (!mounted) return;
-                    setState(() {
-                      _productName = Constants.capitalize(value);
-                      _details['product'] = '$_productName';
-                    });
-                  },
-                ),
-                suggestionsCallback: (pattern) {
-                  return Suggestions.getProductSuggestions(pattern, Constants.sevenUpItems);
-                },
-                itemBuilder: (context, suggestion) {
-                  return ListTile(
-                    title: Text(suggestion),
-                  );
-                },
-                transitionBuilder: (context, suggestionsBox, controller) {
-                  return suggestionsBox;
-                },
-                onSuggestionSelected: (suggestion) {
-                  productController.text = suggestion;
-                  _productName = productController.text;
-                  _details['product'] = '$_productName';
-                },
-                onSaved: (value) {
-                  this._productName = value;
-                  _details['product'] = '$value';
-                },
-              ),
-            ),
-          ),
-          Flexible(
-            child: Container(
-              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-              width: SizeConfig.safeBlockHorizontal * 15,//100.0,
-              child: TextField(
-                keyboardType: TextInputType.number,
-                controller: qtyController,
-                onChanged: (value) {
-                  if (!mounted) return;
-                  setState(() {
-                    _quantity = double.parse(value);
-                    _details['qty'] = '$_quantity';
-                    if(priceController.text != null){
-                      _totalPrice = double.parse(priceController.text) * double.parse(qtyController.text);
-                      totalPriceController.text = _totalPrice.toString();
-                      _details['totalPrice'] = '$_totalPrice';
-                    }
-                  });
-                },
-                decoration: kTextFieldDecoration.copyWith(labelText: "Qty"),
-              ),
-            ),
-          ),
-          Flexible(
-            child: Container(
-              width: SizeConfig.safeBlockHorizontal * 15,//80.0,
-              margin: EdgeInsets.symmetric(vertical: 8.0),
-              child: TextField(
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  if (!mounted) return;
-                  setState(() {
-                    _unitPrice = double.parse(value);
-                    _details['unitPrice'] = '$_unitPrice';
-                    _totalPrice = double.parse(value) * double.parse(qtyController.text);
-                    totalPriceController.text = _totalPrice.toString();
-                    _details['totalPrice'] = '$_totalPrice';
-                  });
-                },
-                decoration: kTextFieldDecoration.copyWith(labelText: 'Unit Price'),
-              ),
-            ),
-          ),
-          Flexible(
-            child: Container(
-              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-              width: SizeConfig.safeBlockHorizontal * 20,//150.0,
-              child: TextField(
-                controller: totalPriceController,
-                decoration: kTextFieldDecoration.copyWith(hintText: '0.0'),
-              ),
-            ),
-          ),
-        ],
-      ));
-
-      print(_details);
-
-    });
-
-    if(_details['qty'].toString().isNotEmpty && _details['productName'].toString().isNotEmpty && _details['unitPrice'].toString().isNotEmpty && _details['totalPrice'].toString().isNotEmpty){
-      try {
-        _detailsList.add(_details);
-        _details.clear();
-        qtyController.clear();
-        priceController.clear();
-        print(_detailsList);
-      } catch (e) {
-        print(e);
-        Constants.showMessage("Error in products");
-      }
-    }
-
-  }
-
-  /// Function to delete a row from the supply sales at a particular [index]
-  void _deleteItem(index){
-    if (!mounted) return;
-    setState((){
-      print(index);
-      _rows.removeAt(index);
-      try {
-        print(_detailsList[index]);
-        _detailsList.removeAt(index);
-        generateTotal();
-      } catch (e) {
-        print(e);
-        Constants.showMessage(e);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -264,65 +86,10 @@ class _AddSupplyState extends State<AddSupply> {
                     ),
                     Padding(
                       padding: EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            'Products',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.0,
-                            ),
-                          ),
-                          AddIconButton(
-                            icon: Icon(Icons.add, color: Color(0xFF008752),),
-                            onPressed: (){
-                              _addRow();
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: _rows.map((data) {
-                            int index = _rows.indexOf(data);
-                            return SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  _rows[index],
-                                  AddIconButton(
-                                    icon: Icon(Icons.remove, color: Colors.red,),
-                                    onPressed: (){
-                                      _deleteItem(index);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: <Widget>[
-                            AddIconButton(
-                              icon: Icon(Icons.add, color: Color(0xFF008752),),
-                              onPressed: (){
-                                generateTotal();
-                              },
-                            ),
-                            SizedBox(width: 10.0,),
                             Text(
                               "Total  = ",
                               style: TextStyle(
@@ -335,6 +102,7 @@ class _AddSupplyState extends State<AddSupply> {
                               width: SizeConfig.safeBlockHorizontal * 50,
                               child: TextField(
                                 controller: _amountController,
+                                keyboardType: TextInputType.number,
                                 decoration: kTextFieldDecoration.copyWith(hintText: '0.0'),
                               ),
                             ),
@@ -342,18 +110,16 @@ class _AddSupplyState extends State<AddSupply> {
                         ),
                       ),
                     ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: TextFormField(
-                          decoration: kAddProductDecoration.copyWith(hintText: "Optional notes"),
-                          keyboardType: TextInputType.text,
-                          controller: _noteController,
-                          autocorrect: true,
-                          minLines: 1,
-                          maxLines: 20,
-                        ),
+                    Container(
+                      height: 200,
+                      padding: EdgeInsets.all(16.0),
+                      child: TextFormField(
+                        decoration: kAddProductDecoration.copyWith(hintText: "Products you intend to get"),
+                        keyboardType: TextInputType.multiline,
+                        controller: _noteController,
+                        autocorrect: true,
+                        minLines: 1,
+                        maxLines: 40,
                       ),
                     ),
                   ],
@@ -390,35 +156,7 @@ class _AddSupplyState extends State<AddSupply> {
                       ),
                       onPressed: () {
                         if(_formKey.currentState.validate()){
-                          if(_detailsList.isNotEmpty && _detailsList != null){
-                            List<SupplyProducts> products = new List();
-                            for(int i = 0; i < _detailsList.length; i++){
-                              if(_detailsList[i].isNotEmpty){
-                                var supplyProducts = SupplyProducts();
-                                supplyProducts.qty = _detailsList[i]['qty'].toString();
-                                supplyProducts.name = _detailsList[i]['product'].toString();
-                                supplyProducts.unitPrice = _detailsList[i]['unitPrice'].toString();
-                                supplyProducts.totalPrice = _detailsList[i]['totalPrice'].toString();
-                                products.add(supplyProducts);
-                              }
-
-                            }
-                            if(products.isNotEmpty){
-                              setState(() {
-                                showSpinner = true;
-                              });
-                              createSupply(
-                                  _nameController.text,
-                                  products,
-                                  double.parse(_amountController.text),
-                                  _noteController.text
-                              );
-                            } else {
-                              Constants.showMessage('No products recorded');
-                            }
-                          } else {
-                            Constants.showMessage('No products recorded');
-                          }
+                          confirmDialog();
                         }
                       }
                   ),
@@ -431,27 +169,86 @@ class _AddSupplyState extends State<AddSupply> {
     );
   }
 
-  void generateTotal(){
-    double total = 0.0;
-    for(int i = 0; i < _detailsList.length; i++){
-      if(_detailsList[i]['totalPrice'] != null){
-        total += double.parse(_detailsList[i]['totalPrice']);
-      }
-    }
-    setState(() {
-      _amountController.text = total.toString();
-    });
+  /// Function to confirm if a supply wants to be saved
+  void confirmDialog(){
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        elevation: 0.0,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  'Confirm your supply of ${Constants.money(double.parse(_amountController.text)).output.symbolOnLeft}',
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 24.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // To close the dialog
+                        if (!mounted) return;
+                        setState(() {
+                          showSpinner = true;
+                        });
+                        createSupply(
+                            _nameController.text,
+                            double.parse(_amountController.text),
+                            _noteController.text
+                        );
+                      },
+                      textColor: Color(0xFF008752),
+                      child: Text('YES'),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pop(); // To close the dialog
+                      },
+                      textColor: Color(0xFF008752),
+                      child: Text('NO'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      //barrierDismissible: false,
+    );
   }
 
   /// Function that creates a new supply by calling
   /// [addSupply] in the [RestDataSource] class
-  void createSupply(String name, List<SupplyProducts> products, double amount, String notes){
+  void createSupply(String name, double amount, String notes){
     var supply = Supply();
     var api = new RestDataSource();
     try {
       supply.dealer = Constants.capitalize(name);
       supply.amount = amount.toString();
-      supply.products = products;
       supply.notes = notes;
       supply.received = false;
       supply.createdAt = DateTime.now().toString();
@@ -461,11 +258,13 @@ class _AddSupplyState extends State<AddSupply> {
         _amountController.clear();
         _noteController.clear();
 
+        if (!mounted) return;
         setState(() {
           showSpinner = false;
         });
         Constants.showMessage('Supply successfully created');
       }).catchError((error) {
+        if (!mounted) return;
         setState(() {
           showSpinner = false;
         });
@@ -474,6 +273,7 @@ class _AddSupplyState extends State<AddSupply> {
 
     } catch (e) {
       print(e);
+      if (!mounted) return;
       setState(() {
         showSpinner = false;
       });
