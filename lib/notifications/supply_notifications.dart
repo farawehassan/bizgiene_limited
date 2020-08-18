@@ -17,7 +17,7 @@ class SupplyNotificationManager {
   }
 
   void initNotifications() {
-    // initialise the plugin.
+    /// initialise the plugin.
     var initializationSettingsAndroid =
     new AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = IOSInitializationSettings(
@@ -28,13 +28,12 @@ class SupplyNotificationManager {
         onSelectNotification: onSelectNotification);
   }
 
-  void showAppointmentNotificationDaily(
+  void showSupplyNotificationDaily(
       int id, String title, String body, int hour, int minute) async {
     var time = new Time(hour, minute, 0);
     await flutterLocalNotificationsPlugin.showDailyAtTime(
         id, title, body, time, getPlatformChannelSpecifics(id));
-    print(
-        'Notification Successfully Scheduled at ${time.toString()} with id of $id');
+    print('Notification Successfully Scheduled at ${time.toString()} with id of $id');
   }
 
   getPlatformChannelSpecifics(int id) {
@@ -61,8 +60,7 @@ class SupplyNotificationManager {
     }
     await Navigator.push(
       MyApp.navigatorKey.currentState.context,
-      MaterialPageRoute(
-          builder: (context) => SupplyInProgress(payload: payload)),
+      MaterialPageRoute(builder: (context) => SupplyInProgress(payload: payload)),
     );
   }
 

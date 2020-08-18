@@ -16,7 +16,7 @@ class NotificationManager {
   }
 
   void initNotifications() {
-    // initialise the plugin.
+    /// initialise the plugin.
     var initializationSettingsAndroid =
     new AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = IOSInitializationSettings(
