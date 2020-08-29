@@ -2,6 +2,7 @@ import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/customer_reports_details.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/notifications/notification_manager.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
@@ -121,10 +122,13 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
       return ListView.builder(
         itemCount: _outstandingCustomers == null ? 0 : _outstandingCustomers.length,
         itemBuilder: (BuildContext context, int index) {
+          var now = DateTime.now();
           Customer customer = _outstandingCustomers[index].values.first;
           CustomerReport customerReport = _outstandingCustomers[index].keys.first;
           double balance = double.parse(customerReport.totalAmount) -
               double.parse(customerReport.paymentMade);
+          var dueDate = DateTime.parse(customerReport.dueDate);
+          var difference = now.difference(dueDate).inDays;
           return Container(
             height: 120,
             margin: const EdgeInsets.all(10.0),
@@ -198,7 +202,7 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
                         ),
                         PopupMenuButton<String>(
                             onSelected: (choice) {
-                              choiceAction(choice, customer, customerReport);
+                              choiceAction(choice, customer, customerReport, customer.id, difference);
                             },
                             itemBuilder: (BuildContext context) {
                               return Constants.showUpdateChoices.map((String choice) {
@@ -652,12 +656,12 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
   }
 
   /// A function to set actions for the options menu with the value [choice]
-  void choiceAction(String choice, Customer customer, CustomerReport customerReport){
+  void choiceAction(String choice, Customer customer, CustomerReport customerReport, String id, int difference){
     if(choice == Constants.ShowUpdate){
       _displayUpdateDialog(customer, customerReport);
     }
     else if(choice == Constants.ShowSettle){
-      _confirmDialog(customer, customerReport);
+      _confirmDialog(customer, customerReport, id, difference);
     }
 
   }
@@ -683,7 +687,7 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
   }
 
   /// Function to confirm if a customer's report payment wants to be settled
-  void _confirmDialog(Customer customer, CustomerReport customerReport){
+  void _confirmDialog(Customer customer, CustomerReport customerReport, String id, int difference){
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -719,7 +723,7 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
                     child: FlatButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // To close the dialog
-                        _settlePayment(customer, customerReport);
+                        _settlePayment(customer, customerReport, id, difference);
                       },
                       textColor: Color(0xFF008752),
                       child: Text('YES'),
@@ -812,13 +816,17 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
 
   /// Function that settles a payment of a customer by calling
   /// [settlePaymentReport] in the [RestDataSource] class
-  void _settlePayment(Customer customer, CustomerReport customerReport) async {
+  void _settlePayment(Customer customer, CustomerReport customerReport, String id, int difference) async {
     var api = new RestDataSource();
 
     await api.settlePaymentReport(customer.id, customerReport.id, customerReport.totalAmount)
         .then((value) {
            Constants.showMessage('${customer.name} payment settled successfully');
            _refreshData();
+           if(difference >= 2){
+             NotificationManager notificationManager;
+             notificationManager.removeReminder(id);
+           }
         })
         .catchError((onError) {
           print(onError.toString());

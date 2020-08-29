@@ -434,7 +434,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   ListTile(
                     leading: Icon(Icons.book),
-                    title: Text('Available Drinks'),
+                    title: Text('Products'),
                     onTap: (){
                       Navigator.pushNamed(context, Products.id);
                     },

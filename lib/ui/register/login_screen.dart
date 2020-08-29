@@ -1,5 +1,6 @@
 import 'package:bizgienelimited/database/user_db_helper.dart';
 import 'package:bizgienelimited/model/user.dart';
+import 'package:bizgienelimited/notifications/notification_manager.dart';
 import 'package:bizgienelimited/styles/theme.dart' as Theme;
 import 'package:bizgienelimited/ui/navs/home_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -470,6 +471,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     }
     loginPhoneController.clear();
     loginPasswordController.clear();
+    NotificationManager notificationManager = NotificationManager();
+    await notificationManager.configureSupplyNotifications();
+    await notificationManager.configureCustomerNotifications();
   }
 
   /// This function calls [_showInSnackBar()] to show a snackbar

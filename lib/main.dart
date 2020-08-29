@@ -18,6 +18,7 @@ import 'ui/navs/available_drinks.dart';
 import 'ui/splash.dart';
 import 'ui/welcome_screen.dart';
 
+
 /// Enabling platform override for desktop
 void enablePlatformOverrideForDesktop() {
   if (!kIsWeb && (Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
@@ -25,10 +26,13 @@ void enablePlatformOverrideForDesktop() {
   }
 }
 
+
 /// Function to call my main application [MyApp()]
 /// and [enablePlatformOverrideForDesktop()]
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   enablePlatformOverrideForDesktop();
+
   runApp(MyApp());
 }
 
@@ -54,6 +58,7 @@ class _MyAppState extends State<MyApp> {
             ),
         themedWidgetBuilder: (context, theme) {
           return MaterialApp(
+            navigatorKey: MyApp.navigatorKey,
             title: 'Bizgenie Limited',
             debugShowCheckedModeBanner: false,
             theme: theme,

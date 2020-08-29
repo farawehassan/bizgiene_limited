@@ -36,6 +36,7 @@ class RestDataSource {
   static final FETCH_PRODUCT_URL = BASE_URL + "/product/fetchProduct";
 
   static final ADD_REPORT_URL = BASE_URL + "/report/addNewReport";
+  static final UPDATE_REPORT_NAME_URL = BASE_URL + "/report/updateReportName";
   static final FETCH_REPORT_URL = BASE_URL + "/report/fetchAllReports";
   static final DELETE_REPORT_URL = BASE_URL + "/report/deleteReport";
 
@@ -276,6 +277,37 @@ class RestDataSource {
         throw ("Unable to connect to the server, check your internet connection");
       }
       throw ("Error in saving ${reportsData.productName}, try again");
+    });
+  }
+
+  /// A function that updates report product name to the server PUT.
+  /// with [Reports] model
+  Future<dynamic> updateReportName(String productName, String updatedName) async{
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+
+    return _netUtil.put(UPDATE_REPORT_NAME_URL, headers: header, body: {
+      "productName": productName,
+      "updatedName": updatedName,
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in updating $productName, try again");
     });
   }
 

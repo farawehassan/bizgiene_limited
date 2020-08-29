@@ -2,12 +2,16 @@ import 'package:bizgienelimited/ui/navs/supplies/received_supply.dart';
 import 'package:bizgienelimited/ui/navs/supplies/supply_in_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-
 import 'add_supply.dart';
 
 class SupplyPage extends StatefulWidget {
 
   static const String id = 'supply_page';
+
+  //final String payload;
+
+  //const SupplyPage({Key key, this.payload}) : super(key: key);
+
 
   @override
   _SupplyPageState createState() => _SupplyPageState();
@@ -16,13 +20,13 @@ class SupplyPage extends StatefulWidget {
 class _SupplyPageState extends State<SupplyPage> with SingleTickerProviderStateMixin {
 
   final List<Tab> myTabs = <Tab>[
-    Tab(text: 'Received'),
     Tab(text: 'In Progress'),
+    Tab(text: 'Received'),
   ];
 
   final List<Widget> _children = [
-    ReceivedSupply(),
-    SupplyInProgress()
+    SupplyInProgress(),
+    ReceivedSupply()
   ];
 
   TabController _tabController;
@@ -47,14 +51,28 @@ class _SupplyPageState extends State<SupplyPage> with SingleTickerProviderStateM
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text("Supplies", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 36.0),),
-            IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: (){
-                Navigator.pushNamed(context, AddSupply.id);
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.mail_outline,
+                    color: Colors.white,
+                  ),
+                  onPressed: (){
+                    Navigator.pushNamed(context, AddSupply.id);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                  onPressed: (){
+                    Navigator.pushNamed(context, AddSupply.id);
+                  },
+                ),
+              ],
             ),
           ],
         ),

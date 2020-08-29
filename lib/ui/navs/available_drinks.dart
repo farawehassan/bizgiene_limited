@@ -68,25 +68,25 @@ class _ProductsState extends State<Products> {
 
   /// Variable of List<[Product]> to hold
   /// the details of all the availableProduct
-  List<Product> _names = new List();
+  List<Product> _names = List();
 
   /// Variable of List<[String]> to hold the suggestions of product names to add
   /// while creating a new product
-  List<String> _nameSuggestions = new List();
+  List<String> _nameSuggestions = List();
 
   /// Variable of List<[Product]> to hold
   /// the details of all filtered availableProduct
-  List<Product> _filteredNames = new List();
+  List<Product> _filteredNames = List();
 
   /// Variable of List<[ProductHistory]> to hold
   /// the details of all the product history
-  List<ProductHistory> _productHistory = new List();
+  List<ProductHistory> _productHistory = List();
 
   /// Variable to hold an Icon Widget of Search
-  Icon _searchIcon = new Icon(Icons.search);
+  Icon _searchIcon = Icon(Icons.search);
 
   /// Variable to hold a Widget of Text for the appBarText
-  Widget _appBarTitle = new Text('Products');
+  Widget _appBarTitle = Text('Available Products');
 
   /// Checking if the filter controller is empty to reset the
   /// _searchText on the appBar to "" and the filteredNames to Names
@@ -126,17 +126,30 @@ class _ProductsState extends State<Products> {
     Future<List<String>> suggestionNames;
     Future<List<Product>> productNames;
 
+    suggestionNames = futureValue.getAllProductNamesFromDB();
     if(productsToShow == 1){
-      suggestionNames = futureValue.getAllProductNamesFromDB();
+      if (!mounted) return;
+      setState(() {
+        _appBarTitle = Text('All Products');
+      });
       productNames = futureValue.getAllProductsFromDB();
     } else if(productsToShow == 2){
-      suggestionNames = futureValue.getAllProductNamesFromDB();
+      if (!mounted) return;
+      setState(() {
+        _appBarTitle = Text('Available Products');
+      });
       productNames = futureValue.getAvailableProductsFromDB();
     } else if(productsToShow == 3){
-      suggestionNames = futureValue.getAllProductNamesFromDB();
+      if (!mounted) return;
+      setState(() {
+        _appBarTitle = Text('Products Out of Stock');
+      });
       productNames = futureValue.getFinishedProductFromDB();
     } else if(productsToShow == 4){
-      suggestionNames = futureValue.getAllProductNamesFromDB();
+      if (!mounted) return;
+      setState(() {
+        _appBarTitle = Text('Other Products');
+      });
       productNames = futureValue.getOtherProductFromDB();
     }
 
@@ -333,17 +346,26 @@ class _ProductsState extends State<Products> {
     Future<List<String>> suggestionNames;
     Future<List<Product>> productNames;
 
+    suggestionNames = futureValue.getAllProductNamesFromDB();
     if(productsToShow == 1){
-      suggestionNames = futureValue.getAllProductNamesFromDB();
+      setState(() {
+        _appBarTitle = Text('All Products');
+      });
       productNames = futureValue.getAllProductsFromDB();
     } else if(productsToShow == 2){
-      suggestionNames = futureValue.getAllProductNamesFromDB();
+      setState(() {
+        _appBarTitle = Text('Available Products');
+      });
       productNames = futureValue.getAvailableProductsFromDB();
     } else if(productsToShow == 3){
-      suggestionNames = futureValue.getAllProductNamesFromDB();
+      setState(() {
+        _appBarTitle = Text('Products Out of Stock');
+      });
       productNames = futureValue.getFinishedProductFromDB();
     } else if(productsToShow == 4){
-      suggestionNames = futureValue.getAllProductNamesFromDB();
+      setState(() {
+        _appBarTitle = Text('Other Products');
+      });
       productNames = futureValue.getOtherProductFromDB();
     }
     return productNames.then((value) async {
@@ -755,7 +777,7 @@ class _ProductsState extends State<Products> {
                                     keyboardType: TextInputType.text,
                                     controller: controllerProduct,
                                     decoration: kAddProductDecoration.copyWith(
-                                        hintText: "Product name (if needed)"),
+                                        hintText: "$name"),
                                   ),
                                 ),
                                 Container(
@@ -790,7 +812,7 @@ class _ProductsState extends State<Products> {
                                           controllerCp.text = value;
                                         },
                                         decoration: kAddProductDecoration
-                                            .copyWith(hintText: "CP"),
+                                            .copyWith(hintText: "$cp"),
                                       ),
                                     ),
                                     SizedBox(
@@ -809,7 +831,7 @@ class _ProductsState extends State<Products> {
                                           controllerSp.text = value;
                                         },
                                         decoration: kAddProductDecoration
-                                            .copyWith(hintText: "SP"),
+                                            .copyWith(hintText: "$sp"),
                                       ),
                                     ),
                                   ],
@@ -993,33 +1015,44 @@ class _ProductsState extends State<Products> {
         product.productName = name;
       }else{
         product.productName = Constants.capitalize(updateName);
-        api.updateProductHistoryName(productHistoryId,
-            Constants.capitalize(updateName)).then((value) {
-          print("Updated name in history successfully");
+        api.updateReportName(name, Constants.capitalize(updateName)).then((value) {
+          api.updateProductHistoryName(productHistoryId,
+              Constants.capitalize(updateName)).then((value) {
+            print("Updated name in history successfully");
+          }).catchError((error) {
+            print(error);
+            Constants.showMessage(error.toString());
+          });
+          print("$name is updated in reports");
         }).catchError((error) {
           print(error);
           Constants.showMessage(error.toString());
         });
       }
+
       product.costPrice = cp.toString();
       product.sellingPrice = sp.toString();
       product.initialQuantity = initialQty.toString();
       product.currentQuantity = currentQty.toString();
 
       api.updateProduct(product, id).then((value){
-        api.addHistoryToProduct(productHistoryId, details).then((value) {
+        if(double.parse(details.qtyReceived) != 0){
+          api.addHistoryToProduct(productHistoryId, details).then((value) {
+            Constants.showMessage( "$name is updated");
+          }).catchError((error) {
+            print(error);
+            Constants.showMessage(error.toString());
+          });
+        } else {
           Constants.showMessage( "$name is updated");
-        }).catchError((error) {
-          print(error);
-          Constants.showMessage(error.toString());
-        });
+        }
       }).catchError((error) {
         print(error);
         Constants.showMessage(error.toString());
       });
     } catch (e) {
       print(e);
-      Constants.showMessage( "Error in adding data");
+      Constants.showMessage("Error in adding data");
     }
   }
 

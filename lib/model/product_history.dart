@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:bizgienelimited/model/product_history_details.dart';
 
 /// A class to hold my [ProductHistory] model

@@ -216,7 +216,7 @@ class _ProductsSoldState extends State<ProductsSold> {
               ],
             ),
           ),
-          _userType == 'Admin' ? Container(
+          /*_userType == 'Admin' ? Container(
             margin: EdgeInsets.only(left: 5.0, right: 40.0),
             padding: EdgeInsets.only(right: 20.0, top: 20.0),
             child: Row(
@@ -237,7 +237,7 @@ class _ProductsSoldState extends State<ProductsSold> {
                 ),
               ],
             ),
-          ) : Container(),
+          ) : Container(),*/
         ],
       ),
     );

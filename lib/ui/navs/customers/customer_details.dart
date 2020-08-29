@@ -152,8 +152,8 @@ class _CustomerDetailsState extends State<CustomerDetails> {
     _reports = widget.customerReports.reversed.toList();
     _reportLength = _reports.length;
     for(var report in _reports){
-      _dates.add(_getFormattedDate(report.soldAt));
-      _customerReport[_getFormattedDate(report.soldAt)] = report;
+      _dates.add(report.soldAt);
+      _customerReport[report.soldAt] = report;
     }
   }
 
@@ -184,7 +184,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                       width: 5.0,
                     ),
                     Text(
-                      _dates[index],
+                      _getFormattedDate(_dates[index]),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 20.0,

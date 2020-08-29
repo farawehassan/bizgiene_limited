@@ -1,3 +1,4 @@
+import 'package:bizgienelimited/notifications/notification_manager.dart';
 import 'package:bizgienelimited/ui/register/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     bool boolValue = prefs.getBool('loggedIn');
     if(boolValue == true){
       Navigator.of(context).pushReplacementNamed(MyHomePage.id);
+      NotificationManager notificationManager = NotificationManager();
+      await notificationManager.configureSupplyNotifications();
+      await notificationManager.configureCustomerNotifications();
     }
     else if(boolValue == false){
       Navigator.of(context).pushReplacementNamed(LoginScreen.id);

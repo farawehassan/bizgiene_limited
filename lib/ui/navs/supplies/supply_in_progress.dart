@@ -1,6 +1,7 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
 import 'package:bizgienelimited/networking/rest_data.dart';
+import 'package:bizgienelimited/notifications/notification_manager.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,10 +11,6 @@ import 'package:intl/intl.dart';
 class SupplyInProgress extends StatefulWidget {
 
   static const String id = 'supply_in_progress_page';
-
-  final String payload;
-
-  const SupplyInProgress({Key key, this.payload}) : super(key: key);
 
   @override
   _SupplyInProgressState createState() => _SupplyInProgressState();
@@ -180,7 +177,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                         child: IconButton(
                           icon: Icon(Icons.more_vert),
                           onPressed: () {
-                            displayDialog(_supplyInProgress[index].id, double.parse(_supplyInProgress[index].amount), _supplyInProgress[index].notes);
+                            displayDialog(_supplyInProgress[index].id, double.parse(_supplyInProgress[index].amount), _supplyInProgress[index].notes, difference);
                           },
                         ),
                       ),
@@ -231,7 +228,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
 
   /// Function to display dialog of supply details [details] the optional notes
   /// [note] if it is not empty
-  void displayDialog(String id, double total, String note){
+  void displayDialog(String id, double total, String note, int difference){
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -301,7 +298,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                     child: FlatButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // To close the dialog
-                        confirmDialog(id);
+                        confirmDialog(id, difference);
                       },
                       textColor: Color(0xFF008752),
                       child: Text('UPDATE'),
@@ -329,7 +326,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
   }
 
   /// Function to confirm if a supply is received and set it true
-  void confirmDialog(String id){
+  void confirmDialog(String id, int difference){
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -365,7 +362,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                     child: FlatButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // To close the dialog
-                        updateSupply(id);
+                        updateSupply(id, difference);
                       },
                       textColor: Color(0xFF008752),
                       child: Text('YES'),
@@ -459,12 +456,16 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
 
   /// Function that updates a supply to received by calling
   /// [receivedSupply] in the [RestDataSource] class
-  void updateSupply(String id){
+  void updateSupply(String id, int difference){
     var api = new RestDataSource();
     try {
       api.receivedSupply(id, true).then((value) {
         Constants.showMessage('Supply successfully received');
         _refreshData();
+        if(difference >= 2){
+          NotificationManager notificationManager;
+          notificationManager.removeReminder(id);
+        }
       }).catchError((error) {
         Constants.showMessage(error.toString());
       });
