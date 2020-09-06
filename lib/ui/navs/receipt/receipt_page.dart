@@ -15,6 +15,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'new_customer_receipt.dart';
 
 /// A StatefulWidget class that displays receipt of items recorded
@@ -70,7 +71,7 @@ class _ReceiptState extends State<Receipt> {
   static const String _email = "mbkosoko@yahoo.com";
 
   /// Variable holding today's datetime
-  DateTime _dateTime = DateTime.now();
+   DateTime _dateTime;
 
   /// Variable holding the due date and time
   DateTime _dueDate;
@@ -107,6 +108,10 @@ class _ReceiptState extends State<Receipt> {
 
   /// A double variable for the animated height in [_paymentDetails()]
   double _animatedHeight = 289.0;
+
+  /// A boolean variable to hold the [inAsyncCall] value in my
+  /// [ModalProgressHUD] widget
+  bool _showSpinner = false;
 
   /// Boolean variables for selection in [_whenToPay()]
   bool _received = false;
@@ -816,6 +821,10 @@ class _ReceiptState extends State<Receipt> {
   @override
   void initState() {
     super.initState();
+    if(!mounted)return;
+    setState(() {
+      _dateTime = DateTime.now();
+    });
     _addProducts();
     _allCustomerNames();
   }
@@ -1124,26 +1133,32 @@ class _ReceiptState extends State<Receipt> {
           ),*/
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Align(
-            alignment: Alignment.center,
-            child: Column(
-              children: <Widget>[
-                _storeDetails(),
-                SizedBox(height: 2.0),
-                _paymentDetailsTable(),
-                _whenToPay(),
-                Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    verticalDirection: VerticalDirection.down,
-                    children: <Widget>[_dataTable()],
+      body: ModalProgressHUD(
+        inAsyncCall: _showSpinner,
+        progressIndicator: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF008752)),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: <Widget>[
+                  _storeDetails(),
+                  SizedBox(height: 2.0),
+                  _paymentDetailsTable(),
+                  _whenToPay(),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      verticalDirection: VerticalDirection.down,
+                      children: <Widget>[_dataTable()],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -1154,7 +1169,7 @@ class _ReceiptState extends State<Receipt> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) =>
-                NewCustomerReceipt(sentProducts: widget.sentProducts)),
+                NewCustomerReceipt(sentProducts: widget.sentProducts, customerNames: _customerNames,)),
           );
         }
       ),
@@ -1167,6 +1182,10 @@ class _ReceiptState extends State<Receipt> {
   void _saveProduct(String paymentMode) async {
     if(_receivedProducts.length > 0 && _receivedProducts.isNotEmpty){
       try {
+        if(!mounted)return;
+        setState(() {
+          _showSpinner = true;
+        });
         await _saveCustomerReports().then((value) async {
           Constants.showMessage('$_customerName items were successfully added');
             for (var product in _receivedProducts) {
@@ -1182,11 +1201,18 @@ class _ReceiptState extends State<Receipt> {
                 });
             }
         }).catchError((e) {
+          if(!mounted)return;
+          setState(() {
+            _showSpinner = false;
+          });
           print(e);
           Constants.showMessage('${e.toString()}');
         });
       } catch (e) {
-        print(e);
+        if(!mounted)return;
+        setState(() {
+          _showSpinner = false;
+        });
         Constants.showMessage('${e.toString()}');
       }
       Navigator.pop(context);
@@ -1260,12 +1286,24 @@ class _ReceiptState extends State<Receipt> {
       dailyReport.createdAt = _dateTime.toString( );
 
       await api.addNewDailyReport(dailyReport).then((value) {
+        if(!mounted)return;
+        setState(() {
+          _showSpinner = false;
+        });
         print('$productName saved successfully');
       }).catchError((e) {
+        if(!mounted)return;
+        setState(() {
+          _showSpinner = false;
+        });
         print(e);
         throw (e);
       });
     } catch (e) {
+      if(!mounted)return;
+      setState(() {
+        _showSpinner = false;
+      });
       print(e);
       throw (e);
     }

@@ -164,6 +164,24 @@ class FutureValues {
     return supply;
   }
 
+  /// Method to get all the foc supplies from the database in the server with
+  /// the help of [RestDataSource]
+  /// It returns a list of [Supply]
+  Future<List<Supply>> getFOCSuppliesFromDB() async {
+    List<Supply> supply = new List();
+    Future<List<Supply>> receivedSupply = getAllSuppliesFromDB();
+    await receivedSupply.then((value){
+      for(int i = 0; i < value.length; i++){
+        if(value[i].foc == true){
+          supply.add(value[i]);
+        }
+      }
+    }).catchError((e){
+      throw e;
+    });
+    return supply;
+  }
+
   /// Method to get all the received supplies from the database in the server with
   /// the help of [RestDataSource]
   /// It returns a list of [Supply]
@@ -206,7 +224,6 @@ class FutureValues {
   Future<List<Customer>> getAllCustomersFromDB() {
     var data = RestDataSource();
     Future<List<Customer>> customer = data.fetchAllCustomers();
-    print(customer);
     return customer;
   }
 
@@ -286,7 +303,6 @@ class FutureValues {
     var now = DateTime.now();
     var time = DateTime.parse(dateTime);
     var difference = now.difference(time).inDays;
-    print(difference);
     return difference;
   }
 

@@ -6,6 +6,9 @@ class Supply {
     this.id,
     this.dealer,
     this.amount,
+    this.foc,
+    this.focRate,
+    this.focPayment,
     this.notes,
     this.received,
     this.createdAt,
@@ -20,6 +23,15 @@ class Supply {
 
   /// A string variable to hold the amount
   String amount;
+
+  /// A boolean variable to hold the supply type if foc or not
+  bool foc;
+
+  /// A string variable to hold the foc rate
+  String focRate;
+
+  /// A string variable to hold the foc payment
+  String focPayment;
 
   /// A string variable to hold the extra notes
   String notes;
@@ -39,6 +51,9 @@ class Supply {
       id: json["_id"].toString(),
       dealer: json["dealer"].toString(),
       amount: json["amount"].toString(),
+      foc: json["foc"],
+      focRate: json["focRate"].toString(),
+      focPayment: json["focPayment"].toString(),
       notes: json["notes"],
       received: json["received"],
       createdAt: json["createdAt"].toString(),

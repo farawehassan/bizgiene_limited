@@ -17,10 +17,19 @@ class Constants{
   static const String ShowUpdate = 'Update payment';
   static const String ShowSettle = 'Settle payment';
 
+  static const String ShowMonthlyProductsSold = 'Products Sold';
+  static const String ShowMonthlySupplies = 'Supplies';
+
   /// List of string to hold the menu options in [OutstandingBalance]
   static const List<String> showUpdateChoices = <String>[
     ShowUpdate,
     ShowSettle
+  ];
+
+  /// List of string to hold the menu options in [Products]
+  static const List<String> showMonthChoices = <String>[
+    ShowMonthlyProductsSold,
+    ShowMonthlySupplies
   ];
 
   /// List of string to hold the menu options in [Products]

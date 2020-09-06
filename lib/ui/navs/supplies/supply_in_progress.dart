@@ -36,19 +36,14 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
     List<Supply> tempList = new List();
     Future<List<Supply>> supplies = futureValue.getInProgressSuppliesFromDB();
     return supplies.then((value) {
-      print(value);
       if(value.length != 0){
-        print(value.length);
-        for (int i = 0; i < value.length; i++){
-          tempList.add(value[i]);
-        }
+        tempList.addAll(value);
         if (!mounted) return;
         setState(() {
           _supplyLength = tempList.length;
           _supplyInProgress = tempList.reversed.toList();
         });
       } else if(value.length == 0 || value.isEmpty){
-        print(value.length);
         if (!mounted) return;
         setState(() {
           _supplyLength = 0;
@@ -73,19 +68,14 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
     List<Supply> tempList = new List();
     Future<List<Supply>> supplies = futureValue.getInProgressSuppliesFromDB();
     await supplies.then((value) {
-      print(value);
       if(value.length != 0){
-        print(value.length);
-        for (int i = 0; i < value.length; i++){
-          tempList.add(value[i]);
-        }
+        tempList.addAll(value);
         if (!mounted) return;
         setState(() {
           _supplyLength = tempList.length;
           _supplyInProgress = tempList.reversed.toList();
         });
       } else if(value.length == 0 || value.isEmpty){
-        print(value.length);
         if (!mounted) return;
         setState(() {
           _supplyLength = 0;
@@ -148,6 +138,14 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                                   fontSize: SizeConfig.safeBlockHorizontal * 3.6,
                                 ),
                               ),
+                              SizedBox(width: 5.0,),
+                              _supplyInProgress[index].foc ? Text(
+                                '(FOC)',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: SizeConfig.safeBlockHorizontal * 3.6,
+                                ),
+                              ) : Text('')
                             ],
                           ),
                           //SizedBox(height: 6.0,),
@@ -161,7 +159,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                             ),
                           )
                               : Text(
-                            'Payed ${difference.toString()} days ago',
+                            'Payed ${difference.toString()} day(s) ago',
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF004C7F),
@@ -177,7 +175,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                         child: IconButton(
                           icon: Icon(Icons.more_vert),
                           onPressed: () {
-                            displayDialog(_supplyInProgress[index].id, double.parse(_supplyInProgress[index].amount), _supplyInProgress[index].notes, difference);
+                            displayDialog(_supplyInProgress[index], difference);
                           },
                         ),
                       ),
@@ -226,9 +224,9 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
     );
   }
 
-  /// Function to display dialog of supply details [details] the optional notes
+  /// Function to display dialog of supply details [details] and optional notes
   /// [note] if it is not empty
-  void displayDialog(String id, double total, String note, int difference){
+  void displayDialog(Supply index, int difference){
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -246,6 +244,17 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
               Container(
                 margin: EdgeInsets.only(left: 5.0, right: 5.0),
                 padding: EdgeInsets.only(right: 10.0, top: 20.0),
+                alignment: Alignment.center,
+                child: Text(
+                  index.foc ? 'FOC Supply': 'Normal Supply',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                padding: EdgeInsets.only(right: 10.0, top: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
@@ -256,7 +265,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                       ),
                     ),
                     Text(
-                      '${Constants.money(total).output.symbolOnLeft}',
+                      '${Constants.money(double.parse(index.amount)).output.symbolOnLeft}',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Color(0xFF008752),
@@ -265,7 +274,80 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                   ],
                 ),
               ),
-              note != "" ? Column(
+              index.foc
+                  ? Column(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                    padding: EdgeInsets.only(right: 10.0, top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Commission = ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500
+                          ),
+                        ),
+                        Text(
+                          '${index.focRate}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF008752),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                    padding: EdgeInsets.only(right: 10.0, top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Payment = ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500
+                          ),
+                        ),
+                        Text(
+                          '${Constants.money(double.parse(index.focPayment)).output.symbolOnLeft}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF008752),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                    padding: EdgeInsets.only(right: 10.0, top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Difference = ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500
+                          ),
+                        ),
+                        Text(
+                          '${Constants.money(double.parse(index.amount) - double.parse(index.focPayment)).output.symbolOnLeft}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF008752),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+                  : Container()
+              ,
+              index.notes != "" ? Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -281,7 +363,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                   Container(
                     padding: EdgeInsets.only(bottom: 5.0),
                     child: Text(
-                      note,
+                      index.notes,
                       style: TextStyle(
                           fontWeight: FontWeight.normal
                       ),
@@ -298,7 +380,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
                     child: FlatButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // To close the dialog
-                        confirmDialog(id, difference);
+                        confirmDialog(index.id, difference);
                       },
                       textColor: Color(0xFF008752),
                       child: Text('UPDATE'),
@@ -477,7 +559,7 @@ class _SupplyInProgressState extends State<SupplyInProgress> {
   }
 
   /// Function that deletes a supply by calling
-  /// [receivedSupply] in the [RestDataSource] class
+  /// [deleteSupply] in the [RestDataSource] class
   void deleteSupply(String id){
     var api = new RestDataSource();
     try {

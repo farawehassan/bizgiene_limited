@@ -1,7 +1,10 @@
 import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/customer_reports.dart';
+import 'package:bizgienelimited/model/customer_reports_details.dart';
+import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
 
@@ -23,6 +26,12 @@ class CustomerDetails extends StatefulWidget {
 }
 
 class _CustomerDetailsState extends State<CustomerDetails> {
+
+  /// A [TextEditingController] to control the input text for the user's password
+  TextEditingController _deletePasswordController = new TextEditingController();
+
+  /// GlobalKey of a my form state to validate my form while deleting a customer
+  final _confirmDeleteFormKey = new GlobalKey<FormState>();
 
   /// Variable of int to hold the numbers of reports
   int _reportLength;
@@ -167,6 +176,9 @@ class _CustomerDetailsState extends State<CustomerDetails> {
             onTap: () {
               _displayDialog(_customerReport[_dates[index]]);
             },
+            onLongPress: (){
+              _displayDeleteDialog(_customerReport[_dates[index]]);
+            },
             child: Card(
               margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
               child: Padding(
@@ -235,6 +247,285 @@ class _CustomerDetailsState extends State<CustomerDetails> {
         ),
       ),
     );
+  }
+
+  /// Function to display dialog of report details [index]
+  void _displayDeleteDialog(CustomerReport details){
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        elevation: 0.0,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // To close the dialog
+                    _confirmDeleteDialog(details);
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+              _dataTable(details),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // To close the dialog
+                  },
+                  color: Colors.transparent,
+                  //textColor: Color(0xFF008752),
+                  child: Text('CANCEL'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      //barrierDismissible: false,
+    );
+  }
+
+  /// Function to confirm if a customer sales wants to be deleted
+  /// It calls [_deleteCustomerReport()] if user confirms
+  void _confirmDeleteDialog(CustomerReport details){
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        elevation: 0.0,
+        child: Container(
+          //height: 320.0,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  'Are you sure you want to delete this sales',
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 24.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // To close the dialog
+                        _confirmPasswordDeleteDialog(details);
+                      },
+                      textColor: Colors.red,
+                      child: Text('YES'),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pop(); // To close the dialog
+                      },
+                      textColor: Colors.red,
+                      child: Text('NO'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      //barrierDismissible: false,
+    );
+  }
+
+  /// Function to confirm if a customer sales wants to be deleted by entering pin
+  /// It calls [_deleteCustomerReport()] if user confirms
+  void _confirmPasswordDeleteDialog(CustomerReport details){
+    bool obscureTextLogin = true;
+    _deletePasswordController.clear();
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        elevation: 0.0,
+        child: Form(
+          key: _confirmDeleteFormKey,
+          child: Container(
+            height: 200.0,
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    'Enter your pin',
+                    style: TextStyle(
+                      color: Color(0xFF008752),
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 24.0,
+                ),
+                Container(
+                  width: 150.0,
+                  child: TextFormField(
+                    controller: _deletePasswordController,
+                    obscureText: obscureTextLogin,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Enter a pin';
+                      }
+                      if (int.parse(_deletePasswordController.text) != 1234) {
+                        return 'Incorrect pin';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.black,
+                        decoration: TextDecoration.underline
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      icon: Icon(
+                        FontAwesomeIcons.lock,
+                        size: 22.0,
+                        color: Colors.black,
+                      ),
+                      hintText: "Pin",
+                      hintStyle: TextStyle(
+                          fontSize: 17.0,
+                          color: Colors.black54
+                      ),
+                      suffixIcon: GestureDetector(
+                        onTap: (){
+                          if(!mounted)return;
+                          setState(() {
+                            obscureTextLogin = !obscureTextLogin;
+                          });
+                        },
+                        child: Icon(
+                          obscureTextLogin
+                              ? FontAwesomeIcons.eye
+                              : FontAwesomeIcons.eyeSlash,
+                          size: 15.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _deletePasswordController.clear();// To close the dialog
+                        },
+                        textColor: Colors.red,
+                        child: Text('CANCEL'),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: FlatButton(
+                        onPressed: () {
+                          if(_confirmDeleteFormKey.currentState.validate()){
+                            _deleteCustomerReport(details);
+                            Navigator.of(context).pop(); // To close the dialog
+                            _deletePasswordController.clear();
+                          }
+                        },
+                        textColor: Colors.red,
+                        child: Text('DELETE'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      //barrierDismissible: false,
+    );
+  }
+
+  /// Function that deletes a customer by calling
+  /// [deleteCustomer] in the [RestDataSource] class
+  Future<void> _deleteCustomerReport(CustomerReport details) async {
+    List<CustomerReportDetails> reports = details.reportDetails;
+    String time = details.soldAt;
+    var api = new RestDataSource();
+    try {
+      for(int i = 0; i < reports.length; i++){
+        await _deleteReport(time, reports[i].productName);
+      }
+      await api.deleteCustomerReport(widget.customer.id, details.id).then((value) {
+        Constants.showMessage('Sales successfully deleted');
+        Navigator.pop(context);
+      }).catchError((error) {
+        Constants.showMessage(error.toString());
+      });
+    } catch (e) {
+      print(e);
+      Constants.showMessage(e.toString());
+    }
+  }
+
+  /// Function that deletes a report by calling
+  /// [deleteReport] in the [RestDataSource] class
+  Future<void> _deleteReport(String time, String product) async{
+    var api = new RestDataSource();
+    try {
+      await api.deleteReport(time, widget.customer.name, product).then((value) {
+        print('Report successfully deleted');
+      }).catchError((error) {
+        Constants.showMessage(error.toString());
+      });
+    } catch (e) {
+      print(e);
+      Constants.showMessage(e.toString());
+    }
   }
 
 }

@@ -5,6 +5,7 @@ import 'package:bizgienelimited/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 
+/// A stateful widget class to display all the products sold
 class ProductsSold extends StatefulWidget {
 
   static const String id = 'products_sold';
@@ -118,8 +119,8 @@ class _ProductsSoldState extends State<ProductsSold> {
       });
       return _dataTable(_filteredSales);
     }
-    else{
-      Container(
+    else if(_data.length == 0 || _data.isEmpty || _data == null){
+      return Container(
         alignment: AlignmentDirectional.center,
         child: Center(child: Text("No sales yet")),
       );

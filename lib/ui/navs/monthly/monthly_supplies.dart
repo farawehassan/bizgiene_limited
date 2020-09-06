@@ -1,21 +1,25 @@
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
-import 'package:bizgienelimited/networking/rest_data.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
 
-class ReceivedSupply extends StatefulWidget {
+/// A StatefulWidget class that displays your supplies for the month
+class MonthlySupply extends StatefulWidget {
 
-  static const String id = 'received_supply_page';
+  MonthlySupply({@required this.month});
+
+  static const String id = 'month_supplies';
+
+  final int month;
 
   @override
-  _ReceivedSupplyState createState() => _ReceivedSupplyState();
+  _MonthlySupplyState createState() => _MonthlySupplyState();
 }
 
-class _ReceivedSupplyState extends State<ReceivedSupply> {
+class _MonthlySupplyState extends State<MonthlySupply> {
 
   /// GlobalKey of a my RefreshIndicatorState to refresh my list items in the page
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -23,30 +27,37 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   /// Instantiating a class of the [FutureValues]
   var futureValue = FutureValues();
 
+  /// Variable of double to hold the total amount value of supplies
+  double _totalSupplyAmount = 0.0;
+
   /// Variable of int to hold the numbers of supplies
-  int _supplyLength;
+  int _supplyLength = 0;
 
   /// Variable of List<Supply> to hold the details of all the supply
-  List<Supply> _receivedSupplies = new List();
+  List<Supply> _monthSupplies = new List();
 
-  /// Function to refresh details of the received supplies similar to
-  /// [_getReceivedSupply()]
+  /// Function to refresh details of the supplies for this month [widget.month]
+  /// [_getSupplies()]
   Future<Null> _refreshData(){
     List<Supply> tempList = new List();
-    Future<List<Supply>> receivedSupply = futureValue.getReceivedSuppliesFromDB();
-    return receivedSupply.then((value) {
+    Future<List<Supply>> supplies = futureValue.getInProgressSuppliesFromDB();
+    return supplies.then((value) {
       if(value.length != 0){
-        tempList.addAll(value);
+        for (int i = 0; i < value.length; i++){
+          if(DateTime.parse(value[i].createdAt).month == widget.month){
+            tempList.add(value[i]);
+          }
+        }
         if (!mounted) return;
         setState(() {
           _supplyLength = tempList.length;
-          _receivedSupplies = tempList.reversed.toList();
+          _monthSupplies = tempList.reversed.toList();
         });
       } else if(value.length == 0 || value.isEmpty){
         if (!mounted) return;
         setState(() {
           _supplyLength = 0;
-          _receivedSupplies = [];
+          _monthSupplies = [];
         });
       }
     }).catchError((error){
@@ -56,23 +67,29 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
   }
 
   /// Function to get all the supplies from the database and
-  /// setting the results to [_receivedSupplies]
-  void _getReceivedSupply() async {
+  /// setting the results to [_monthSupplies]
+  void _getSupplies() async {
     List<Supply> tempList = new List();
-    Future<List<Supply>> receivedSupply = futureValue.getReceivedSuppliesFromDB();
+    Future<List<Supply>> receivedSupply = futureValue.getAllSuppliesFromDB();
     await receivedSupply.then((value) {
       if(value.length != 0){
-        tempList.addAll(value);
+        for (int i = 0; i < value.length; i++){
+          if(DateTime.parse(value[i].createdAt).month == widget.month){
+            tempList.add(value[i]);
+            _totalSupplyAmount += double.parse(value[i].amount);
+          }
+        }
         if (!mounted) return;
         setState(() {
           _supplyLength = tempList.length;
-          _receivedSupplies = tempList.reversed.toList();
+          _monthSupplies = tempList.reversed.toList();
         });
       } else if(value.length == 0 || value.isEmpty){
+        print(value.length);
         if (!mounted) return;
         setState(() {
           _supplyLength = 0;
-          _receivedSupplies = [];
+          _monthSupplies = [];
         });
       }
     }).catchError((error){
@@ -87,23 +104,19 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
     return DateFormat('MMM d, ''yyyy').format(DateTime.parse(dateTime)).toString();
   }
 
-  /// A function to build the list of the received supply
+  /// A function to build the list of all the supplies for this month
   Widget _buildList() {
-    if(_receivedSupplies.length > 0 && _receivedSupplies.isNotEmpty){
+    if(_monthSupplies.length > 0 && _monthSupplies.isNotEmpty){
       return ListView.builder(
-        itemCount: _receivedSupplies == null ? 0 : _receivedSupplies.length,
+        itemCount: _monthSupplies == null ? 0 : _monthSupplies.length,
         itemBuilder: (BuildContext context, int index) {
-          final paymentDate = DateTime.parse(_receivedSupplies[index].createdAt);
-          final time = DateTime.parse(_receivedSupplies[index].receivedAt);
-          final difference = time.difference(paymentDate).inDays;
+          final paymentDate = DateTime.parse(_monthSupplies[index].createdAt);
+          final received = _monthSupplies[index].received;
           return Container(
             margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-            height: SizeConfig.safeBlockVertical * 15,
+            height: SizeConfig.safeBlockVertical * 16.5,
             child: GestureDetector(
               onTap: (){},
-              onLongPress: (){
-                _confirmDeleteDialog(_receivedSupplies[index].id);
-              },
               child: Material(
                 elevation: 14.0,
                 borderRadius: BorderRadius.circular(24.0),
@@ -120,63 +133,41 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                '${_receivedSupplies[index].dealer}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: SizeConfig.safeBlockHorizontal * 4,
-                                ),
-                              ),
-                              SizedBox(width: 6.0,),
-                              Text(
-                                '${_getFormattedTime(paymentDate.toString())}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: SizeConfig.safeBlockHorizontal * 3.6,
-                                ),
-                              ),
-                              SizedBox(width: 5.0,),
-                              _receivedSupplies[index].foc ? Text(
-                                '(FOC)',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: SizeConfig.safeBlockHorizontal * 3.6,
-                                ),
-                              ) : Text('')
-                            ],
+                          Text(
+                            '${_getFormattedTime(paymentDate.toString())}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: SizeConfig.safeBlockHorizontal * 4,
+                            ),
                           ),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'Received - ',
-                                style: TextStyle(
-                                  color: Color(0xFF008752),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: SizeConfig.safeBlockHorizontal * 3.5,
-                                ),
-                              ),
-                              Text(
-                                'in ${difference.toString()} days',
-                                style: TextStyle(
-                                  //color: Colors.black45,
-                                  fontWeight: FontWeight.w400,
-                                    fontSize: SizeConfig.safeBlockHorizontal * 3.5
-                                ),
-                              ),
-                            ],
+                          received
+                              ? Text(
+                            'Received',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF008752),
+                                fontSize: SizeConfig.safeBlockHorizontal * 3.5
+                            ),
+                          )
+                              : Text(
+                            'In progress',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF004C7F),
+                                fontSize: SizeConfig.safeBlockHorizontal * 3.5
+                            ),
                           ),
                         ],
                       ),
                       Container(
+                        alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15.0),
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
                         child: IconButton(
                           icon: Icon(Icons.more_vert),
                           onPressed: () {
-                            _displayDialog(_receivedSupplies[index]);
+                            displayDialog(_monthSupplies[index]);
                           },
                         ),
                       ),
@@ -192,7 +183,7 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
     else if(_supplyLength == 0){
       return Container(
         alignment: AlignmentDirectional.center,
-        child: Center(child: Text("No received supplies yet")),
+        child: Center(child: Text("No supplies for this month")),
       );
     }
     return Center(
@@ -205,29 +196,77 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
     );
   }
 
-  /// Calls [_getReceivedSupply()] before the class builds its widgets
+  /// Calls [_getSupplies()] before the class builds its widgets
   @override
   void initState() {
     super.initState();
-    _getReceivedSupply();
+    _getSupplies();
   }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return RefreshIndicator(
-      key: _refreshIndicatorKey,
-      onRefresh: _refreshData,
-      color: Color(0xFF008752),
-      child: Container(
-        child: _buildList(),
+    return Scaffold(
+      appBar: GradientAppBar(
+        backgroundColorStart: Color(0xFF004C7F),
+        backgroundColorEnd: Color(0xFF008752),
+        bottom: PreferredSize(
+          preferredSize: Size(100, 50),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(left: 20.0, right: 10.0),
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  'Total Supplies = $_supplyLength',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 20.0, right: 10.0, bottom: 10.0),
+                padding: EdgeInsets.only(top: 10.0),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      'Total Payment = ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white
+                      ),
+                    ),
+                    Text(
+                      '${Constants.money(_totalSupplyAmount).output.symbolOnLeft}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        title: Text('Supplies'),
+      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _refreshData,
+          color: Color(0xFF008752),
+          child: Container(child: _buildList()),
+        ),
       ),
     );
   }
 
-  /// Function to display dialog of supply details [details] the optional notes
+  /// Function to display dialog of supply details [details] and optional notes
   /// [note] if it is not empty
-  void _displayDialog(Supply index){
+  void displayDialog(Supply index){
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -390,89 +429,6 @@ class _ReceivedSupplyState extends State<ReceivedSupply> {
       ),
       //barrierDismissible: false,
     );
-  }
-
-  /// Function to confirm if a supply wants to be deleted
-  void _confirmDeleteDialog(String id){
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        elevation: 0.0,
-        child: Container(
-          //height: 320.0,
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'Are you sure you want to delete this supply',
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 24.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // To close the dialog
-                        _deleteSupply(id);
-                      },
-                      textColor: Colors.red,
-                      child: Text('YES'),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: FlatButton(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pop(); // To close the dialog
-                      },
-                      textColor: Colors.red,
-                      child: Text('NO'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      //barrierDismissible: false,
-    );
-  }
-
-  /// Function that deletes a supply by calling
-  /// [deleteSupply] in the [RestDataSource] class
-  void _deleteSupply(String id){
-    var api = new RestDataSource();
-    try {
-      api.deleteSupply(id).then((value) {
-        Constants.showMessage('Supply successfully deleted');
-        _refreshData();
-      }).catchError((error) {
-        Constants.showMessage(error.toString());
-      });
-
-    } catch (e) {
-      print(e);
-      Constants.showMessage(e.toString());
-    }
   }
 
 }

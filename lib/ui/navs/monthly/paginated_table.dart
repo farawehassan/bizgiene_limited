@@ -38,7 +38,8 @@ class DTS extends DataTableSource{
       DataCell(
         Text(salesList[index]['customerName'].toString()),
       ),
-    ]);
+    ],
+    );
   }
 
   @override

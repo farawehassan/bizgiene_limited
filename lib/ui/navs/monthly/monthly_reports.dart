@@ -2,12 +2,15 @@ import 'package:bizgienelimited/bloc/daily_report_value.dart';
 import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/reportsDB.dart';
 import 'package:bizgienelimited/ui/navs/monthly/paginated_table.dart';
+import 'package:bizgienelimited/ui/navs/monthly/products_sold_for_month.dart';
 import 'package:bizgienelimited/utils/constants.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
+
+import 'monthly_supplies.dart';
 
 /// A StatefulWidget class that displays a Month's Reports details
 class MonthReport extends StatefulWidget {
@@ -50,6 +53,12 @@ class _MonthReportState extends State<MonthReport> {
   /// A variable holding the length my monthly report data
   int _dataLength;
 
+  /// List of reports for the [widget.month]
+  List<Reports> monthReport = List();
+
+  /// Variable to hold true or false If the DataTable should be editable
+  bool _editable = false;
+
   /// A TextEditingController to control the searchText on the AppBar
   final TextEditingController _filter = new TextEditingController();
 
@@ -57,16 +66,16 @@ class _MonthReportState extends State<MonthReport> {
   String _searchText = "";
 
   /// Variable of List<Map> to hold the details of all the sales
-  List<Map> _sales = new List();
+  List<Map> _sales = List();
 
   /// Variable of List<Map> to hold the details of all filtered sales
-  List<Map> _filteredSales= new List();
+  List<Map> _filteredSales = List();
 
   /// Variable to hold an Icon Widget of Search
-  Icon _searchIcon = new Icon(Icons.search);
+  Icon _searchIcon = Icon(Icons.search);
 
   /// Variable to hold a Widget of Text for the appBarText
-  Widget _appBarTitle = new Text('Sales Report');
+  Widget _appBarTitle;
 
   /// Variable to hold the type of the user logged in
   String _userType;
@@ -139,11 +148,12 @@ class _MonthReportState extends State<MonthReport> {
     List<Map> tempList = new List();
     Future<List<Reports>> dailySales = futureValue.getMonthReports(widget.month);
     await dailySales.then((value) {
+      monthReport.addAll(value);
       _dataLength = value.length;
       Map details = {};
       for (int i = 0; i < value.length; i++){
         _totalProfitMade += double.parse(value[i].quantity) * (double.parse(value[i].unitPrice) - double.parse(value[i].costPrice));
-        details = {'qty':'${value[i].quantity}', 'productName': '${value[i].productName}', 'costPrice':'${value[i].costPrice}', 'unitPrice':'${value[i].unitPrice}','totalPrice':'${value[i].totalPrice}', 'paymentMode':'${value[i].paymentMode}', 'time':'${value[i].createdAt}', 'customerName':'${value[i].customerName}'};
+        details = {'id': value[i].id, 'qty':'${value[i].quantity}', 'productName': '${value[i].productName}', 'costPrice':'${value[i].costPrice}', 'unitPrice':'${value[i].unitPrice}','totalPrice':'${value[i].totalPrice}', 'paymentMode':'${value[i].paymentMode}', 'time':'${value[i].createdAt}', 'customerName':'${value[i].customerName}'};
         if(value[i].paymentMode == 'Cash'){
           _availableCash += double.parse(value[i].totalPrice);
         }
@@ -355,18 +365,18 @@ class _MonthReportState extends State<MonthReport> {
     if (!mounted) return;
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
-        this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = new TextField(
+        this._searchIcon = Icon(Icons.close);
+        this._appBarTitle = TextField(
           controller: _filter,
-          decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search),
-              hintText: 'Search...'
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search),
+            hintText: 'Search...'
           ),
         );
       }
       else {
-        this._searchIcon = new Icon(Icons.search);
-        this._appBarTitle = new Text('Sales Report');
+        this._searchIcon = Icon(Icons.search);
+        this._appBarTitle = Text('${widget.month}, ${DateFormat('yyyy').format(now)}');
         _filteredSales = _sales;
         _filter.clear();
       }
@@ -376,8 +386,6 @@ class _MonthReportState extends State<MonthReport> {
   /// A function to build the AppBar of the page by calling
   /// [_searchPressed()] when the icon is pressed
   Widget _buildBar(BuildContext context) {
-    DateTime now = DateTime.now();
-    String formattedDate = '${widget.month}, ${DateFormat('yyyy').format(now)}';
     return GradientAppBar(
       centerTitle: false,
       backgroundColorStart: Color(0xFF004C7F),
@@ -388,17 +396,19 @@ class _MonthReportState extends State<MonthReport> {
           icon: _searchIcon,
           onPressed: _searchPressed,
         ),
-        Center(
-          child: Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: Text(
-              formattedDate,
-              style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),
-            ),
-          ),
-        )
+        PopupMenuButton<String>(
+            onSelected: (choice) {
+              choiceAction(choice);
+            },
+            itemBuilder: (BuildContext context) {
+              return Constants.showMonthChoices.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            }
+        ),
       ],
     );
   }
@@ -449,6 +459,7 @@ class _MonthReportState extends State<MonthReport> {
   SingleChildScrollView _dataTable(List<Map> salesList){
     var dts = DTS(salesList: _filteredSales.reversed.toList());
     int _rowPerPage = 50;
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -521,6 +532,7 @@ class _MonthReportState extends State<MonthReport> {
           ) : Container(),*/
           PaginatedDataTable(
             header: Text('Reports Table'),
+            onSelectAll: (b){},
             columns: [
               DataColumn(label: Text('QTY', style: TextStyle(fontWeight: FontWeight.bold),)),
               DataColumn(label: Text('PRODUCT', style: TextStyle(fontWeight: FontWeight.bold),)),
@@ -549,6 +561,10 @@ class _MonthReportState extends State<MonthReport> {
   @override
   void initState() {
     super.initState();
+    if (!mounted) return;
+    setState(() {
+      _appBarTitle = Text('${widget.month}, ${DateFormat('yyyy').format(now)}');
+    });
     _getCurrentUser();
     _getSales();
     _getOutstandingPayment();
@@ -569,6 +585,132 @@ class _MonthReportState extends State<MonthReport> {
         ),
       ),
     );
+  }
+
+  /// A function to set actions for the options menu with the value [choice]
+  void choiceAction(String choice){
+    if(choice == Constants.ShowMonthlyProductsSold){
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MonthlyProductSold(reports: monthReport,)),
+      );
+    }
+    else if(choice == Constants.ShowMonthlySupplies){
+      switch(widget.month) {
+        case 'Jan': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 1,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Feb': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 2,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Mar': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 3,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Apr': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 4,)),
+          );
+          return;
+        }
+        break;
+
+        case 'May': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 5,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Jun': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 6,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Jul': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 7,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Aug': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 8,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Sep': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 9,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Oct': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 10,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Nov': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 11,)),
+          );
+          return;
+        }
+        break;
+
+        case 'Dec': {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MonthlySupply(month: 12,)),
+          );
+          return;
+        }
+        break;
+
+        default: {
+          return null;
+        }
+        break;
+      }
+    }
   }
 
 }

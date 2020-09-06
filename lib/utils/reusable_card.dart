@@ -122,5 +122,51 @@ class SelectCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A [SelectSupplyCard] StatelessWidget class to build a dynamic select card
+/// for supply methods
+class SelectSupplyCard extends StatelessWidget {
+
+  SelectSupplyCard({
+    @required this.text,
+    this.onPress,
+    @required this.isSelected
+  });
+
+  final String text;
+  final Function onPress;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPress,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Color(0xFF008752)),
+          borderRadius: BorderRadius.circular(8.0),
+          color: isSelected ? Color(0xFF008752) : Colors.transparent,
+        ),
+        child: SizedBox(
+          width: 120,
+          height: 50,
+          child: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child:  Align(
+              alignment: Alignment.center,
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
 }

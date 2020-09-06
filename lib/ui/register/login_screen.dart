@@ -154,16 +154,17 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 Container(
                   child: _buildSignIn(context),
                 ),
-                /*Container(
+                Container(
                   padding: EdgeInsets.all(5.0),
                   child: Text(
-                    "3, Fawehinmi street Off Ojuelegba Road Surulere Lagos",
+                    "56, Olumegbon Rd Gbaja, Surulere, Lagos",
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0
+                      color: Colors.white,
+                      fontSize: 16.0,
                     ),
+                    overflow: TextOverflow.fade,
                   ),
-                ),*/
+                ),
               ],
             ),
           ),

@@ -16,6 +16,8 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:intl/intl.dart';
 import 'dart:io' show Platform;
 
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+
 class NewCustomerReceipt extends StatefulWidget {
 
   static const String id = 'new_customer_receipt_page';
@@ -23,7 +25,10 @@ class NewCustomerReceipt extends StatefulWidget {
   /// Passing the products recorded in this class constructor
   final List<Map> sentProducts;
 
-  NewCustomerReceipt({@required this.sentProducts});
+  /// A List to hold the names of all the customers in the database
+  final List<String> customerNames;
+
+  NewCustomerReceipt({@required this.sentProducts, @required this.customerNames});
 
   @override
   _NewCustomerReceiptState createState() => _NewCustomerReceiptState();
@@ -71,7 +76,7 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
   static const String _email = "mbkosoko@yahoo.com";
 
   /// Variable holding today's datetime
-  DateTime _dateTime = DateTime.now();
+  DateTime _dateTime;
 
   /// Variable holding the due date and time
   DateTime _dueDate;
@@ -117,6 +122,10 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
 
   /// A double variable for the animated height in [_paymentDetails()]
   double _animatedHeight = 348.0;
+
+  /// A boolean variable to hold the [inAsyncCall] value in my
+  /// [ModalProgressHUD] widget
+  bool _showSpinner = false;
 
   /// Boolean variables for selection in [_whenToPay()]
   bool _received = false;
@@ -867,14 +876,19 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
   /// Function to fetch all the available product's names and details from the
   /// database to [_customerNames] and [_customerDetails]
   void _allCustomerNames() {
-    Future<Map<String, String>> customerNames = futureValue.getAllCustomerNamesFromDB();
-    customerNames.then((value) {
-      _customerDetails.addAll(value);
-      _customerNames.addAll(value.keys);
-    }).catchError((error){
-      print(error);
-      Constants.showMessage(error.toString());
-    });
+    if(widget.customerNames.isEmpty || widget.customerNames == null){
+      Future<Map<String, String>> customerNames = futureValue.getAllCustomerNamesFromDB();
+      customerNames.then((value) {
+        _customerDetails.addAll(value);
+        _customerNames.addAll(value.keys);
+      }).catchError((error){
+        print(error);
+        Constants.showMessage(error.toString());
+      });
+    } else {
+      _customerNames.addAll(widget.customerNames);
+    }
+
   }
 
   /// Calls [_addProducts()] and [_allCustomerNames()] before the class
@@ -882,6 +896,10 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
   @override
   void initState() {
     super.initState();
+    if(!mounted)return;
+    setState(() {
+      _dateTime = DateTime.now();
+    });
     _addProducts();
     _allCustomerNames();
   }
@@ -909,338 +927,344 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
           ),*/
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Align(
-            alignment: Alignment.center,
-            child: Column(
-              children: <Widget>[
-                _storeDetails(),
-                SizedBox(
-                  height: 2.0,
-                ),
-                _paymentDetailsTable(),
-                _whenToPay(),
-                Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    verticalDirection: VerticalDirection.down,
-                    children: <Widget>[_dataTable()],
+      body: ModalProgressHUD(
+        inAsyncCall: _showSpinner,
+        progressIndicator: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF008752)),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: <Widget>[
+                  _storeDetails(),
+                  SizedBox(
+                    height: 2.0,
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      gradient: new LinearGradient(
-                          colors: [
-                            Theme.ColorGradients.loginGradientStart,
-                            Theme.ColorGradients.loginGradientEnd
-                          ],
-                          begin: const FractionalOffset(0.2, 0.2),
-                          end: const FractionalOffset(1.0, 1.0),
-                          stops: [0.0, 1.0],
-                          tileMode: TileMode.clamp),
+                  _paymentDetailsTable(),
+                  _whenToPay(),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      verticalDirection: VerticalDirection.down,
+                      children: <Widget>[_dataTable()],
                     ),
-                    child: MaterialButton(
-                        highlightColor: Colors.transparent,
-                        splashColor: Theme.ColorGradients.loginGradientEnd,
-                        child: Container(
-                          width: SizeConfig.safeBlockHorizontal * 80,
-                          padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 21.0),
-                          child: Text(
-                            'CONFIRM',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20.0
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        gradient: new LinearGradient(
+                            colors: [
+                              Theme.ColorGradients.loginGradientStart,
+                              Theme.ColorGradients.loginGradientEnd
+                            ],
+                            begin: const FractionalOffset(0.2, 0.2),
+                            end: const FractionalOffset(1.0, 1.0),
+                            stops: [0.0, 1.0],
+                            tileMode: TileMode.clamp),
+                      ),
+                      child: MaterialButton(
+                          highlightColor: Colors.transparent,
+                          splashColor: Theme.ColorGradients.loginGradientEnd,
+                          child: Container(
+                            width: SizeConfig.safeBlockHorizontal * 80,
+                            padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 21.0),
+                            child: Text(
+                              'CONFIRM',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20.0
+                              ),
                             ),
                           ),
-                        ),
-                      onPressed: () {
-                        if(_formKey.currentState.validate() && _fullyPaid) {
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (_) => Dialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                elevation: 0.0,
-                                child: Container(
-                                  width: SizeConfig.safeBlockHorizontal * 60,
-                                  height: 150.0,
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top: 16.0),
-                                          child: Text(
-                                            "Are you sure the product you want to save is confirmed?",
-                                            style: TextStyle(
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.bold,
+                        onPressed: () {
+                          if(_formKey.currentState.validate() && _fullyPaid) {
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  elevation: 0.0,
+                                  child: Container(
+                                    width: SizeConfig.safeBlockHorizontal * 60,
+                                    height: 150.0,
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(top: 16.0),
+                                            child: Text(
+                                              "Are you sure the product you want to save is confirmed?",
+                                              style: TextStyle(
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context)
-                                                    .pop(); // To close the dialog
-                                              },
-                                              textColor: Color(0xFF008752),
-                                              child: Text('NO'),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Align(
+                                              alignment: Alignment.bottomLeft,
+                                              child: FlatButton(
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // To close the dialog
+                                                },
+                                                textColor: Color(0xFF008752),
+                                                child: Text('NO'),
+                                              ),
                                             ),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context)
-                                                    .pop(); // To close the dialog
-                                                showDialog(
-                                                  context: context,
-                                                  barrierDismissible: true,
-                                                  builder: (_) => Dialog(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                      BorderRadius.circular(16.0),
-                                                    ),
-                                                    elevation: 0.0,
-                                                    child: Container(
-                                                      width: SizeConfig.safeBlockHorizontal * 60,
-                                                      height: 150.0,
-                                                      padding: EdgeInsets.all(16.0),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                        mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                        children: <Widget>[
-                                                          Align(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.only(
-                                                                  top: 16.0),
-                                                              child: Text(
-                                                                "Select payment mode",
-                                                                style: TextStyle(
-                                                                  fontSize: 15.0,
-                                                                  fontWeight: FontWeight.bold,
+                                            Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: FlatButton(
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // To close the dialog
+                                                  showDialog(
+                                                    context: context,
+                                                    barrierDismissible: true,
+                                                    builder: (_) => Dialog(
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.circular(16.0),
+                                                      ),
+                                                      elevation: 0.0,
+                                                      child: Container(
+                                                        width: SizeConfig.safeBlockHorizontal * 60,
+                                                        height: 150.0,
+                                                        padding: EdgeInsets.all(16.0),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                          mainAxisAlignment:
+                                                          MainAxisAlignment.spaceBetween,
+                                                          children: <Widget>[
+                                                            Align(
+                                                              alignment: Alignment.centerLeft,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.only(
+                                                                    top: 16.0),
+                                                                child: Text(
+                                                                  "Select payment mode",
+                                                                  style: TextStyle(
+                                                                    fontSize: 15.0,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                            crossAxisAlignment:
-                                                            CrossAxisAlignment.end,
-                                                            children: <Widget>[
-                                                              Align(
-                                                                alignment:
-                                                                Alignment.bottomLeft,
-                                                                child: FlatButton(
-                                                                  onPressed: () {
-                                                                    Navigator.of(context)
-                                                                        .pop(); // To close the dialog
-                                                                    _saveProduct('Transfer');
-                                                                  },
-                                                                  textColor: Color(0xFF008752),
-                                                                  child: Text('Transfer'),
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                              crossAxisAlignment:
+                                                              CrossAxisAlignment.end,
+                                                              children: <Widget>[
+                                                                Align(
+                                                                  alignment:
+                                                                  Alignment.bottomLeft,
+                                                                  child: FlatButton(
+                                                                    onPressed: () {
+                                                                      Navigator.of(context)
+                                                                          .pop(); // To close the dialog
+                                                                      _saveProduct('Transfer');
+                                                                    },
+                                                                    textColor: Color(0xFF008752),
+                                                                    child: Text('Transfer'),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              Align(
-                                                                alignment:
-                                                                Alignment.bottomRight,
-                                                                child: FlatButton(
-                                                                  onPressed: () {
-                                                                    Navigator.of(context)
-                                                                        .pop(); // To close the dialog
-                                                                    _saveProduct('Cash');
-                                                                  },
-                                                                  textColor: Color(0xFF008752),
-                                                                  child: Text('Cash'),
+                                                                Align(
+                                                                  alignment:
+                                                                  Alignment.bottomRight,
+                                                                  child: FlatButton(
+                                                                    onPressed: () {
+                                                                      Navigator.of(context)
+                                                                          .pop(); // To close the dialog
+                                                                      _saveProduct('Cash');
+                                                                    },
+                                                                    textColor: Color(0xFF008752),
+                                                                    child: Text('Cash'),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                );
-                                              },
-                                              textColor: Color(0xFF008752),
-                                              child: Text('YES'),
+                                                  );
+                                                },
+                                                textColor: Color(0xFF008752),
+                                                child: Text('YES'),
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ));
-                        }
-                        if(_dueDate == null && !_fullyPaid){
-                          Constants.showMessage("Double tap to select date");
-                        }
-                        if(_formKey.currentState.validate() && _dueDate != null && !_fullyPaid) {
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (_) => Dialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                elevation: 0.0,
-                                child: Container(
-                                  width: SizeConfig.safeBlockHorizontal * 60,
-                                  height: 150.0,
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top: 16.0),
-                                          child: Text(
-                                            "Are you sure the product you want to save is confirmed?",
-                                            style: TextStyle(
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.bold,
+                                ));
+                          }
+                          if(_dueDate == null && !_fullyPaid){
+                            Constants.showMessage("Double tap to select date");
+                          }
+                          if(_formKey.currentState.validate() && _dueDate != null && !_fullyPaid) {
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  elevation: 0.0,
+                                  child: Container(
+                                    width: SizeConfig.safeBlockHorizontal * 60,
+                                    height: 150.0,
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(top: 16.0),
+                                            child: Text(
+                                              "Are you sure the product you want to save is confirmed?",
+                                              style: TextStyle(
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context)
-                                                    .pop(); // To close the dialog
-                                              },
-                                              textColor: Color(0xFF008752),
-                                              child: Text('NO'),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Align(
+                                              alignment: Alignment.bottomLeft,
+                                              child: FlatButton(
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // To close the dialog
+                                                },
+                                                textColor: Color(0xFF008752),
+                                                child: Text('NO'),
+                                              ),
                                             ),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context)
-                                                    .pop(); // To close the dialog
-                                                showDialog(
-                                                  context: context,
-                                                  barrierDismissible: true,
-                                                  builder: (_) => Dialog(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                      BorderRadius.circular(16.0),
-                                                    ),
-                                                    elevation: 0.0,
-                                                    child: Container(
-                                                      width: SizeConfig.safeBlockHorizontal * 60,
-                                                      height: 150.0,
-                                                      padding: EdgeInsets.all(16.0),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                        mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                        children: <Widget>[
-                                                          Align(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.only(
-                                                                  top: 16.0),
-                                                              child: Text(
-                                                                "Select payment mode",
-                                                                style: TextStyle(
-                                                                  fontSize: 15.0,
-                                                                  fontWeight: FontWeight.bold,
+                                            Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: FlatButton(
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // To close the dialog
+                                                  showDialog(
+                                                    context: context,
+                                                    barrierDismissible: true,
+                                                    builder: (_) => Dialog(
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                        BorderRadius.circular(16.0),
+                                                      ),
+                                                      elevation: 0.0,
+                                                      child: Container(
+                                                        width: SizeConfig.safeBlockHorizontal * 60,
+                                                        height: 150.0,
+                                                        padding: EdgeInsets.all(16.0),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                          mainAxisAlignment:
+                                                          MainAxisAlignment.spaceBetween,
+                                                          children: <Widget>[
+                                                            Align(
+                                                              alignment: Alignment.centerLeft,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.only(
+                                                                    top: 16.0),
+                                                                child: Text(
+                                                                  "Select payment mode",
+                                                                  style: TextStyle(
+                                                                    fontSize: 15.0,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                            crossAxisAlignment:
-                                                            CrossAxisAlignment.end,
-                                                            children: <Widget>[
-                                                              Align(
-                                                                alignment:
-                                                                Alignment.bottomLeft,
-                                                                child: FlatButton(
-                                                                  onPressed: () {
-                                                                    Navigator.of(context)
-                                                                        .pop(); // To close the dialog
-                                                                    _saveProduct('Transfer');
-                                                                  },
-                                                                  textColor: Color(0xFF008752),
-                                                                  child: Text('Transfer'),
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                              crossAxisAlignment:
+                                                              CrossAxisAlignment.end,
+                                                              children: <Widget>[
+                                                                Align(
+                                                                  alignment:
+                                                                  Alignment.bottomLeft,
+                                                                  child: FlatButton(
+                                                                    onPressed: () {
+                                                                      Navigator.of(context)
+                                                                          .pop(); // To close the dialog
+                                                                      _saveProduct('Transfer');
+                                                                    },
+                                                                    textColor: Color(0xFF008752),
+                                                                    child: Text('Transfer'),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              Align(
-                                                                alignment:
-                                                                Alignment.bottomRight,
-                                                                child: FlatButton(
-                                                                  onPressed: () {
-                                                                    Navigator.of(context)
-                                                                        .pop(); // To close the dialog
-                                                                    _saveProduct('Cash');
-                                                                  },
-                                                                  textColor: Color(0xFF008752),
-                                                                  child: Text('Cash'),
+                                                                Align(
+                                                                  alignment:
+                                                                  Alignment.bottomRight,
+                                                                  child: FlatButton(
+                                                                    onPressed: () {
+                                                                      Navigator.of(context)
+                                                                          .pop(); // To close the dialog
+                                                                      _saveProduct('Cash');
+                                                                    },
+                                                                    textColor: Color(0xFF008752),
+                                                                    child: Text('Cash'),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                );
-                                              },
-                                              textColor: Color(0xFF008752),
-                                              child: Text('YES'),
+                                                  );
+                                                },
+                                                textColor: Color(0xFF008752),
+                                                child: Text('YES'),
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ));
-                        }
-                      },
+                                ));
+                          }
+                        },
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -1254,6 +1278,10 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
   void _saveProduct(String paymentMode) async {
     if(receivedProducts.length > 0 && receivedProducts.isNotEmpty){
       try {
+        if(!mounted)return;
+        setState(() {
+          _showSpinner = true;
+        });
         await _saveNewCustomerReports().then((value) async {
           Constants.showMessage('$_customerName items were successfully added');
           for (var product in receivedProducts) {
@@ -1269,10 +1297,18 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
             });
           }
         }).catchError((e) {
+          if(!mounted)return;
+          setState(() {
+            _showSpinner = false;
+          });
           print(e);
           Constants.showMessage('${e.toString()}');
         });
       } catch (e) {
+        if(!mounted)return;
+        setState(() {
+          _showSpinner = false;
+        });
         print(e);
         Constants.showMessage('${e.toString()}');
       }
@@ -1351,9 +1387,13 @@ class _NewCustomerReceiptState extends State<NewCustomerReceipt> {
       dailyReport.unitPrice = unitPrice.toString();
       dailyReport.totalPrice = total.toString();
       dailyReport.paymentMode = paymentMode;
-      dailyReport.createdAt = DateTime.now().toString();
+      dailyReport.createdAt = _dateTime.toString();
 
       await api.addNewDailyReport(dailyReport).then((value) {
+        if(!mounted)return;
+        setState(() {
+          _showSpinner = false;
+        });
         print('$productName saved successfully');
       }).catchError((e) {
         print(e);

@@ -663,7 +663,6 @@ class _OutstandingBalanceState extends State<OutstandingBalance> {
     else if(choice == Constants.ShowSettle){
       _confirmDialog(customer, customerReport, id, difference);
     }
-
   }
 
   /// Calls [_getOutstandingCustomers()] before the class builds its widgets

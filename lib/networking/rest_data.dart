@@ -57,6 +57,7 @@ class RestDataSource {
   static final FETCH_CUSTOMERS_URL = BASE_URL + "/customer/fetchAllCustomers";
   static final FETCH_CUSTOMER_URL = BASE_URL + "/customer/fetchCustomer";
   static final DELETE_CUSTOMER_URL = BASE_URL + "/customer/deleteCustomer";
+  static final DELETE_CUSTOMER_REPORT_URL = BASE_URL + "/customer/deleteCustomerReport";
 
   static final ADD_PRODUCT_HISTORY_URL = BASE_URL + "/history/addProductHistory";
   static final ADD_HISTORY_TO_PRODUCT_URL = BASE_URL + "/history/addNewProductToHistory";
@@ -340,8 +341,8 @@ class RestDataSource {
     });
   }
 
-  /// A function that deletes a report from the server using the [id]
-  Future<dynamic> deleteReport(String id) async {
+  /// A function that deletes a report from the server using the [time]
+  Future<dynamic> deleteReport(String time, String customerName, String productName) async {
     Map<String, String> header;
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
@@ -350,7 +351,7 @@ class RestDataSource {
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
     });
-    final DELETE_URL = DELETE_REPORT_URL + "/$id";
+    final DELETE_URL = DELETE_REPORT_URL + "/$time/$customerName/$productName";
     return _netUtil.delete(DELETE_URL, headers: header).then((dynamic res) {
       if(res["error"] == true){
         throw (res["message"]);
@@ -397,20 +398,35 @@ class RestDataSource {
   /// with [Supply] model
   Future<dynamic> addSupply(Supply supply) async{
     Map<String, String> header;
+    Map<String, dynamic> jsonBody;
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
         throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+      supply.foc
+          ? jsonBody = {
+        "dealer": supply.dealer.toString(),
+        "amount": supply.amount.toString(),
+        "foc": supply.foc.toString(),
+        "focRate": supply.focRate.toString(),
+        "focPayment": supply.focPayment.toString(),
+        "notes": supply.notes.toString(),
+        "received": supply.received.toString(),
+        "createdAt": supply.createdAt.toString(),
+      }
+          : jsonBody = {
+        "dealer": supply.dealer.toString(),
+        "amount": supply.amount.toString(),
+        "foc": supply.foc.toString(),
+        "notes": supply.notes.toString(),
+        "received": supply.received.toString(),
+        "createdAt": supply.createdAt.toString(),
+      };
     });
-    return _netUtil.post(ADD_SUPPLY_URL, headers: header, body: {
-      "dealer": supply.dealer.toString(),
-      "amount": supply.amount.toString(),
-      "notes": supply.notes.toString(),
-      "received": supply.received.toString(),
-      "createdAt": supply.createdAt.toString(),
-    }).then((dynamic res) {
+    return _netUtil.post(ADD_SUPPLY_URL, headers: header, body: jsonBody
+    ).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
         throw (res["message"]);
@@ -846,7 +862,7 @@ class RestDataSource {
     });
   }
 
-  /// A function that deletes a customer from the database using the [id]
+  /// A function that deletes a customer from the database using the customer[id]
   Future<dynamic> deleteCustomer(String id) async {
     Map<String, String> header;
     Future<User> user = futureValue.getCurrentUser();
@@ -870,6 +886,36 @@ class RestDataSource {
         throw ("Unable to connect to the server, check your internet connection");
       }
       throw ("Error in deleting customer, try again");
+    });
+  }
+
+  /// A function that deletes a customer's report from the database using the
+  /// report [id]
+  Future<dynamic> deleteCustomerReport(String customerId, String reportId) async {
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.put(DELETE_CUSTOMER_REPORT_URL, headers: header, body: {
+      "customerId": customerId,
+      "reportId": reportId,
+    }).then((dynamic res) {
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        print(res["message"]);
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in deleting customer's report, try again");
     });
   }
 

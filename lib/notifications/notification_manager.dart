@@ -2,6 +2,7 @@ import 'package:bizgienelimited/bloc/future_values.dart';
 import 'package:bizgienelimited/model/customerDB.dart';
 import 'package:bizgienelimited/model/customer_reports.dart';
 import 'package:bizgienelimited/model/supply_details.dart';
+import 'package:bizgienelimited/ui/navs/customers/customer_page.dart';
 import 'package:bizgienelimited/ui/navs/supplies/supply_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -193,7 +194,7 @@ class NotificationManager {
                 print('notification payload: ' + payload);
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SupplyPage()),
+                  MaterialPageRoute(builder: (context) => CustomerPage()),
                 );
               }
             },
@@ -220,7 +221,7 @@ class NotificationManager {
       print('notification payload: ' + payload);
       await Navigator.push(
         MyApp.navigatorKey.currentContext,
-        MaterialPageRoute(builder: (context) => SupplyPage()),
+        MaterialPageRoute(builder: (context) => CustomerPage()),
       );
     }
   }
