@@ -56,15 +56,6 @@ class _SupplyPageState extends State<SupplyPage> with SingleTickerProviderStateM
               children: [
                 IconButton(
                   icon: Icon(
-                    Icons.mail_outline,
-                    color: Colors.white,
-                  ),
-                  onPressed: (){
-                    Navigator.pushNamed(context, AddSupply.id);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(
                     Icons.add,
                     color: Colors.white,
                   ),
