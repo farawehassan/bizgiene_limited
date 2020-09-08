@@ -7,6 +7,7 @@ import 'package:bizgienelimited/utils/reusable_card.dart';
 import 'package:bizgienelimited/utils/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -470,13 +471,33 @@ class _AddSupplyState extends State<AddSupply> {
     try {
       if(foc){
         supply.dealer = Constants.capitalize(_nameController.text);
-        supply.amount = _focAmountController.toString();
+        supply.amount = _focAmountController.text;
         supply.foc = true;
         supply.focRate = _focRateController.text;
         supply.focPayment = _focPaymentController.text;
         supply.notes = _noteController.text;
         supply.received = false;
         supply.createdAt = DateTime.now().toString();
+
+        api.addFOCSupply(supply).then((value) {
+          _focAmountController.clear();
+          _focPaymentController.clear();
+          _focRateController.clear();
+          _focDifferenceController.clear();
+          _noteController.clear();
+          if (!mounted) return;
+          setState(() {
+            _showSpinner = false;
+          });
+          Constants.showMessage('Supply successfully created');
+          Navigator.of(context).pop();
+        }).catchError((error) {
+          if (!mounted) return;
+          setState(() {
+            _showSpinner = false;
+          });
+          Constants.showMessage(error.toString());
+        });
       }
       else if(!foc){
         supply.dealer = Constants.capitalize(_nameController.text);
@@ -485,34 +506,24 @@ class _AddSupplyState extends State<AddSupply> {
         supply.notes = _noteController.text;
         supply.received = false;
         supply.createdAt = DateTime.now().toString();
-      }
 
-      api.addSupply(supply).then((value) {
-        if(foc){
-          _focAmountController.clear();
-          _focPaymentController.clear();
-          _focRateController.clear();
-          _focDifferenceController.clear();
-        }
-        else if(!foc){
+        api.addNormalSupply(supply).then((value) {
           _normalPaymentController.clear();
-        }
-        _noteController.clear();
-
-        if (!mounted) return;
-        setState(() {
-          _showSpinner = false;
+          _noteController.clear();
+          if (!mounted) return;
+          setState(() {
+            _showSpinner = false;
+          });
+          Constants.showMessage('Supply successfully created');
+          Navigator.of(context).pop();
+        }).catchError((error) {
+          if (!mounted) return;
+          setState(() {
+            _showSpinner = false;
+          });
+          Constants.showMessage(error.toString());
         });
-        Constants.showMessage('Supply successfully created');
-        Navigator.of(context).pop();
-      }).catchError((error) {
-        if (!mounted) return;
-        setState(() {
-          _showSpinner = false;
-        });
-        Constants.showMessage(error.toString());
-      });
-
+      }
     } catch (e) {
       print(e);
       if (!mounted) return;

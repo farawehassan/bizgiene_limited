@@ -42,7 +42,8 @@ class RestDataSource {
 
   static final FETCH_STORE_URL = BASE_URL + "/fetchStoreDetails";
 
-  static final ADD_SUPPLY_URL = BASE_URL + "/supply/addNewSupply";
+  static final ADD_NORMAL_SUPPLY_URL = BASE_URL + "/supply/addNormalSupply";
+  static final ADD_FOC_SUPPLY_URL = BASE_URL + "/supply/addFOCSupply";
   static final RECEIVED_SUPPLY_URL = BASE_URL + "/supply/receivedSupply";
   static final UPDATE_SUPPLY_URL = BASE_URL + "/supply/editSupply";
   static final FETCH_SUPPLIES_URL = BASE_URL + "/supply/fetchAllSupplies";
@@ -396,37 +397,59 @@ class RestDataSource {
 
   /// A function that adds new supply to the database POST
   /// with [Supply] model
-  Future<dynamic> addSupply(Supply supply) async{
+  Future<dynamic> addNormalSupply(Supply supply) async{
     Map<String, String> header;
-    Map<String, dynamic> jsonBody;
     Future<User> user = futureValue.getCurrentUser();
     await user.then((value) {
       if(value.token == null){
         throw ("No user logged in");
       }
       header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
-      supply.foc
-          ? jsonBody = {
-        "dealer": supply.dealer.toString(),
-        "amount": supply.amount.toString(),
-        "foc": supply.foc.toString(),
-        "focRate": supply.focRate.toString(),
-        "focPayment": supply.focPayment.toString(),
-        "notes": supply.notes.toString(),
-        "received": supply.received.toString(),
-        "createdAt": supply.createdAt.toString(),
-      }
-          : jsonBody = {
-        "dealer": supply.dealer.toString(),
-        "amount": supply.amount.toString(),
-        "foc": supply.foc.toString(),
-        "notes": supply.notes.toString(),
-        "received": supply.received.toString(),
-        "createdAt": supply.createdAt.toString(),
-      };
     });
-    return _netUtil.post(ADD_SUPPLY_URL, headers: header, body: jsonBody
-    ).then((dynamic res) {
+    return _netUtil.post(ADD_NORMAL_SUPPLY_URL, headers: header, body: {
+      "dealer": supply.dealer.toString(),
+      "amount": supply.amount.toString(),
+      "foc": supply.foc.toString(),
+      "notes": supply.notes.toString(),
+      "received": supply.received.toString(),
+      "createdAt": supply.createdAt.toString(),
+    }).then((dynamic res) {
+      print(res.toString());
+      if(res["error"] == true){
+        throw (res["message"]);
+      }else{
+        return res["message"];
+      }
+    }).catchError((e){
+      print(e);
+      if(e is SocketException){
+        throw ("Unable to connect to the server, check your internet connection");
+      }
+      throw ("Error in adding supply, try again");
+    });
+  }
+
+  /// A function that adds new supply to the database POST
+  /// with [Supply] model
+  Future<dynamic> addFOCSupply(Supply supply) async{
+    Map<String, String> header;
+    Future<User> user = futureValue.getCurrentUser();
+    await user.then((value) {
+      if(value.token == null){
+        throw ("No user logged in");
+      }
+      header = {"Authorization": "Bearer ${value.token}", "Accept": "application/json"};
+    });
+    return _netUtil.post(ADD_FOC_SUPPLY_URL, headers: header, body: {
+      "dealer": supply.dealer.toString(),
+      "amount": supply.amount.toString(),
+      "foc": supply.foc.toString(),
+      "focRate": supply.focRate.toString(),
+      "focPayment": supply.focPayment.toString(),
+      "notes": supply.notes.toString(),
+      "received": supply.received.toString(),
+      "createdAt": supply.createdAt.toString(),
+    }).then((dynamic res) {
       print(res.toString());
       if(res["error"] == true){
         throw (res["message"]);
